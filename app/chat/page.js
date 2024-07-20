@@ -127,7 +127,8 @@ const Page = () => {
       const ApiPath = Apis.SendMessage;
       const data = {
         chatId: chatId,
-        content: UserChatMessage
+        content: UserChatMessage,
+        image: previewURL
       }
       console.log('Data sending in api is', data);
       const response = await fetch(ApiPath, {
@@ -138,7 +139,8 @@ const Page = () => {
         },
         body: JSON.stringify({
           chatId: chatId,
-          content: UserChatMessage
+          content: UserChatMessage,
+          imageUrl: previewURL
         })
       });
       if (response.ok) {
@@ -1059,9 +1061,9 @@ const Page = () => {
                             </div>
                         }
                       </div> :
-                      <div className='flex justify-center'>
+                      <div className='flex justify-center w-full'>
                         {userChat.length === 0 ? (
-                          <div>
+                          <div className='w-full'>
                             <p style={{ fontSize: 24, fontWeight: 'bolder', textAlign: 'center' }}>Webflow GPT</p>
                             <div className='flex justify-center' style={{ gap: 10, marginTop: 30 }}>
                               <div className='w-2/6'>
