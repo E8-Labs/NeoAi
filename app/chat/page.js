@@ -70,6 +70,7 @@ const Page = () => {
   const [myProjects, setMyProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [getMessagesLoader, setGetMessagesLoader] = useState(false);
+  const [showImgInput, setShowInputImg] = useState(false);
 
   //test useeffect
 
@@ -118,16 +119,17 @@ const Page = () => {
     });
   };
 
+  const axios = require('axios'); // Make sure you have Axios installed and imported
+
   const callOpenAIAPI = async (messages) => {
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
     console.log('Data from localstorage is :', localStorageData);
     const AuthToken = localStorageData.data.token;
 
-
     const urlToFile = async (url, filename, mimeType) => {
-      const res = await fetch(url);
-      const blob = await res.blob();
+      const res = await axios.get(url, { responseType: 'blob' });
+      const blob = res.data;
       return new File([blob], filename, { type: mimeType });
     };
 
@@ -141,31 +143,33 @@ const Page = () => {
       formData.append('media', file);
     }
 
-
     try {
       const ApiPath = Apis.SendMessage;
       const data = {
         chatId: chatId,
         content: UserChatMessage,
-      }
+      };
       console.log('Data sending in api is', data);
-      const response = await fetch(ApiPath, {
-        method: 'post',
+      const response = await axios.post(ApiPath, formData, {
         headers: {
           'Authorization': 'Bearer ' + AuthToken,
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
-      if (response.ok) {
-        const Result = await response.json()
-        console.log('response of  api is', Result);
+
+      if (response.status === 200) {
+        const Result = response.data;
+        console.log('response of api is', Result);
         return Result.data[1].content;
-      } else if (!response.ok) { console.log('Response is not ok :', response); }
+      } else {
+        console.log('Response is not ok :', response);
+      }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       return "Sorry, I can't respond right now.";
     }
   };
+
 
   const handleSubmit = async (e) => {
     setSelectedFile(null);
@@ -256,12 +260,12 @@ const Page = () => {
     let separatedContent = separateTextAndCode(text)
 
     return (
-      <div className='flex flex-row gap-4 mt-8 mb-8' style={{ width: "80%" }}>
-        <div>
+      <div className='flex mt-8 mb-8' style={{ width: "80%" }}>
+        {/* <div>
           <img src='/assets/logo.png' alt='bot'
             style={{ height: '30px', width: '30px', resize: 'cover', objectFit: 'cover' }} />
-        </div>
-        <div className='px-4 py-3'
+        </div> */}
+        <div className='px-2 py-2'
           style={{
             borderTopLeftRadius: 25, backgroundColor: '#ffffff60', borderTopRightRadius: 25,
             borderBottomRightRadius: 25,
@@ -287,8 +291,8 @@ const Page = () => {
                 }}> */}
                   <p
                     style={{
-                      color: 'white', padding: 15,
-                      borderTopLeftRadius: 25, borderTopRightRadius: 25, borderBottomRightRadius: 25
+                      color: 'white', padding: 7,
+                      borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
                     }}>
                     {part.value}
                   </p>
@@ -1128,19 +1132,27 @@ const Page = () => {
                                   {
                                     chat.role === "user" ? (
                                       <div>
-                                        <div className='flex flex-row w-full justify-end items-center gap-3'>
-                                          <div className='px-4 py-3'
+                                        <div className='flex flex-col w-full justify-end items-end gap-2'>
+                                          <div>
+                                            {
+                                              previewURL ?
+                                                "Hello" : "no url"
+                                            }
+                                            {/* <div className='mt-2'>
+                                              
+                                            </div> */}
+                                            {/* <img src='/assets/profile1.jpeg' alt='user'
+                                              style={{ height: '50px', width: '50px', resize: 'cover', borderRadius: '50%' }} /> */}
+                                          </div>
+                                          <div className='px-2 py-2'
                                             style={{
                                               color: 'white', textAlign: 'end', width: 'fit-content',
-                                              maxWidth: '60%', borderTopLeftRadius: 25, backgroundColor: '#ffffff40', borderTopRightRadius: 25,
-                                              borderBottomLeftRadius: 25
+                                              maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff40', borderTopRightRadius: 20,
+                                              borderBottomLeftRadius: 20
                                             }}>
                                             {chat.content}
                                           </div>
-                                          <div>
-                                            <img src='/assets/profile1.jpeg' alt='user'
-                                              style={{ height: '50px', width: '50px', resize: 'cover', borderRadius: '50%' }} />
-                                          </div>
+
                                         </div>
                                       </div>
                                     ) :
@@ -1158,7 +1170,7 @@ const Page = () => {
                         )}
                       </div>
                   }
-                  <div className='flex rounded-xl w-5/12 flex-row justify-between'
+                  <div className='flex rounded-xl w-7/12 flex-row justify-between'
                     style={{ position: 'absolute', bottom: 5, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
                     <div className='w-full flex flex-col items-center'>
                       <div className='text-white w-full items-start px-4 py-2'>

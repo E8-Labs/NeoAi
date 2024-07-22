@@ -59,13 +59,13 @@ const Page = () => {
                     <div className="w-full flex flex-row">
                         {/* Code for onboarding */}
                         <div className="flex items-center w-6/12">
-                            <div className="w-10/12"
+                            <div className="w-9/12"
                                 style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
                                 <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
                                     ONBOARDING
                                 </p>
                                 <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                                    Who are the customers you are building this app for?
+                                    Who are the customers you are building this for?
                                 </p>
                                 <div className="flex justify-center">
                                     <textarea
