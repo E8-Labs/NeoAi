@@ -6,7 +6,8 @@ const Apis = {
     SendMessage: `${BasePath}api/chat/send_message`,
     CreateProject: `${BasePath}api/chat/create_project`,
     GetProjects: `${BasePath}api/chat/get_projects`,
-    GetMessages: `${BasePath}api/chat/get_messages`
+    GetMessages: `${BasePath}api/chat/get_messages`,
+    AddTeamMember: `${BasePath}api/user/invite_user`
 }
 
 export default Apis;

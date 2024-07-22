@@ -13,6 +13,8 @@ const ChoosePlan = () => {
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [CVV, setCVV] = useState('');
+    const [loader, setLoader] = useState(false);
+    const [error, setError] = useState(false);
 
     const openAddCardModal = () => {
         setAddCard(true);

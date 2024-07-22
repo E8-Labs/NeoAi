@@ -71,6 +71,8 @@ const Page = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [getMessagesLoader, setGetMessagesLoader] = useState(false);
   const [showImgInput, setShowInputImg] = useState(false);
+  const [addTeamLoader, setAddTeamLoader] = useState(false);
+  const [addTeamError, setAddTeamError] = useState(false);
 
   //test useeffect
 
@@ -139,17 +141,20 @@ const Page = () => {
 
     // Convert the image URL to a File object and append it to the form data
     if (previewURL) {
+      console.log('Imagr sending in');
       const file = await urlToFile(previewURL, 'image.png', 'image/png');
       formData.append('media', file);
     }
 
+    console.log('form Data sending in api is', formData);
+
     try {
       const ApiPath = Apis.SendMessage;
-      const data = {
-        chatId: chatId,
-        content: UserChatMessage,
-      };
-      console.log('Data sending in api is', data);
+      // const data = {
+      //   chatId: chatId,
+      //   content: UserChatMessage,
+      // };
+      // console.log('Data sending in api is', data);
       const response = await axios.post(ApiPath, formData, {
         headers: {
           'Authorization': 'Bearer ' + AuthToken,
@@ -167,6 +172,8 @@ const Page = () => {
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       return "Sorry, I can't respond right now.";
+    } finally {
+      setPreviewURL(null);
     }
   };
 
@@ -457,8 +464,21 @@ const Page = () => {
     }
   ]);
 
-  const handleAddTeam = (e) => {
+  const handleAddTeam = async (e) => {
     if (name && email && role) {
+
+      //api call for adding team member
+
+      const AddMember = {
+        name: name,
+        toUserEmail: email,
+        role: role
+      }
+
+      const response = await axios.post(Apis.AddTeamMember, AddMember, {
+        
+      })
+
       e.preventDefault();
       setOpenAddTeam(false);
       const newMember = {
@@ -540,6 +560,9 @@ const Page = () => {
       }
       if (response.status === 200) {
         console.log('messages of selected id are :', response.data.data);
+        if (response.data.data === "Unauthenticated user") {
+          console.log('Selected user is unAuthorized');
+        }
       } else {
         console.log('Response is not ok :', response);
       }
