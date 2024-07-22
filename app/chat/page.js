@@ -123,25 +123,38 @@ const Page = () => {
     const localStorageData = JSON.parse(LSD);
     console.log('Data from localstorage is :', localStorageData);
     const AuthToken = localStorageData.data.token;
+
+
+    const urlToFile = async (url, filename, mimeType) => {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new File([blob], filename, { type: mimeType });
+    };
+
+    const formData = new FormData();
+    formData.append('chatId', chatId);
+    formData.append('content', UserChatMessage);
+
+    // Convert the image URL to a File object and append it to the form data
+    if (previewURL) {
+      const file = await urlToFile(previewURL, 'image.png', 'image/png');
+      formData.append('media', file);
+    }
+
+
     try {
       const ApiPath = Apis.SendMessage;
       const data = {
         chatId: chatId,
         content: UserChatMessage,
-        image: previewURL
       }
       console.log('Data sending in api is', data);
       const response = await fetch(ApiPath, {
         method: 'post',
         headers: {
           'Authorization': 'Bearer ' + AuthToken,
-          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          chatId: chatId,
-          content: UserChatMessage,
-          imageUrl: previewURL
-        })
+        body: formData,
       });
       if (response.ok) {
         const Result = await response.json()
