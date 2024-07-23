@@ -73,7 +73,47 @@ const Page = () => {
   const [showImgInput, setShowInputImg] = useState(false);
   const [addTeamLoader, setAddTeamLoader] = useState(false);
   const [addTeamError, setAddTeamError] = useState(false);
-
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [loadTeamLoader, setLoadTeamLoader] = useState(false);
+  const [teamProfiles, setTeamProfiles] = useState([
+    {
+      id: 1,
+      name: 'James J.',
+      role: 'Web Developer',
+      email: 'james@gmail.com',
+      status: 'Accepted'
+    },
+    {
+      id: 2,
+      name: 'John D.',
+      role: 'App Developer',
+      email: 'john@gmail.com',
+      status: 'Pending'
+    },
+    {
+      id: 3,
+      name: 'Jony J.',
+      role: 'Web Designer',
+      email: 'jony@gmail.com',
+      status: 'Accepted'
+    },
+    {
+      id: 4,
+      name: 'David J.',
+      role: 'Bank Manager',
+      email: 'david@gmail.com',
+      status: 'Pending'
+    },
+    {
+      id: 5,
+      name: 'Anya.',
+      role: 'Cook',
+      email: 'anya@gmail.com',
+      status: 'Accepted'
+    }
+  ]);
   //test useeffect
 
   // useEffect(() => {
@@ -339,11 +379,32 @@ const Page = () => {
     setOpenSetting(false);
   }
 
-  const handleTeamClick = () => {
+  const handleTeamClick = async () => {
     setOpenTeam(true);
     setOpenProjects(false);
     setOpenPlan(false);
     setOpenSetting(false);
+    // try {
+    //   //Auth token from local storage add team loader
+    //   const LSD = localStorage.getItem('User');
+    //   const localStorageData = JSON.parse(LSD);
+    //   // console.log('Data2 from localstorage is :', localStorageData);
+    //   const AuthToken = localStorageData.data.token;
+    //   // console.log('Auth token is', AuthToken);
+    //   setLoadTeamLoader(true);
+    //   const response = await axios.get(Apis.GetTeamMembers, {
+    //     headers: {
+    //       'Authorization': 'Bearer ' + AuthToken
+    //     }
+    //   });
+    //   if (response) {
+    //     console.log('Response of get team members api is :', response);
+    //   }
+    // } catch (error) {
+    //   console.error("Error occured in api is :", error);
+    // } finally {
+    //   setLoadTeamLoader(false);
+    // }
   }
 
   //code for projects modal
@@ -422,76 +483,57 @@ const Page = () => {
     backgroundColor: '#0F0C2D'
   };
 
-  //code for tema profile
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState('');
-  const [teamProfiles, setTeamProfiles] = useState([
-    {
-      id: 1,
-      name: 'James J.',
-      role: 'Web Developer',
-      email: 'james@gmail.com',
-      status: 'Accepted'
-    },
-    {
-      id: 2,
-      name: 'John D.',
-      role: 'App Developer',
-      email: 'john@gmail.com',
-      status: 'Pending'
-    },
-    {
-      id: 3,
-      name: 'Jony J.',
-      role: 'Web Designer',
-      email: 'jony@gmail.com',
-      status: 'Accepted'
-    },
-    {
-      id: 4,
-      name: 'David J.',
-      role: 'Bank Manager',
-      email: 'david@gmail.com',
-      status: 'Pending'
-    },
-    {
-      id: 5,
-      name: 'Anya.',
-      role: 'Cook',
-      email: 'anya@gmail.com',
-      status: 'Accepted'
-    }
-  ]);
-
   const handleAddTeam = async (e) => {
     if (name && email && role) {
 
       //api call for adding team member
 
-      const AddMember = {
-        name: name,
-        toUserEmail: email,
-        role: role
+      try {
+        setAddTeamLoader(true)
+        const AddMember = {
+          toUserEmail: email,
+          name: name,
+          role: role,
+        }
+
+        //Auth token from local storage add team loader
+        const LSD = localStorage.getItem('User');
+        const localStorageData = JSON.parse(LSD);
+        // console.log('Data2 from localstorage is :', localStorageData);
+        const AuthToken = localStorageData.data.token;
+        // console.log('Auth token is', AuthToken);
+
+        const response = await axios.post(Apis.AddTeamMember, AddMember, {
+          headers: {
+            'Authorization': 'Bearer ' + AuthToken,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response) {
+          console.log('Response of add team member is :', response);
+        }
+
+        // e.preventDefault();
+        // const newMember = {
+        //   id: teamProfiles.length + 1,
+        //   name,
+        //   email,
+        //   role,
+        //   status: 'Pending'
+        // }
+        // setTeamProfiles([...teamProfiles, newMember]);
+        setName('');
+        setEmail('');
+        setRole('');
+      } catch (error) {
+        console.error("Error occured in api call is :", error);
+      } finally {
+        setOpenAddTeam(false);
+        setAddTeamLoader(false);
       }
 
-      const response = await axios.post(Apis.AddTeamMember, AddMember, {
-        
-      })
 
-      e.preventDefault();
-      setOpenAddTeam(false);
-      const newMember = {
-        id: teamProfiles.length + 1,
-        name,
-        email,
-        role,
-        status: 'Pending'
-      }
-      setTeamProfiles([...teamProfiles, newMember]);
-      setName('');
-      setEmail('');
-      setRole('');
     } else {
       console.log('Cannot');
     }
@@ -856,55 +898,64 @@ const Page = () => {
       </div>
 
       <div className='w-10/12 flex flex-col'>
-        <div className='flex w-full' style={{ display: 'flex', justifyContent: 'center', borderBottom: '1px solid #555555' }}>
-          {
-            openProjects &&
-            <div className='w-11/12 mb-2'>
-              <div className='flex flex-row items-center justify-between w-3/12 mt-8'>
-                <div className='flex flex-row gap-2 items-center'>
-                  {
-                    SelectedLogo ?
-                      <img src={SelectedLogo} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
-                      <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-                  }
-                  <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                    {appName ?
+        <div className='flex w-full items-center' style={{ display: 'flex', justifyContent: 'center', borderBottom: '1px solid #555555' }}>
+          <div className='w-11/12 flex flex-row items-center justify-center'>
+            <div className='w-6/12'>
+              {
+                openProjects &&
+                <div className='w-11/12 mb-2'>
+                  <div className='flex flex-row items-center gap-12 mt-8'>
+                    <div className='flex flex-row gap-2 items-center'>
+                      {
+                        SelectedLogo ?
+                          <img src={SelectedLogo} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
+                          <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+                      }
                       <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                        {appName}
-                      </div> :
-                      <div>
-                        App Name
-                      </div>}
+                        {appName ?
+                          <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
+                            {appName}
+                          </div> :
+                          <div>
+                            App Name
+                          </div>}
+                      </div>
+                    </div>
+                    <div className='flex flex-row gap-2 items-center'>
+                      <button onClick={handleOpenEditproject}>
+                        <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                      </button>
+                      <button onClick={handleOpenShareproject}>
+                        <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className='flex flex-row gap-2 items-center'>
-                  <button onClick={handleOpenEditproject}>
-                    <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-                  </button>
-                  <button onClick={handleOpenShareproject}>
-                    <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-                  </button>
+              }
+              {openPlan &&
+                <div className='flex items-center w-11/12'
+                  style={{ height: '50px', fontSize: 20, fontWeight: '500', fontFamily: 'inter' }}>
+                  Subscription Plan
                 </div>
-              </div>
+              }
+              {
+                openSetting &&
+                <div className='flex items-center w-11/12' style={{ height: '50px' }}>
+                  Settings
+                </div>
+              }
+              {openTeam &&
+                <div className='flex items-center w-11/12' style={{ height: '50px' }}>
+                  My Team
+                </div>
+              }
             </div>
-          }
-          {openPlan &&
-            <div className='flex items-center w-11/12'
-              style={{ height: '50px', fontSize: 20, fontWeight: '500', fontFamily: 'inter' }}>
-              Subscription Plan
+            <div className='w-6/12 flex justify-end'>
+              <button>
+                <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
+              </button>
             </div>
-          }
-          {
-            openSetting &&
-            <div className='flex items-center w-11/12' style={{ height: '50px' }}>
-              Settings
-            </div>
-          }
-          {openTeam &&
-            <div className='flex items-center w-11/12' style={{ height: '50px' }}>
-              My Team
-            </div>
-          }
+          </div>
         </div>
 
         {
@@ -1319,9 +1370,9 @@ const Page = () => {
               />
               <TextField id="standard-basic" label="Role" variant="standard"
                 placeholder="Role"
-                value={email}
+                value={role}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setRole(e.target.value);
                 }}
                 sx={{
                   width: '100%', // Change the width here
@@ -1351,9 +1402,9 @@ const Page = () => {
               />
               <TextField id="standard-basic" label="Email" variant="standard"
                 placeholder="Enter Email"
-                value={role}
+                value={email}
                 onChange={(e) => {
-                  setRole(e.target.value);
+                  setEmail(e.target.value);
                 }}
                 sx={{
                   width: '100%', // Change the width here
@@ -1383,7 +1434,11 @@ const Page = () => {
               />
               <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
                 style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
-                Add
+                {
+                  addTeamLoader ?
+                    <CircularProgress size={30} /> :
+                    "Add"
+                }
               </Button>
             </div>
           </Box>

@@ -43,10 +43,10 @@ export default function RootLayout({ children }) {
             <body className={inter.className} style={backgroundImage}>
                 <div style={{ marginTop: 30, }}>
                     <div className="w-screen flex flex-row items-center justify-between px-12">
-                        <button className="">
+                        <button>
                             <img src="/assets/logo.png" style={{ height: '37px', width: '36px', resize: 'cover' }} />
                         </button>
-                        <div className="ms-4 flex justify-end gap-12">
+                        <div className="flex flex-row gap-2 items-center text-white">
                             {/*<NavLinks />
                             <Button
                                 // onClick={()=> router.push('/onboarding')}
@@ -55,6 +55,16 @@ export default function RootLayout({ children }) {
                                 style={{ height: '40px', color: 'white', fontWeight: '500', fontSize: 15, backgroundColor: '#4011FA', fontFamily: 'inter' }}>
                                 Get Started
                             </Button>*/}
+                            Already have an account ?
+                            <Button sx={{
+                                textTransform: 'none',
+                                fontSize: 14,
+                                fontWeight: "500",
+                                fontFamily: 'inter',
+                                width: "auto"
+                            }}>
+                                Login
+                            </Button>
                         </div>
                     </div>
                     <div>
