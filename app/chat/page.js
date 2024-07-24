@@ -121,19 +121,28 @@ const Page = () => {
   
     switch (textType) {
       case 'heading1':
-        return <Text style={styles.heading1}>{text.replace(/^#\s/, '')}</Text>;
+        return <h2 style={{color: 'white'}}>{text.replace(/^#\s/, '')}</h2>;
       case 'heading2':
-        return <Text style={styles.heading2}>{text.replace(/^##\s/, '')}</Text>;
+        return <h3 style={{color: 'white'}}>{text.replace(/^##\s/, '')}</h3>;
       case 'heading3':
-        return <Text style={styles.heading3}>{text.replace(/^###\s/, '')}</Text>;
+        return <h4 style={{color: 'white'}}>{text.replace(/^###\s/, '')}</h4>;
       case 'bullet':
-        return <Text style={styles.bullet}>{text.replace(/^-/, '•')}</Text>;
-      case 'code':
-        return <Text style={styles.code}>{text.replace(/^`\s/, '')}</Text>;
+        return <p style={{color: 'white'}}>{text.replace(/^-/, '•')}</p>;
+      // case 'code':
+      //   return <Text style={styles.code}>{text.replace(/^`\s/, '')}</Text>;
       default:
-        return <Text style={styles.simpleText}>{text}</Text>;
+        return <p style={{color: 'white'}}>{text}</p>;
     }
   };
+
+
+  const ShowMessageTextBubble = (textContent) => {
+    const textLines = textContent.trim().split('\n').filter(line => line.trim() !== ''); 
+    return ( <div style={{
+      color: 'white', padding: 7,
+      borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
+    }}>{textLines.map((line, index) => ( <RenderText key={index} text={line} /> ))} </div> );
+  }
 
 
 
@@ -334,20 +343,28 @@ const Page = () => {
         </div> */}
         <div className='px-2 py-2'
           style={{
-            borderTopLeftRadius: 25, backgroundColor: '#ffffff60', borderTopRightRadius: 25,
+            borderTopLeftRadius: 25, backgroundColor: '#ffffff00', borderTopRightRadius: 25,
             borderBottomRightRadius: 25,
           }}>
           {separatedContent.map((part, index) => (
             <div key={index}>
               {part.type === 'code' ? (
                 // <pre><code>{part.value}</code></pre>
-                <SyntaxHighlighter language="javascript" style={vs2015}>
+                <div className='w-full' style={{backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, borderTop: 5, 
+                  flexDirection: 'column',
+                  
+                }}>
+                  <div className='w-full' style={{justifyContent: 'end', alignItems: 'center', backgroundColor: 'grey'}}> 
+                    <h4>copy</h4>
+                  </div>
+                  <SyntaxHighlighter language="javascript" style={vs2015}>
                   {part.value}
                 </SyntaxHighlighter>
+                </div>
               ) : (
                 <div className='flex flex-row items-center gap-2' style={{ color: 'white' }}>
                   {
-                    RenderText(part.value)
+                    ShowMessageTextBubble(part.value)
                   }
                   {/* <p
                     style={{
