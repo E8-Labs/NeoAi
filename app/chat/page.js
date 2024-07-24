@@ -217,7 +217,7 @@ const Page = () => {
       console.error('Error calling OpenAI API:', error);
       return "Sorry, I can't respond right now.";
     } finally {
-      setPreviewURL(null);
+      // setPreviewURL(null);
     }
   };
 
@@ -577,7 +577,6 @@ const Page = () => {
         setAddTeamLoader(false);
       }
 
-
     } else {
       console.log('Cannot');
     }
@@ -629,10 +628,9 @@ const Page = () => {
       const localStorageData = JSON.parse(LSD);
       console.log('Data2 from localstorage is :', localStorageData);
       const AuthToken = localStorageData.data.token;
-      // console.log('Auth token is', AuthToken);
-      const response = await axios.get(ApiPath, {
-        chatId: item
-      },
+      console.log('Auth token is', AuthToken);
+      
+      const response = await axios.get(ApiPath + `?chatId=${item}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -645,10 +643,11 @@ const Page = () => {
         console.log('Response is :', response);
       }
       if (response.status === 200) {
-        console.log('messages of selected id are :', response.data.data);
-        if (response.data.data === "Unauthenticated user") {
-          console.log('Selected user is unAuthorized');
-        }
+        let data = response.data;
+        console.log("Data is ", data)
+        let messages = data.data
+        setUserChat(messages)
+        console.log("Chat is ", messages)
       } else {
         console.log('Response is not ok :', response);
       }
@@ -700,8 +699,8 @@ const Page = () => {
             sx={{ textTransform: 'none' }}
             onClick={handleProjectClick}
             style={{
-              color: openProjects ? '#2548FD' : '#ffffff60', fontWeight: '500',
-              fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '#2548FD30' : ''
+              color: openProjects ? '#ffffff' : '#ffffff60', fontWeight: '500',
+              fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '#ffffff60' : ''
             }}>
             My Projects
           </Button>
@@ -743,16 +742,19 @@ const Page = () => {
           <Button onClick={handleSettingClick} sx={{ textTransform: 'none' }}
             style={{
               fontWeight: '500', fontSize: 12, fontFamily: 'inter',
-              color: openSetting ? '#2548FD' : '#ffffff60', backgroundColor: openSetting ? '#2548FD30' : ''
+              color: openSetting ? '#ffffff' : '#ffffff60', backgroundColor: openSetting ? '#ffffff60' : ''
             }}>
             Settings
           </Button>
           <Button onClick={handleTeamClick} sx={{ textTransform: 'none' }}
-            style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter', color: openTeam ? '#2548FD' : '#ffffff', backgroundColor: openTeam ? '#2548FD30' : '' }}>
+            style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#ffffff' : '#ffffff60', backgroundColor: openTeam ? '#ffffff60' : '' }}>
             My Team
           </Button>
-          <Button onClick={handlePlanClick} sx={{ textTransform: 'none' }}
-            style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter', color: openPlan ? '#2548FD' : '#ffffff', backgroundColor: openPlan ? '#2548FD30' : '' }}>
+          <Button onClick={handlePlanClick} sx={{ textTransform: 'none', padding: 0, margin: 0 }}
+            style={{
+              fontWeight: '500', fontSize: 12, textAlign: 'start', fontFamily: 'inter', color: openPlan ? '#ffffff' : '#ffffff60',
+              backgroundColor: openPlan ? '#ffffff60' : ''
+            }}>
             Plans
           </Button>
         </div>
@@ -1221,9 +1223,48 @@ const Page = () => {
                             <div className='mt-8'>
                               <CircularProgress size={50} />
                             </div> :
-                            <div style={{ color: 'red' }}>
-                              Here is your project history
-                            </div>
+                            <div style={{ overflow: 'auto', height: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                            {userChat.map((chat, index) => (
+                              <div key={index} style={{ gap: 20 }}>
+                                {
+                                  chat.role === "user" ? (
+                                    <div>
+                                      <div className='flex flex-col w-full justify-end items-end gap-2'>
+                                        <div>
+                                          {
+                                            previewURL ?
+                                              <div>
+                                                <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                              </div> : ""
+                                          }
+                                          {/* <div className='mt-2'>
+                                            
+                                          </div> */}
+                                          {/* <img src='/assets/profile1.jpeg' alt='user'
+                                            style={{ height: '50px', width: '50px', resize: 'cover', borderRadius: '50%' }} /> */}
+                                        </div>
+                                        <div className='px-2 py-2'
+                                          style={{
+                                            color: 'white', textAlign: 'end', width: 'fit-content',
+                                            maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff40', borderTopRightRadius: 20,
+                                            borderBottomLeftRadius: 20
+                                          }}>
+                                          {chat.content}
+                                        </div>
+
+                                      </div>
+                                    </div>
+                                  ) :
+                                    (
+                                      <div>
+                                        {getResponseView(chat.content)}
+                                      </div>
+                                    )
+                                }
+
+                              </div>
+                            ))}
+                          </div>
                         }
                       </div> :
                       <div className='flex justify-center w-full'>
@@ -1284,7 +1325,9 @@ const Page = () => {
                                           <div>
                                             {
                                               previewURL ?
-                                                "Hello" : "no url"
+                                                <div>
+                                                  <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                                </div> : ""
                                             }
                                             {/* <div className='mt-2'>
                                               

@@ -53,11 +53,6 @@ const Page = () => {
                     localStorage.setItem('User', JSON.stringify(ApiResponse));
                     if (ApiResponse.status === true) {
 
-                        const data = {
-                            appIdea: appIdea,
-                            targettedAudience: audienceName,
-                            projectName: appName
-                        }
                         const AuthToken = ApiResponse.data.token;
 
                         const response2 = await axios.post(Apis.CreateProject, {

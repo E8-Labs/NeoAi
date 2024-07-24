@@ -1,21 +1,18 @@
 'use client'
-import { Box, Button, Modal, Alert } from "@mui/material";
+import { Box, Button, Modal, Alert, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
 import TextField from '@mui/material/TextField';
+import axios from "axios";
+import Apis from "@/public/Apis/Apis";
 
 const Page = () => {
     const router = useRouter('');
     const [showError, setShowError] = useState(false);
     const [addFounder, setAddFounder] = useState(false);
-    const [founders, setFounders] = useState([
-        { id: 1, name: 'Rico gaspien', email: 'ricosgaspien@gmail.com', role: 'CFO' },
-        { id: 2, name: 'Rico gaspien2', email: 'ricosgaspien2@gmail.com', role: 'Manager' },
-        { id: 3, name: 'Rico gaspien3', email: 'ricosgaspien3@gmail.com', role: 'CEO' },
-        { id: 4, name: 'Rico gaspien4', email: 'ricosgaspien4@gmail.com', role: 'Clerk' }
-    ]);
+    const [founders, setFounders] = useState([]);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -24,7 +21,8 @@ const Page = () => {
     const [appIdea, setAppIdea] = useState('');
     const [audienceName, setAudienceName] = useState("");
     const [appName, setAppName] = useState("");
-    
+    const [loader, setLoader] = useState(false);
+
     //getting create project data
     useEffect(() => {
         const D = localStorage.getItem('createProject');
@@ -45,9 +43,42 @@ const Page = () => {
         setShowError(false);
     }
 
-    const handleContinueClick = () => {
-        localStorage.setItem("createProject", JSON.stringify(CreateProject1))
-        router.push('/onboarding/savework');
+    const handleContinueClick = async () => {
+        const data = localStorage.getItem('User');
+        if (data) {
+            const ParsedLocalData = JSON.parse(data);
+            const AuthToken = ParsedLocalData.data.token;
+
+            try {
+                setLoader(true);
+                const response2 = await axios.post(Apis.CreateProject, {
+                    appIdea: appIdea,
+                    targettedAudience: audienceName,
+                    projectName: appName
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + AuthToken
+                    }
+                });
+                if (response2.status === 200) {
+                    const Result = response2.data;
+                    localStorage.setItem('NewProject', JSON.stringify(Result));
+                    console.log('Response of API is:', Result);
+                    router.push('/chat');
+                    // router.push('/onboarding/founders');
+                } else {
+                    console.log('Response is not ok', response2);
+                }
+            } catch (error) {
+                console.error("Error occured in api is:", error);
+            } finally {
+                setLoader(false);
+            }
+        } else {
+            localStorage.setItem("createProject", JSON.stringify(CreateProject1))
+            router.push('/onboarding/savework');
+        }
     }
 
     const handleBackClick = () => {
@@ -193,6 +224,7 @@ const Page = () => {
                                         Back
                                     </Button>
                                     {founders ? <Button
+                                        // variant="disabled"
                                         onClick={handleContinueClick}
                                         className="p-3 py-4"
                                         style={{
@@ -208,7 +240,10 @@ const Page = () => {
                                                 height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
                                                 backgroundColor: '#4011FA50', fontFamily: 'inter'
                                             }}>
-                                            Continue
+                                            {
+                                                loader ?
+                                                    <CircularProgress size={30} /> : "Continue"
+                                            }
                                         </Button>
                                     }
                                 </div>
@@ -280,7 +315,21 @@ const Page = () => {
                             <div className="w-10/12 mt-6" style={{
                                 fontSize: 12, fontWeight: '400', fontFamily: 'inter', color: '#ffffff60'
                             }}>
-                                It starts with you. Fill your personal information as a
+
+                                {
+                                    founders.length === 0 ?
+                                        <div className="w-10/12 mt-6" style={{
+                                            fontSize: 12, fontWeight: '400', fontFamily: 'inter', color: '#ffffff60'
+                                        }}>
+                                            It starts with you. Fill your personal information as a Founder
+                                        </div> :
+                                        <div className="w-10/12 mt-6" style={{
+                                            fontSize: 12, fontWeight: '400', fontFamily: 'inter', color: '#ffffff60'
+                                        }}>
+                                            Add additional founders to your project
+                                        </div>
+                                }
+
                             </div>
                             <div className="mt-6">
                                 <TextField id="standard-basic" label="Name" variant="standard"

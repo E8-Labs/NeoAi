@@ -196,7 +196,7 @@ const ChoosePlan = () => {
         <div className='w-full flex flex-col items-center'>
             <div className='w-11/12 flex flex-row gap-12 mt-8'>
                 <div className='w-6/12'>
-                    <div className='flex flex-row justify-between w-11/12'>
+                    <div className='flex flex-row justify-between w-full'>
                         <div style={{ fontSize: 20, fontWeight: '500', fontFamily: 'inter' }}>
                             Choose Plan
                         </div>
@@ -310,7 +310,7 @@ const ChoosePlan = () => {
                     </div>
 
                 </div>
-                <div className='w-6/12 flex flex-col items-end'>
+                <div className='w-6/12 flex flex-col'>
                     <div className='flex w-10/12 flex-row justify-between'>
                         <div style={{ fontWeight: '500', fontFamily: 'inter', fontSize: 20 }}>
                             Make Payment
