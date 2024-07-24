@@ -80,6 +80,7 @@ const Page = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [loadTeamLoader, setLoadTeamLoader] = useState(false);
+  const [showAcceptBtn, setShowAcceptBtn] = useState(false);
   const [teamProfiles, setTeamProfiles] = useState([
     // {
     //   id: 1,
@@ -413,7 +414,43 @@ const Page = () => {
     } finally {
       setLoadTeamLoader(false);
     }
+
+    //code for showing and hiding accept and decline button
+
+    // const LSD = localStorage.getItem('User');
+    // const localStorageData = JSON.parse(LSD);
+    // console.log('Data2 from localstorage is :', localStorageData);
+    // const toUser2 = localStorageData.data.user.email;
+    // console.log('email to match is:',toUser2);
+    // // const toUserId = teamProfiles.toUser.id;
+    // // console.log('Id getting is:', teamProfiles[0].toUser.id);
+    // teamProfiles.forEach(element => {
+    //   if (element.fromuser.email !== toUser2) {
+    //     console.log('Email id of user and sender user donot matches');
+    //   }else{
+    //     console.log('Log matches');
+    //   }
+    // });
+
   }
+
+  useEffect(() => {
+    const LSD = localStorage.getItem('User');
+    const localStorageData = JSON.parse(LSD);
+    console.log('Data2 from localstorage is :', localStorageData);
+    const toUser2 = localStorageData.data.user.id;
+    console.log('email to match is:', toUser2);
+    // const toUserId = teamProfiles.toUser.id;
+    // console.log('Id getting is:', teamProfiles[0].toUser.id);
+    teamProfiles.forEach(element => {
+      if (element.toUser.id == toUser2) {
+        console.log('Id of user and ined user matches');
+        setShowAcceptBtn(true);
+      } else {
+        console.log('id donot match');
+      }
+    });
+  }, [handleTeamClick])
 
   //code for projects modal
 
@@ -1000,15 +1037,37 @@ const Page = () => {
                                 {item.toUserEmail}
                               </span>
                             </div>
-                            {item.status === 'accepted' && (
+                            {item.status === 'accepted' ?
                               <div className='flex items-center justify-center mt-3'
                                 style={{
                                   height: '35px', width: '96px', borderRadius: 1,
                                   backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
                                 }}>
                                 Accepted
+                              </div> :
+                              <div>
+                                {
+                                  showAcceptBtn && (
+                                    <div className='flex flex-row justify-between w-full'>
+                                      <Button className='flex items-center justify-center mt-3'
+                                        style={{
+                                          height: '35px', width: '96px', borderRadius: 5,
+                                          backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                        }}>
+                                        Accept
+                                      </Button>
+                                      <Button className='flex items-center justify-center mt-3'
+                                        style={{
+                                          height: '35px', width: '96px', borderRadius: 1,
+                                          backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                        }}>
+                                        Decline
+                                      </Button>
+                                    </div>
+                                  )
+                                }
                               </div>
-                            )}
+                            }
                             {item.status === 'pending' && (
                               <div className='flex items-center justify-center mt-3'
                                 style={{
