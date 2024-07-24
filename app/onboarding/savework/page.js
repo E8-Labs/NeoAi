@@ -7,6 +7,7 @@ import { Alert } from '@mui/material';
 import Slide from '@mui/material/Slide';
 import React from 'react'
 import Apis from "@/public/Apis/Apis";
+import axios from "axios";
 
 const Page = () => {
     const router = useRouter('');
@@ -14,10 +15,24 @@ const Page = () => {
     const [password, setPassword] = useState('');
     const [showError, setShowError] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [appIdea, setAppIdea] = useState('');
+    const [audienceName, setAudienceName] = useState("");
+    const [appName, setAppName] = useState("");
+    const [founders, setFounders] = useState(null);
 
     const handleClose = () => {
         setShowError(false);
     }
+
+    useEffect(() => {
+        const D = localStorage.getItem('createProject');
+        const localData = JSON.parse(D);
+        console.log("Data from local including array is", localData);
+        setAppIdea(localData.appidea);
+        setAudienceName(localData.audienceName);
+        setAppName(localData.appName);
+        setFounders(localData.founders);
+    }, []);
 
     const handleContinueClick = async () => {
         if (email.length !== 0) {
@@ -31,10 +46,39 @@ const Page = () => {
                     },
                     body: JSON.stringify({ email, password })
                 });
+                console.log("response for checking status", response);
                 if (response.ok) {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
+                    localStorage.setItem('User', JSON.stringify(ApiResponse));
                     if (ApiResponse.status === true) {
+
+                        const data = {
+                            appIdea: appIdea,
+                            targettedAudience: audienceName,
+                            projectName: appName
+                        }
+                        const AuthToken = ApiResponse.data.token;
+
+                        const response2 = await axios.post(Apis.CreateProject, {
+                            appIdea: appIdea,
+                            targettedAudience: audienceName,
+                            projectName: appName
+                        }, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + AuthToken
+                            }
+                        });
+                        if (response2.status === 200) {
+                            const Result = response2.data;
+                            localStorage.setItem('NewProject', JSON.stringify(Result));
+                            console.log('Response of API is:', Result);
+                            router.push('/chat');
+                            // router.push('/onboarding/founders');
+                        } else {
+                            console.log('Response is not ok', response2);
+                        }
                         // if (ApiResponse.message === "User registered") {
                         //     router.push('/chat');
                         //     localStorage.setItem('User', JSON.stringify(ApiResponse));
@@ -44,6 +88,8 @@ const Page = () => {
                     } else {
                         console.log('Error in response', response);
                     }
+                } else if(!response.ok){
+                    console.log("Response of login api is not ok :", response);
                 }
             } catch (error) {
                 console.error('Error occured is :', error);
@@ -59,9 +105,6 @@ const Page = () => {
         router.push('/onboarding/founders')
     }
 
-    useEffect(() => {
-        console.log('App idea of user is :', email);
-    }, [email])
     return (
         <div className="flex justify-center" style={{ color: 'white' }}>
             <div className="w-11/12">

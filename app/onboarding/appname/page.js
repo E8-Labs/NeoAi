@@ -14,6 +14,8 @@ const Page = () => {
     const [appName, setAppName] = useState('');
     const [showError, setShowError] = useState(false);
     const [loader, setloader] = useState(false);
+    const [appIdea, setAppIdea] = useState('');
+    const [audienceName, setAudienceName] = useState("");
 
     const handleClose = () => {
         setShowError(false);
@@ -25,52 +27,65 @@ const Page = () => {
         console.log('Data from local storage is', localStorageData);
     }, []);
 
+    useEffect(() => {
+        const D = localStorage.getItem('createProject');
+        const localStorageData = JSON.parse(D);
+        setAppIdea(localStorageData.appidea);
+        setAudienceName(localStorageData.audeincename);
+    }, []);
+
+    const CreateProject1 = {
+        appidea: appIdea,
+        audeincename: audienceName,
+        appName: appName
+    }
+
     const handleContinueClick = async () => {
         if (appName.length !== 0) {
-            try {
-                setloader(true);
-                const D = localStorage.getItem('createProject');
-                const localStorageData = JSON.parse(D);
-                const appIdea = localStorageData.appidea;
-                const audienceName = localStorageData.audeincename;
-                const LSD = localStorage.getItem('User');
-                const localStorageData2 = JSON.parse(LSD);
-                console.log('Data2 from localstorage is :', localStorageData2);
-                const AuthToken = localStorageData2.data.token;
-                const data = {
-                    appIdea: appIdea,
-                    targettedAudience: audienceName,
-                    projectName: appName
-                }
-                console.log('Data is', data);
-                const response = await axios.post(Apis.CreateProject, {
-                    appIdea: appIdea,
-                    targettedAudience: audienceName,
-                    projectName: appName
-                }, {
-                    // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Im5hbWUiOiIiLCJwaG9uZSI6IiIsInByb2ZpbGVfaW1hZ2UiOiIiLCJmdWxsX3Byb2ZpbGVfaW1hZ2UiOiIiLCJpZCI6MSwiZW1haWwiOiJzYWxtYW5AZTgtbGFicy5jb20iLCJwYXNzd29yZCI6IiQyYSQxMCRUMFhMdUkwcFJ4aG84c3ZiM010LndlYks1OTZCOHd6eHhvbnhWUHM0MUY4clVMc0FjcHNrbSIsInVwZGF0ZWRBdCI6IjIwMjQtMDctMTZUMTg6MTg6MDkuNDU4WiIsImNyZWF0ZWRBdCI6IjIwMjQtMDctMTZUMTg6MTg6MDkuNDU4WiJ9LCJpYXQiOjE3MjExNTM4ODksImV4cCI6MTc1MjY4OTg4OX0.30vN5W7SHBrwuCbBq52T6Ps1NscDRevvOw_V_085Bow
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + AuthToken
-                    }
-                });
+            // try {
+            //     setloader(true);
+            //     const D = localStorage.getItem('createProject');
+            //     const localStorageData = JSON.parse(D);
+            //     const appIdea = localStorageData.appidea;
+            //     const audienceName = localStorageData.audeincename;
+            //     const LSD = localStorage.getItem('User');
+            //     const localStorageData2 = JSON.parse(LSD);
+            //     console.log('Data2 from localstorage is :', localStorageData2);
+            //     const AuthToken = localStorageData2.data.token;
+            //     const data = {
+            //         appIdea: appIdea,
+            //         targettedAudience: audienceName,
+            //         projectName: appName
+            //     }
+            //     console.log('Data is', data);
+            //     const response = await axios.post(Apis.CreateProject, {
+            //         appIdea: appIdea,
+            //         targettedAudience: audienceName,
+            //         projectName: appName
+            //     }, {
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'Authorization': 'Bearer ' + AuthToken
+            //         }
+            //     });
 
-                if (response.status === 200) {
-                    const Result = response.data;
-                    localStorage.setItem('NewProject', JSON.stringify(Result));
-                    console.log('Response of API is:', Result);
-                    router.push('/chat');
-                    // router.push('/onboarding/founders');
-                } else {
-                    console.log('Response is not ok', response);
-                }
-            } catch (error) {
-                console.log('Error occurred:', error);
-            } finally {
-                setloader(false);
-            }
+            //     if (response.status === 200) {
+            //         const Result = response.data;
+            //         localStorage.setItem('NewProject', JSON.stringify(Result));
+            //         console.log('Response of API is:', Result);
+            //         router.push('/chat');
+            //         // router.push('/onboarding/founders');
+            //     } else {
+            //         console.log('Response is not ok', response);
+            //     }
+            // } catch (error) {
+            //     console.log('Error occurred:', error);
+            // } finally {
+            //     setloader(false);
+            // }
 
-            // router.push('/onboarding/founders');
+            localStorage.setItem('createProject', JSON.stringify(CreateProject1));
+            router.push('/onboarding/founders');
         } else {
             setShowError(true);
         }

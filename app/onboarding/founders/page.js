@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField';
 
 const Page = () => {
     const router = useRouter('');
-    const [appIdea, setAppIdea] = useState('');
     const [showError, setShowError] = useState(false);
     const [addFounder, setAddFounder] = useState(false);
     const [founders, setFounders] = useState([
@@ -22,22 +21,38 @@ const Page = () => {
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('');
     const [AddFounderError, setAddFounderError] = useState(false);
+    const [appIdea, setAppIdea] = useState('');
+    const [audienceName, setAudienceName] = useState("");
+    const [appName, setAppName] = useState("");
+    
+    //getting create project data
+    useEffect(() => {
+        const D = localStorage.getItem('createProject');
+        const localStorageData = JSON.parse(D);
+        setAppIdea(localStorageData.appidea);
+        setAudienceName(localStorageData.audeincename);
+        setAppName(localStorageData.appName);
+    }, []);
+
+    const CreateProject1 = {
+        appidea: appIdea,
+        audienceName: audienceName,
+        appName: appName,
+        founders: [founders]
+    }
 
     const handleClose = () => {
         setShowError(false);
     }
 
     const handleContinueClick = () => {
+        localStorage.setItem("createProject", JSON.stringify(CreateProject1))
         router.push('/onboarding/savework');
     }
 
     const handleBackClick = () => {
         router.push('/onboarding/appname')
     }
-
-    useEffect(() => {
-        console.log('App idea of user is :', appIdea);
-    }, [appIdea]);
 
     //Modal to add founder
     const handleAddFounder = () => {
@@ -86,6 +101,14 @@ const Page = () => {
     const handleDelfounder = (itemId) => {
         setFounders(founders.filter(founders => founders.id !== itemId))
     }
+
+    useEffect(() => {
+        const localstorage = localStorage.getItem('createProject');
+        if (localstorage) {
+            const LD = JSON.parse(localstorage);
+            console.log('Local data is', LD);
+        }
+    }, [])
 
     return (
         <div className="flex justify-center" style={{ color: 'white' }}>
@@ -255,9 +278,9 @@ const Page = () => {
                                 New Founder
                             </div>
                             <div className="w-10/12 mt-6" style={{
-                                fontSize: 12, fontWeight: '400', fontFamily: 'inter', color :'#ffffff60'
+                                fontSize: 12, fontWeight: '400', fontFamily: 'inter', color: '#ffffff60'
                             }}>
-                                It starts with you. Fill your personal information as a 
+                                It starts with you. Fill your personal information as a
                             </div>
                             <div className="mt-6">
                                 <TextField id="standard-basic" label="Name" variant="standard"

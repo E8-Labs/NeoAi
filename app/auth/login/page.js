@@ -9,12 +9,21 @@ import React from 'react'
 import Apis from "@/public/Apis/Apis";
 
 const Page = () => {
-    const router = useRouter('');
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showError, setShowError] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loginLoader, setLoginLoader] = useState(false);
+    const [inviteId, setInviteId] = useState('');
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const inviteIdFromUrl = urlParams.get('inviteId');
+        if (inviteIdFromUrl) {
+            setInviteId(inviteIdFromUrl);
+        }
+    }, []);
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
@@ -32,6 +41,17 @@ const Page = () => {
         setShowError(false);
     }
 
+    const data = {
+        email: email,
+        password: password,
+    }
+
+    if (inviteId) {
+        data.inviteId = inviteId
+    }
+
+    console.log("Data sending in  login api is:", data);
+
     const handleContinueClick = async () => {
         if (email.length !== 0) {
             try {
@@ -42,7 +62,7 @@ const Page = () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify(data)
                 });
                 if (response.ok) {
                     const ApiResponse = await response.json();
@@ -68,10 +88,6 @@ const Page = () => {
             // setShowError(true);
         }
     }
-
-    useEffect(() => {
-        console.log('App idea of user is :', email);
-    }, [email]);
 
     const handleSignin = () => {
         router.push('/auth/signin')

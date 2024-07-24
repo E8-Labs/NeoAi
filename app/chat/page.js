@@ -13,6 +13,7 @@ import ChoosePlan from '@/public/ui/ChoosePlan';
 import ImagePicker from '@/public/ui/ImagePicker';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Apis from '@/public/Apis/Apis';
+import { useRouter } from 'next/navigation';
 
 SyntaxHighlighter.registerLanguage('javascript', js);
 
@@ -36,6 +37,7 @@ const darkDocco = {
   },
 };
 
+
 const Page = () => {
   const Suggestion = {
     fontSize: 14,
@@ -44,6 +46,7 @@ const Page = () => {
     textTransform: 'none',
   };
 
+  const Router = useRouter();
   const [message, setMessage] = useState('');
   const [userChat, setUserChat] = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
@@ -78,41 +81,41 @@ const Page = () => {
   const [role, setRole] = useState('');
   const [loadTeamLoader, setLoadTeamLoader] = useState(false);
   const [teamProfiles, setTeamProfiles] = useState([
-    {
-      id: 1,
-      name: 'James J.',
-      role: 'Web Developer',
-      email: 'james@gmail.com',
-      status: 'Accepted'
-    },
-    {
-      id: 2,
-      name: 'John D.',
-      role: 'App Developer',
-      email: 'john@gmail.com',
-      status: 'Pending'
-    },
-    {
-      id: 3,
-      name: 'Jony J.',
-      role: 'Web Designer',
-      email: 'jony@gmail.com',
-      status: 'Accepted'
-    },
-    {
-      id: 4,
-      name: 'David J.',
-      role: 'Bank Manager',
-      email: 'david@gmail.com',
-      status: 'Pending'
-    },
-    {
-      id: 5,
-      name: 'Anya.',
-      role: 'Cook',
-      email: 'anya@gmail.com',
-      status: 'Accepted'
-    }
+    // {
+    //   id: 1,
+    //   name: 'James J.',
+    //   role: 'Web Developer',
+    //   email: 'james@gmail.com',
+    //   status: 'Accepted'
+    // },
+    // {
+    //   id: 2,
+    //   name: 'John D.',
+    //   role: 'App Developer',
+    //   email: 'john@gmail.com',
+    //   status: 'Pending'
+    // },
+    // {
+    //   id: 3,
+    //   name: 'Jony J.',
+    //   role: 'Web Designer',
+    //   email: 'jony@gmail.com',
+    //   status: 'Accepted'
+    // },
+    // {
+    //   id: 4,
+    //   name: 'David J.',
+    //   role: 'Bank Manager',
+    //   email: 'david@gmail.com',
+    //   status: 'Pending'
+    // },
+    // {
+    //   id: 5,
+    //   name: 'Anya.',
+    //   role: 'Cook',
+    //   email: 'anya@gmail.com',
+    //   status: 'Accepted'
+    // }
   ]);
   //test useeffect
 
@@ -161,7 +164,7 @@ const Page = () => {
     });
   };
 
-  const axios = require('axios'); // Make sure you have Axios installed and imported
+  const axios = require('axios');
 
   const callOpenAIAPI = async (messages) => {
     const LSD = localStorage.getItem('User');
@@ -282,10 +285,10 @@ const Page = () => {
       if (response) {
         console.log('Response is', response);
       }
-      if (response.status === 201) {
+      if (response.status === 200) {
         console.log('Response of api is', response.data);
         setMyProjects(response.data.data)
-      } else if (!response.status === 201) {
+      } else if (!response.status === 200) {
         console.log('Response is not ok due to:', response);
       }
     } catch (error) {
@@ -384,27 +387,32 @@ const Page = () => {
     setOpenProjects(false);
     setOpenPlan(false);
     setOpenSetting(false);
-    // try {
-    //   //Auth token from local storage add team loader
-    //   const LSD = localStorage.getItem('User');
-    //   const localStorageData = JSON.parse(LSD);
-    //   // console.log('Data2 from localstorage is :', localStorageData);
-    //   const AuthToken = localStorageData.data.token;
-    //   // console.log('Auth token is', AuthToken);
-    //   setLoadTeamLoader(true);
-    //   const response = await axios.get(Apis.GetTeamMembers, {
-    //     headers: {
-    //       'Authorization': 'Bearer ' + AuthToken
-    //     }
-    //   });
-    //   if (response) {
-    //     console.log('Response of get team members api is :', response);
-    //   }
-    // } catch (error) {
-    //   console.error("Error occured in api is :", error);
-    // } finally {
-    //   setLoadTeamLoader(false);
-    // }
+    try {
+      //Auth token from local storage add team loader
+      const LSD = localStorage.getItem('User');
+      const localStorageData = JSON.parse(LSD);
+      // console.log('Data2 from localstorage is :', localStorageData);
+      const AuthToken = localStorageData.data.token;
+      // console.log('Auth token is', AuthToken);
+      setLoadTeamLoader(true);
+      const response = await axios.get(Apis.GetTeamMembers, {
+        headers: {
+          'Authorization': 'Bearer ' + AuthToken
+        }
+      });
+      if (response) {
+        console.log('Response of get team members api is :', response);
+      }
+      if (response.status === 200) {
+        setTeamProfiles(response.data.data);
+      } else {
+        console.log("Status is not ok");
+      }
+    } catch (error) {
+      console.error("Error occured in api is :", error);
+    } finally {
+      setLoadTeamLoader(false);
+    }
   }
 
   //code for projects modal
@@ -423,7 +431,6 @@ const Page = () => {
     setOpenSupport(false);
     setOpenProfile(false);
   };
-
 
   const style = {
     position: 'absolute',
@@ -640,8 +647,9 @@ const Page = () => {
               backgroundColor: '#4011FA', height: '50px', fontWeight: '500', fontSize: 15, fontFamily: 'inter'
             }}
             onClick={() => {
-              setUserChat([]);
-              setActiveChat(null);
+              // setUserChat([]);
+              // setActiveChat(null);
+              Router.push("/onboarding")
             }}>
             <img src='/assets/addIcon.png' alt='addIcon' style={{ height: '16px', width: '16px' }} />
             <p style={{ textTransform: 'none', fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
@@ -989,10 +997,10 @@ const Page = () => {
                             <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
                               Email:
                               <span style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
-                                {item.email}
+                                {item.toUserEmail}
                               </span>
                             </div>
-                            {item.status === 'Accepted' && (
+                            {item.status === 'accepted' && (
                               <div className='flex items-center justify-center mt-3'
                                 style={{
                                   height: '35px', width: '96px', borderRadius: 1,
@@ -1001,7 +1009,7 @@ const Page = () => {
                                 Accepted
                               </div>
                             )}
-                            {item.status === 'Pending' && (
+                            {item.status === 'pending' && (
                               <div className='flex items-center justify-center mt-3'
                                 style={{
                                   height: '35px', width: '96px', borderRadius: 1,
@@ -1133,6 +1141,13 @@ const Page = () => {
         </div>
 
         {
+          openSetting &&
+          <div style={{ height: '100vh' }}>
+            Settings screen
+          </div>
+        }
+
+        {
           openProjects &&
           <div className='flex flex-row justify-center'>
             <div className='w-11/12 flex justify-center '
@@ -1148,7 +1163,7 @@ const Page = () => {
                               <CircularProgress size={50} />
                             </div> :
                             <div style={{ color: 'red' }}>
-                              Hello
+                              Here is your project history
                             </div>
                         }
                       </div> :
@@ -1245,7 +1260,7 @@ const Page = () => {
                       </div>
                   }
                   <div className='flex rounded-xl w-7/12 flex-row justify-between'
-                    style={{ position: 'absolute', bottom: 5, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
+                    style={{ position: 'absolute', bottom: 0, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
                     <div className='w-full flex flex-col items-center'>
                       <div className='text-white w-full items-start px-4 py-2'>
                         {selectedFile ?

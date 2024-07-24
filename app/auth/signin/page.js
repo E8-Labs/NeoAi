@@ -56,13 +56,15 @@ const Page = () => {
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
                         if (ApiResponse.message === "User logged in") {
-                            router.push('/onboarding');
+                            router.push('/chat');
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
                         } else if (ApiResponse.message === "User registered") {
-                            setShowError(true);
+                            // setShowError(true);
                         }else if (ApiResponse.message === "Invalid password") {
                             // console.log('User not registered');
+                            localStorage.setItem('User', JSON.stringify(ApiResponse));
                             setPasswordError(true);
+                            router.push('/chat');
                         } else {
                             console.log('Status is :', ApiResponse.status);
                         }
@@ -84,9 +86,6 @@ const Page = () => {
         router.push('/onboarding/founders')
     }
 
-    useEffect(() => {
-        console.log('App idea of user is :', email);
-    }, [email])
     return (
         <div className="flex justify-center text-white" style={backgroundImage}>
             <div className="w-11/12">
@@ -212,7 +211,7 @@ const Page = () => {
                         <Alert
                             onClose={handleClose} severity="error"
                             sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                            User already logged in.
+                            User already exists.
                         </Alert>
                     </Snackbar>
                     <Snackbar

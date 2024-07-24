@@ -20,7 +20,7 @@ const Page = () => {
         const D = localStorage.getItem('createProject');
         const appIdea = JSON.parse(D);
         setAppIdea(appIdea);
-    }, [])
+    }, []);
 
     const createProject1 = {
         appidea: appIdea,
@@ -39,10 +39,6 @@ const Page = () => {
     const handleBackClick = () => {
         router.push('/onboarding')
     }
-
-    useEffect(() => {
-        console.log('App idea of user is :', AudienceName);
-    }, [AudienceName])
 
     return (
         <div className="flex justify-center" style={{ color: 'white' }}>

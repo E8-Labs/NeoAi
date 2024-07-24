@@ -26,9 +26,9 @@ const Page = () => {
         }
     }
 
-    useEffect(() => {
-        console.log('App idea of user is :', appIdea);
-    }, [appIdea]);
+    // useEffect(() => {
+    //     console.log('App idea of user is :', appIdea);
+    // }, [appIdea]);
 
     return (
         <div className="flex justify-center" style={{ color: 'white' }}>
