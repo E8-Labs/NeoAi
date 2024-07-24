@@ -14,6 +14,7 @@ import ImagePicker from '@/public/ui/ImagePicker';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Apis from '@/public/Apis/Apis';
 import { useRouter } from 'next/navigation';
+import styles from '../Home.module.css';
 
 SyntaxHighlighter.registerLanguage('javascript', js);
 
@@ -109,11 +110,26 @@ const Page = () => {
       return 'heading1';
     } else if (/^-\s/.test(text)) {
       return 'bullet';
-    } else if (/^`\s/.test(text)) {
-      return 'code';
+    } else if (/^\d+\.\s/.test(text)) {
+      return 'numbered';
+    } else if (/^•\s/.test(text)) {
+      return 'dot';
     } else {
       return 'simpleText';
     }
+  };
+  
+  const formatInlineText = (text) => {
+    const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
+    return parts.map((part, index) => {
+      if (/^\*\*[^*]+\*\*$/.test(part)) {
+        return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
+      } else if (/^\*[^*]+\*$/.test(part)) {
+        return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
+      } else {
+        return part;
+      }
+    });
   };
   
   const RenderText = ({ text }) => {
@@ -121,17 +137,19 @@ const Page = () => {
   
     switch (textType) {
       case 'heading1':
-        return <h2 style={{color: 'white'}}>{text.replace(/^#\s/, '')}</h2>;
+        return <h1 className={styles.heading1}>{formatInlineText(text.replace(/^#\s/, ''))}</h1>;
       case 'heading2':
-        return <h3 style={{color: 'white'}}>{text.replace(/^##\s/, '')}</h3>;
+        return <h2 className={styles.heading2}>{formatInlineText(text.replace(/^##\s/, ''))}</h2>;
       case 'heading3':
-        return <h4 style={{color: 'white'}}>{text.replace(/^###\s/, '')}</h4>;
+        return <h3 className={styles.heading3}>{formatInlineText(text.replace(/^###\s/, ''))}</h3>;
       case 'bullet':
-        return <p style={{color: 'white'}}>{text.replace(/^-/, '•')}</p>;
-      // case 'code':
-      //   return <Text style={styles.code}>{text.replace(/^`\s/, '')}</Text>;
+        return <li className={styles.bullet}>{formatInlineText(text.replace(/^-/, ''))}</li>;
+      case 'numbered':
+        return <li className={styles.numbered}>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
+      case 'dot':
+        return <li className={styles.dot}>{formatInlineText(text.replace(/^•\s/, ''))}</li>;
       default:
-        return <p style={{color: 'white'}}>{text}</p>;
+        return <p className={styles.simpleText}>{formatInlineText(text)}</p>;
     }
   };
 
@@ -350,12 +368,14 @@ const Page = () => {
             <div key={index}>
               {part.type === 'code' ? (
                 // <pre><code>{part.value}</code></pre>
-                <div className='w-full' style={{backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, borderTop: 5, 
+                <div className='w-full' style={{backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, paddingBottom: 1, borderTop: 15, 
                   flexDirection: 'column',
                   
                 }}>
                   <div className='w-full' style={{justifyContent: 'end', alignItems: 'center', backgroundColor: 'grey'}}> 
-                    <h4>copy</h4>
+                    <button className='pl-1' onClick={async()=>{
+                      await navigator.clipboard.writeText(part.value);
+                    }}>copy</button>
                   </div>
                   <SyntaxHighlighter language="javascript" style={vs2015}>
                   {part.value}
