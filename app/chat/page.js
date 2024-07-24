@@ -46,6 +46,17 @@ const Page = () => {
     textTransform: 'none',
   };
 
+
+
+
+
+
+
+
+
+
+
+
   const Router = useRouter();
   const [message, setMessage] = useState('');
   const [userChat, setUserChat] = useState([]);
@@ -82,47 +93,52 @@ const Page = () => {
   const [loadTeamLoader, setLoadTeamLoader] = useState(false);
   const [showAcceptBtn, setShowAcceptBtn] = useState(false);
   const [teamProfiles, setTeamProfiles] = useState([
-    // {
-    //   id: 1,
-    //   name: 'James J.',
-    //   role: 'Web Developer',
-    //   email: 'james@gmail.com',
-    //   status: 'Accepted'
-    // },
-    // {
-    //   id: 2,
-    //   name: 'John D.',
-    //   role: 'App Developer',
-    //   email: 'john@gmail.com',
-    //   status: 'Pending'
-    // },
-    // {
-    //   id: 3,
-    //   name: 'Jony J.',
-    //   role: 'Web Designer',
-    //   email: 'jony@gmail.com',
-    //   status: 'Accepted'
-    // },
-    // {
-    //   id: 4,
-    //   name: 'David J.',
-    //   role: 'Bank Manager',
-    //   email: 'david@gmail.com',
-    //   status: 'Pending'
-    // },
-    // {
-    //   id: 5,
-    //   name: 'Anya.',
-    //   role: 'Cook',
-    //   email: 'anya@gmail.com',
-    //   status: 'Accepted'
-    // }
+    
   ]);
-  //test useeffect
 
-  // useEffect(() => {
-  //   console.log("Test history is :", UserChatMessage);
-  // }, [UserChatMessage]);
+
+
+
+
+  const determineTextType = (text) => {
+    if (/^###\s/.test(text)) {
+      return 'heading3';
+    } else if (/^##\s/.test(text)) {
+      return 'heading2';
+    } else if (/^#\s/.test(text)) {
+      return 'heading1';
+    } else if (/^-\s/.test(text)) {
+      return 'bullet';
+    } else if (/^`\s/.test(text)) {
+      return 'code';
+    } else {
+      return 'simpleText';
+    }
+  };
+  
+  const RenderText = ({ text }) => {
+    const textType = determineTextType(text);
+  
+    switch (textType) {
+      case 'heading1':
+        return <Text style={styles.heading1}>{text.replace(/^#\s/, '')}</Text>;
+      case 'heading2':
+        return <Text style={styles.heading2}>{text.replace(/^##\s/, '')}</Text>;
+      case 'heading3':
+        return <Text style={styles.heading3}>{text.replace(/^###\s/, '')}</Text>;
+      case 'bullet':
+        return <Text style={styles.bullet}>{text.replace(/^-/, '•')}</Text>;
+      case 'code':
+        return <Text style={styles.code}>{text.replace(/^`\s/, '')}</Text>;
+      default:
+        return <Text style={styles.simpleText}>{text}</Text>;
+    }
+  };
+
+
+
+
+  
 
   useEffect(() => {
     const storedHistory = localStorage.getItem('chatHistory');
@@ -330,23 +346,16 @@ const Page = () => {
                 </SyntaxHighlighter>
               ) : (
                 <div className='flex flex-row items-center gap-2' style={{ color: 'white' }}>
-                  {/*<strong>Chat GPT:</strong>*/}
-                  {/* <div>
-                  <img src='/assets/logo.png' alt='bot'
-                    style={{ height: '50px', width: '50px', resize: 'cover' }} />
-                </div> */}
-                  {/* <div style={{
-                  marginTop: 10, marginBottom: 10, color: 'white',
-                  maxWidth: '80%', borderTopLeftRadius: 25, borderTopRightRadius: 25,
-                  borderBottomRightRadius: 25, backgroundColor: '#ffffff40'
-                }}> */}
-                  <p
+                  {
+                    RenderText(part.value)
+                  }
+                  {/* <p
                     style={{
                       color: 'white', padding: 7,
                       borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
                     }}>
                     {part.value}
-                  </p>
+                  </p> */}
                   {/* </div> */}
                 </div>
               )}
