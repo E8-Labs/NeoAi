@@ -5,7 +5,7 @@ import "./navCss.css";
 import "../../public/assets/styles/styles.css";
 import { Button } from "@mui/material";
 import NavLinks from "@/public/assets/Nav/NavLinks";
-
+import Login from "@/public/ui/Login";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,6 +16,10 @@ export const metadata = {
 
 const grad = {
     background: 'linear-gradient(to right, #03002A, #040121)'
+}
+
+const handleLogin = () => {
+    Router.push('/auth/signin');
 }
 
 const backgroundImage = {
@@ -55,16 +59,7 @@ export default function RootLayout({ children }) {
                                 style={{ height: '40px', color: 'white', fontWeight: '500', fontSize: 15, backgroundColor: '#4011FA', fontFamily: 'inter' }}>
                                 Get Started
                             </Button>*/}
-                            Already have an account ?
-                            <Button sx={{
-                                textTransform: 'none',
-                                fontSize: 14,
-                                fontWeight: "500",
-                                fontFamily: 'inter',
-                                width: "auto"
-                            }}>
-                                Login
-                            </Button>
+                            <Login />
                         </div>
                     </div>
                     <div>

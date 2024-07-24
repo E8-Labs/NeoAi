@@ -16,6 +16,7 @@ const Page = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showSignInError, setSignInError] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [PasswordError, setPasswordError] = useState(false);
 
     const handleSignup = () => {
         router.push('/auth/login')
@@ -35,6 +36,7 @@ const Page = () => {
 
     const handleClose = () => {
         setShowError(false);
+        setPasswordError(false);
     }
 
     const handleContinueClick = async () => {
@@ -53,11 +55,16 @@ const Page = () => {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
-                        if (ApiResponse.message === "User registered") {
+                        if (ApiResponse.message === "User logged in") {
                             router.push('/onboarding');
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
-                        } else if (ApiResponse.message === "User logged in") {
+                        } else if (ApiResponse.message === "User registered") {
                             setShowError(true);
+                        }else if (ApiResponse.message === "Invalid password") {
+                            // console.log('User not registered');
+                            setPasswordError(true);
+                        } else {
+                            console.log('Status is :', ApiResponse.status);
                         }
                     } else {
                         console.log('status is', ApiResponse.status);
@@ -82,7 +89,7 @@ const Page = () => {
     }, [email])
     return (
         <div className="flex justify-center text-white" style={backgroundImage}>
-            <div className="w-11/12" style={{ height: '100vh' }}>
+            <div className="w-11/12">
                 <div className="flex justify-between mt-16">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector2.png" alt="vector2" style={{ height: '23px', width: '20px', resize: 'cover' }} />
@@ -206,6 +213,25 @@ const Page = () => {
                             onClose={handleClose} severity="error"
                             sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
                             User already logged in.
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={PasswordError}
+                        autoHideDuration={3000}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right'
+                        }}
+                        TransitionComponent={Slide}
+                        TransitionProps={{
+                            direction: 'left'
+                        }}
+                    >
+                        <Alert
+                            onClose={handleClose} severity="error"
+                            sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                            Invalid password try again.
                         </Alert>
                     </Snackbar>
                 </div>

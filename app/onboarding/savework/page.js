@@ -1,5 +1,5 @@
 'use client'
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Snackbar from '@mui/material/Snackbar';
@@ -13,6 +13,7 @@ const Page = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showError, setShowError] = useState(false);
+    const [loader, setLoader] = useState(false);
 
     const handleClose = () => {
         setShowError(false);
@@ -21,6 +22,7 @@ const Page = () => {
     const handleContinueClick = async () => {
         if (email.length !== 0) {
             try {
+                setLoader(true);
                 const ApiPath = Apis.Login;
                 const response = await fetch(ApiPath, {
                     method: 'post',
@@ -33,18 +35,20 @@ const Page = () => {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
-                        if (ApiResponse.message === "User registered") {
-                            router.push('/chat');
-                            localStorage.setItem('User', JSON.stringify(ApiResponse));
-                        } else {
-                            console.log('User not registered');
-                        }
+                        // if (ApiResponse.message === "User registered") {
+                        //     router.push('/chat');
+                        //     localStorage.setItem('User', JSON.stringify(ApiResponse));
+                        // } else {
+                        //     console.log('User not registered');
+                        // }
                     } else {
                         console.log('Error in response', response);
                     }
                 }
             } catch (error) {
                 console.error('Error occured is :', error);
+            } finally {
+                setLoader(false)
             }
         } else {
             setShowError(true);
@@ -123,7 +127,10 @@ const Page = () => {
                                                 height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
                                                 backgroundColor: '#4011FA', fontFamily: 'inter'
                                             }}>
-                                            Continue
+                                            {
+                                                loader ?
+                                                    <CircularProgress size={30} /> : "Continue"
+                                            }
                                         </Button> :
                                             <Button variant="disabled"
                                                 onClick={handleContinueClick}

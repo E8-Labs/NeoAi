@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     // router.push('/onboarding');
-    router.push('/auth/login');
+    router.push('/onboarding');
   }, [])
 
   //code for storing value of input

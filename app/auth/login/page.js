@@ -15,7 +15,6 @@ const Page = () => {
     const [showError, setShowError] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loginLoader, setLoginLoader] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
@@ -31,7 +30,6 @@ const Page = () => {
 
     const handleClose = () => {
         setShowError(false);
-        setPasswordError(false);
     }
 
     const handleContinueClick = async () => {
@@ -57,11 +55,6 @@ const Page = () => {
                             // console.log('User not registered');
                             setShowError(true);
                         }
-                    } else if (ApiResponse.message === "Invalid password") {
-                        // console.log('User not registered');
-                        setPasswordError(true);
-                    } else {
-                        console.log('Status is :', ApiResponse.status);
                     }
                 } else if (!response.ok) {
                     console.log('Error in signing in is :', response)
@@ -86,7 +79,7 @@ const Page = () => {
 
     return (
         <div className="flex justify-center text-white" style={backgroundImage}>
-            <div className="w-11/12" style={{ height: '100vh' }}>
+            <div className="w-11/12">
                 <div className="flex justify-between mt-16">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector2.png" alt="vector2" style={{ height: '23px', width: '20px', resize: 'cover' }} />
@@ -225,27 +218,7 @@ const Page = () => {
                         <Alert
                             onClose={handleClose} severity="error"
                             sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                            User registered now try again.
-                        </Alert>
-                    </Snackbar>
-
-                    <Snackbar
-                        open={passwordError}
-                        autoHideDuration={3000}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right'
-                        }}
-                        TransitionComponent={Slide}
-                        TransitionProps={{
-                            direction: 'left'
-                        }}
-                    >
-                        <Alert
-                            onClose={handleClose} severity="error"
-                            sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                            Invalid password try again.
+                            User registered!! Try again now.
                         </Alert>
                     </Snackbar>
 
