@@ -15,6 +15,7 @@ import LogoPicker from '@/public/ui/LogoPicker';
 import Apis from '@/public/Apis/Apis';
 import { useRouter } from 'next/navigation';
 import styles from '../Home.module.css';
+import Link from 'next/link';
 
 SyntaxHighlighter.registerLanguage('javascript', js);
 
@@ -83,6 +84,7 @@ const Page = () => {
   const [previewURL, setPreviewURL] = useState(null);
   const [chatId, setChatId] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
+  const [myProjectsLoader, setMyProjectsLoader] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [getMessagesLoader, setGetMessagesLoader] = useState(false);
   const [showImgInput, setShowInputImg] = useState(false);
@@ -93,9 +95,10 @@ const Page = () => {
   const [role, setRole] = useState('');
   const [loadTeamLoader, setLoadTeamLoader] = useState(false);
   const [showAcceptBtn, setShowAcceptBtn] = useState(false);
-  const [teamProfiles, setTeamProfiles] = useState([
-    
-  ]);
+  const [teamProfiles, setTeamProfiles] = useState([]);
+  const [copied, setCopied] = useState(false);
+  const [boatReplyLoader, setBotReplyLoader] = useState(false);
+  const chatContainerRef = useRef(null);
 
 
 
@@ -118,7 +121,7 @@ const Page = () => {
       return 'simpleText';
     }
   };
-  
+
   const formatInlineText = (text) => {
     const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
     return parts.map((part, index) => {
@@ -131,10 +134,10 @@ const Page = () => {
       }
     });
   };
-  
+
   const RenderText = ({ text }) => {
     const textType = determineTextType(text);
-  
+
     switch (textType) {
       case 'heading1':
         return <h1 className={styles.heading1}>{formatInlineText(text.replace(/^#\s/, ''))}</h1>;
@@ -155,17 +158,17 @@ const Page = () => {
 
 
   const ShowMessageTextBubble = (textContent) => {
-    const textLines = textContent.trim().split('\n').filter(line => line.trim() !== ''); 
-    return ( <div style={{
+    const textLines = textContent.trim().split('\n').filter(line => line.trim() !== '');
+    return (<div style={{
       color: 'white', padding: 7,
       borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
-    }}>{textLines.map((line, index) => ( <RenderText key={index} text={line} /> ))} </div> );
+    }}>{textLines.map((line, index) => (<RenderText key={index} text={line} />))} </div>);
   }
 
 
 
 
-  
+
 
   useEffect(() => {
     const storedHistory = localStorage.getItem('chatHistory');
@@ -236,6 +239,7 @@ const Page = () => {
     console.log('form Data sending in api is', formData);
 
     try {
+      setBotReplyLoader(true);
       const ApiPath = Apis.SendMessage;
       // const data = {
       //   chatId: chatId,
@@ -261,6 +265,7 @@ const Page = () => {
       return "Sorry, I can't respond right now.";
     } finally {
       // setPreviewURL(null);
+      setBotReplyLoader(false);
     }
   };
 
@@ -269,6 +274,10 @@ const Page = () => {
     setSelectedFile(null);
     e.preventDefault();
     setLoading(true);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+
 
     const newChat = { role: 'user', content: message };
     const updatedChat = [...userChat, newChat];
@@ -314,10 +323,11 @@ const Page = () => {
   //code for calling get projects api
   const getProjects = async () => {
     try {
+      setMyProjectsLoader(true)
       const ApiPath = Apis.GetProjects;
       const LSD = localStorage.getItem('User');
       const localStorageData = JSON.parse(LSD);
-      console.log('Data2 from localstorage is :', localStorageData);
+      console.log('Data from localstorage fopr get project is :', localStorageData);
       const AuthToken = localStorageData.data.token;
       console.log('Auth token is', AuthToken);
       const response = await axios.get(ApiPath, {
@@ -337,6 +347,8 @@ const Page = () => {
       }
     } catch (error) {
       console.log('error occured is', error);
+    } finally {
+      setMyProjectsLoader(false)
     }
   };
 
@@ -368,18 +380,34 @@ const Page = () => {
             <div key={index}>
               {part.type === 'code' ? (
                 // <pre><code>{part.value}</code></pre>
-                <div className='w-full' style={{backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, paddingBottom: 1, borderTop: 15, 
+                <div className='w-full' style={{
+                  backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, paddingBottom: 1, borderTop: 15,
                   flexDirection: 'column',
-                  
+
                 }}>
-                  <div className='w-full' style={{justifyContent: 'end', alignItems: 'center', backgroundColor: 'grey'}}> 
-                    <button className='pl-1' onClick={async()=>{
+                  <div className='w-full flex items-end justify-end' style={{ backgroundColor: 'grey' }}>
+                    <button style={{ paddingRight: 2 }} onClick={async () => {
                       await navigator.clipboard.writeText(part.value);
-                    }}>copy</button>
+                      setCopied(true);
+                      setTimeout(() => {
+                        setCopied(false);
+                      }, 2000);
+                    }}>
+                      {
+                        copied ?
+                          <div>
+                            Copied
+                          </div> :
+                          <div className='flex flex-row gap-2 items-center'>
+                            <img src='/assets/copied.png' alt='copy' style={{ height: '30px', width: '30px', resize: 'cover', objectFit: 'cover' }} />
+                            <p>Copy</p>
+                          </div>
+                      }
+                    </button>
                   </div>
                   <SyntaxHighlighter language="javascript" style={vs2015}>
-                  {part.value}
-                </SyntaxHighlighter>
+                    {part.value}
+                  </SyntaxHighlighter>
                 </div>
               ) : (
                 <div className='flex flex-row items-center gap-2' style={{ color: 'white' }}>
@@ -438,7 +466,6 @@ const Page = () => {
       //Auth token from local storage add team loader
       const LSD = localStorage.getItem('User');
       const localStorageData = JSON.parse(LSD);
-      // console.log('Data2 from localstorage is :', localStorageData);
       const AuthToken = localStorageData.data.token;
       // console.log('Auth token is', AuthToken);
       setLoadTeamLoader(true);
@@ -465,7 +492,7 @@ const Page = () => {
 
     // const LSD = localStorage.getItem('User');
     // const localStorageData = JSON.parse(LSD);
-    // console.log('Data2 from localstorage is :', localStorageData);
+    // console.log('Data2 from localstorage for add btn is :', localStorageData);
     // const toUser2 = localStorageData.data.user.email;
     // console.log('email to match is:',toUser2);
     // // const toUserId = teamProfiles.toUser.id;
@@ -483,9 +510,9 @@ const Page = () => {
   useEffect(() => {
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
-    console.log('Data2 from localstorage is :', localStorageData);
+    // console.log('Data2 from localstorage for match email is :', localStorageData);
     const toUser2 = localStorageData.data.user.id;
-    console.log('email to match is:', toUser2);
+    // console.log('email to match is:', toUser2);
     // const toUserId = teamProfiles.toUser.id;
     // console.log('Id getting is:', teamProfiles[0].toUser.id);
     teamProfiles.forEach(element => {
@@ -589,7 +616,7 @@ const Page = () => {
         //Auth token from local storage add team loader
         const LSD = localStorage.getItem('User');
         const localStorageData = JSON.parse(LSD);
-        // console.log('Data2 from localstorage is :', localStorageData);
+        // console.log('Data2 from localstorage for add team is :', localStorageData);
         const AuthToken = localStorageData.data.token;
         // console.log('Auth token is', AuthToken);
 
@@ -672,10 +699,10 @@ const Page = () => {
       const ApiPath = Apis.GetMessages;
       const LSD = localStorage.getItem('User');
       const localStorageData = JSON.parse(LSD);
-      console.log('Data2 from localstorage is :', localStorageData);
+      console.log('Data2 from localstorage for edit project is :', localStorageData);
       const AuthToken = localStorageData.data.token;
       console.log('Auth token is', AuthToken);
-      
+
       const response = await axios.get(ApiPath + `?chatId=${item}`,
         {
           headers: {
@@ -751,22 +778,38 @@ const Page = () => {
             My Projects
           </Button>
 
-          <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {
-              myProjects.map((item) => (
-                <div key={item.id} className='w-full flex flex-row items-center mt-6 p-3' style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
-                  <div className='w-8/12'>
-                    {item.projectName ? item.projectName : "App Name"}
-                  </div>
-                  <div className='w-4/12 flex justify-end'>
-                    <button onClick={() => handleEditProject(item.chat.id)}>
-                      <img src='/assets/edit.png' alt='edit' style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover' }} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            }
-          </div>
+          {
+            myProjectsLoader ?
+              <div className='w-full mt-6 items-center justify-center flex'>
+                <CircularProgress size={30} />
+              </div> :
+              <div>
+                {
+                  myProjects.length === 0 ?
+                    <div className='text-white mt-2' style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
+                      No projects
+                    </div> :
+                    <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      {
+                        myProjects.map((item) => (
+                          <div key={item.id} className='w-full flex flex-row items-center mt-6' style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
+                            <Link className='w-8/12 items-start p-3' href={`/chat/${item.chat.id}`} passHref>
+                              {/* <button className='w-full text-start'> */}
+                              {item.projectName ? item.projectName : "App Name"}
+                              {/* </button> */}
+                            </Link>
+                            <div className='w-4/12 p-3 flex justify-end'>
+                              <button onClick={handleOpenEditproject}>
+                                <img src='/assets/edit.png' alt='edit' style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover' }} />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                }
+              </div>
+          }
 
           {/* {chatHistory.map((chat, index) => (
             <Button
@@ -1260,57 +1303,61 @@ const Page = () => {
             <div className='w-11/12 flex justify-center '
               style={{ height: '100vh', padding: 15, backgroundColor: '#ffffff10' }}>
               <div className='w-11/12'>
-                <div className='flex justify-center'>
+                <div className='w-full flex justify-center'>
+                  {/* replace with the component */}
                   {
                     selectedProjectId ?
-                      <div>
+                      <div className='w-fll'>
                         {
                           getMessagesLoader ?
                             <div className='mt-8'>
                               <CircularProgress size={50} />
                             </div> :
-                            <div style={{ overflow: 'auto', height: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                            {userChat.map((chat, index) => (
-                              <div key={index} style={{ gap: 20 }}>
-                                {
-                                  chat.role === "user" ? (
-                                    <div>
-                                      <div className='flex flex-col w-full justify-end items-end gap-2'>
-                                        <div>
-                                          {
-                                            previewURL ?
-                                              <div>
-                                                <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
-                                              </div> : ""
-                                          }
-                                          {/* <div className='mt-2'>
+                            <div style={{ width: '100%' }}>
+                              <div className='w-full' style={{ overflow: 'auto', height: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                ref={chatContainerRef}>
+                                {userChat.map((chat, index) => (
+                                  <div key={index} style={{ gap: 20 }}>
+                                    {
+                                      chat.role === "user" ? (
+                                        <div className='w-full'>
+                                          <div className='flex flex-col w-full justify-end items-end gap-2'>
+                                            <div>
+                                              {
+                                                previewURL ?
+                                                  <div>
+                                                    <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                                  </div> : ""
+                                              }
+                                              {/* <div className='mt-2'>
                                             
                                           </div> */}
-                                          {/* <img src='/assets/profile1.jpeg' alt='user'
+                                              {/* <img src='/assets/profile1.jpeg' alt='user'
                                             style={{ height: '50px', width: '50px', resize: 'cover', borderRadius: '50%' }} /> */}
-                                        </div>
-                                        <div className='px-2 py-2'
-                                          style={{
-                                            color: 'white', textAlign: 'end', width: 'fit-content',
-                                            maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff40', borderTopRightRadius: 20,
-                                            borderBottomLeftRadius: 20
-                                          }}>
-                                          {chat.content}
-                                        </div>
+                                            </div>
+                                            <div className='px-2 py-2'
+                                              style={{
+                                                color: 'white', textAlign: 'end', width: 'fit-content',
+                                                maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff40', borderTopRightRadius: 20,
+                                                borderBottomLeftRadius: 20,
+                                              }}>
+                                              {chat.content}
+                                            </div>
 
-                                      </div>
-                                    </div>
-                                  ) :
-                                    (
-                                      <div>
-                                        {getResponseView(chat.content)}
-                                      </div>
-                                    )
-                                }
+                                          </div>
+                                        </div>
+                                      ) :
+                                        (
+                                          <div>
+                                            {getResponseView(chat.content)}
+                                          </div>
+                                        )
+                                    }
 
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
                         }
                       </div> :
                       <div className='flex justify-center w-full'>
@@ -1608,7 +1655,7 @@ const Page = () => {
         </Modal>
       </div>
 
-    </div>
+    </div >
   );
 };
 

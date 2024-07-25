@@ -332,8 +332,8 @@ const Page = () => {
 
                             </div>
                             <div className="mt-6">
-                                <TextField id="standard-basic" label="Name" variant="standard"
-                                    placeholder="Enter Founder Name"
+                                <TextField id="standard-basic" label="Full Name" variant="standard"
+                                    placeholder="Enter Full Name"
                                     value={name}
                                     onChange={(e) => {
                                         setName(e.target.value);

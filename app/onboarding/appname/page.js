@@ -8,6 +8,7 @@ import Slide from '@mui/material/Slide';
 import React from 'react'
 import axios from "axios";
 import Apis from "@/public/Apis/Apis";
+import AnimatedForm from "@/public/assets/animation/animation";
 
 const Page = () => {
     const router = useRouter('');
@@ -113,62 +114,9 @@ const Page = () => {
                     <div className="w-11/12 flex flex-row">
                         {/* Code for onboarding */}
                         <div className="flex items-center w-6/12">
-                            <div className="w-8/12"
-                                style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
-                                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
-                                    ONBOARDING
-                                </p>
-                                <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                                    What is your app name
-                                </p>
-                                <div className="flex justify-center">
-                                    <textarea
-                                        rows={4}
-                                        value={appName}
-                                        onChange={(e) => setAppName(e.target.value)}
-                                        className="mt-4 w-11/12"
-                                        style={{
-                                            outline: 'none', border: 'none', backgroundColor: '#00000000',
-                                            fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                                        }}
-                                        placeholder="Type here" />
-                                </div>
-                                <div className="flex flex-col gap-y-24">
-                                    <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-                                    <div className="mt-6 flex flex-row gap-8">
-                                        <Button
-                                            onClick={handleBackClick}
-                                            className="p-3 py-4"
-                                            style={{
-                                                height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                                                backgroundColor: '', fontFamily: 'inter'
-                                            }}>
-                                            Back
-                                        </Button>
-                                        {appName ? <Button
-                                            onClick={handleContinueClick}
-                                            className="p-3 py-4"
-                                            style={{
-                                                height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                                                backgroundColor: '#4011FA', fontFamily: 'inter'
-                                            }}>
-                                            Continue
-                                        </Button> :
-                                            <Button variant="disabled"
-                                                onClick={handleContinueClick}
-                                                className="p-3 py-4"
-                                                style={{
-                                                    height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                                                    backgroundColor: '#4011FA50', fontFamily: 'inter'
-                                                }}>
-                                                {
-                                                    loader ?
-                                                        <CircularProgress size={30} /> : "Continue"
-                                                }
-                                            </Button>
-                                        }
-                                    </div>
-                                </div>
+                            <div className="w-9/12"
+                                style={{ backgroundColor: '#0F0C2D' }}>
+                                <AnimatedForm />
                             </div>
                         </div>
                         {/* Code for logo3 */}
