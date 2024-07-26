@@ -98,18 +98,6 @@ const Page = () => {
                         </div>
                     </div>
                 </div>
-
-                {/*<div className="flex flex-row ms-6 gap-6 mt-12" style={{ position: 'absolute' }}>
-                    <button>
-                        <img src="/assets/facebook.png" alt="facebook" style={{ height: 'auto', width: '100%', maxWidth: '20px' }} />
-                    </button>
-                    <button>
-                        <img src="/assets/instagram.png" alt="insta" style={{ height: 'auto', width: '100%', maxWidth: '20px' }} />
-                    </button>
-                    <button>
-                        <img src="/assets/linkedin.png" alt="linkdin" style={{ height: 'auto', width: '100%', maxWidth: '20px' }} />
-                    </button>
-                                </div>*/}
                 <div className="flex justify-between mt-16">
                     <img src="/assets/Vector3.png" alt="vector3" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector4.png" alt="vector4" style={{ height: '23px', width: '20px', resize: 'cover' }} />
@@ -139,9 +127,6 @@ const Page = () => {
                     </Snackbar>
                 </div>
 
-                {/*<div>
-            <img src="/assets/logo2.png" style={{ height: 'auto', width: '100%', maxWidth: '440px', resize: ' cover' }} />
-  </div>*/}
             </div>
         </div>
     )

@@ -115,7 +115,7 @@ const Page = () => {
                         {/* Code for onboarding */}
                         <div className="flex items-center w-6/12">
                             <div className="w-9/12"
-                                style={{ backgroundColor: '#0F0C2D' }}>
+                                style={{ backgroundColor: '' }}>
                                 <AnimatedForm />
                             </div>
                         </div>

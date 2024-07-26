@@ -1138,7 +1138,7 @@ const Page = () => {
                               </div> :
                               <div>
                                 {
-                                  showAcceptBtn && (
+                                  showAcceptBtn ?
                                     <div className='flex flex-row justify-between w-full'>
                                       <Button className='flex items-center justify-center mt-3'
                                         style={{
@@ -1154,20 +1154,22 @@ const Page = () => {
                                         }}>
                                         Decline
                                       </Button>
+                                    </div> :
+                                    <div>
+                                      {item.status === 'pending' && (
+                                        <div className='flex items-center justify-center mt-3'
+                                          style={{
+                                            height: '35px', width: '96px', borderRadius: 1,
+                                            backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                          }}>
+                                          Pending
+                                        </div>
+                                      )}
                                     </div>
-                                  )
                                 }
                               </div>
                             }
-                            {item.status === 'pending' && (
-                              <div className='flex items-center justify-center mt-3'
-                                style={{
-                                  height: '35px', width: '96px', borderRadius: 1,
-                                  backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                }}>
-                                Pending
-                              </div>
-                            )}
+
                           </div>
                         </div>
                       </Grid>
