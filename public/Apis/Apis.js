@@ -8,7 +8,9 @@ const Apis = {
     GetProjects: `${BasePath}api/chat/get_projects`,
     GetMessages: `${BasePath}api/chat/get_messages`,
     AddTeamMember: `${BasePath}api/user/invite_user`,
-    GetTeamMembers: `${BasePath}api/user/my_team`
+    GetTeamMembers: `${BasePath}api/user/my_team`,
+    AddCard: `${BasePath}api/user/add_card`,
+    GetCards: `${BasePath}api/user/list_cards`
 }
 
 export default Apis;

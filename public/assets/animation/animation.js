@@ -1,7 +1,13 @@
 'use client'
 import { useState } from 'react';
 import { motion, AnimatePresence, color } from 'framer-motion';
-import { Box, Button, Modal, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Modal, TextField } from '@mui/material';
+import Apis from '@/public/Apis/Apis';
+import Snackbar from '@mui/material/Snackbar';
+import { Alert } from '@mui/material';
+import Slide from '@mui/material/Slide';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const boxVariants = {
 
@@ -22,6 +28,7 @@ const boxVariants = {
 };
 
 const AnimatedForm = () => {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -52,12 +59,22 @@ const AnimatedForm = () => {
   const [appIdea, setAppIdea] = useState('');
   const [audienceName, setAudienceName] = useState('');
   const [appName, setAppName] = useState('');
-  const [founders, setFounders] = useState([]);
+  const [founders, setFounders] = useState([
+    {
+      founderName: "Hamza",
+      role: "Admin",
+      founderEmail: "hamza@gmail.com"
+    }
+  ]);
   const [addFounder, setAddFounder] = useState(false);
   const [founderName, setFounderName] = useState('');
   const [founderEmail, setFounderEmail] = useState('');
   const [role, setRole] = useState('');
   const [AddFounderError, setAddFounderError] = useState(false);
+  const [email, setUserEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [saveWorkLoader, setSaveWorkLoader] = useState(false);
+  const [showSaveWorkError, setShowSaveWorkError] = useState(false);
 
   //code for adding and deleting founder
   const handleAddFounder = () => {
@@ -66,6 +83,7 @@ const AnimatedForm = () => {
 
   const onClose = () => {
     setAddFounder(false);
+    setShowSaveWorkError(false);
   }
 
   const handleSubmit = (e) => {
@@ -107,6 +125,69 @@ const AnimatedForm = () => {
     backgroundColor: '#0F0C2D',
     color: '#ffffff'
   };
+
+  //api call for save work
+  const handleContinueClick = async () => {
+    if (email.length !== 0 || password.length !== 0) {
+      try {
+        setSaveWorkLoader(true);
+        const ApiPath = Apis.Login;
+        const response = await fetch(ApiPath, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        console.log("response for checking status", response);
+        if (response.ok) {
+          const ApiResponse = await response.json();
+          console.log('Response of login api is :', ApiResponse);
+          localStorage.setItem('User', JSON.stringify(ApiResponse));
+          if (ApiResponse.status === true) {
+
+            const AuthToken = ApiResponse.data.token;
+
+            const response2 = await axios.post(Apis.CreateProject, {
+              appIdea: appIdea,
+              targettedAudience: audienceName,
+              projectName: appName
+            }, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + AuthToken
+              }
+            });
+            if (response2.status === 200) {
+              const Result = response2.data;
+              localStorage.setItem('NewProject', JSON.stringify(Result));
+              console.log('Response of create project API is:', Result);
+              router.push('/chat');
+              // router.push('/onboarding/founders');
+            } else {
+              console.log('Create project Response is not ok', response2);
+            }
+            // if (ApiResponse.message === "User registered") {
+            //     router.push('/chat');
+            //     localStorage.setItem('User', JSON.stringify(ApiResponse));
+            // } else {
+            //     console.log('User not registered');
+            // }
+          } else {
+            console.log('Error in login api response', response);
+          }
+        } else if (!response.ok) {
+          console.log("Response of login api is not ok :", response);
+        }
+      } catch (error) {
+        console.error('Error occured in login api is :', error);
+      } finally {
+        setSaveWorkLoader(false)
+      }
+    } else {
+      setShowSaveWorkError(true);
+    }
+  }
 
   return (
     <div style={{ position: 'relative', height: '60vh', overflow: 'hidden' }}>
@@ -351,7 +432,7 @@ const AnimatedForm = () => {
                 </button>
               </div>
               {
-                founders ?
+                founders.length ?
                   <div className="mt-4" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {
                       founders.map((item) => (
@@ -388,7 +469,7 @@ const AnimatedForm = () => {
                       ))
                     }
                   </div> :
-                  <div className="mt-6" style={{ fontSize: 24, fontWeight: '600', color: '#ffffff' }}>
+                  <div className="mt-6" style={{ height: '24vh', fontSize: 14, fontWeight: '600', color: '#ffffff' }}>
                     No Founders
                   </div>
               }
@@ -412,12 +493,12 @@ const AnimatedForm = () => {
                   }}>
                   Continue
                 </Button> :
-                  <Button variant="disabled"
+                  <Button
                     onClick={handleContinue}
                     className="p-3 py-4"
                     style={{
                       height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                      backgroundColor: '#4011FA50', fontFamily: 'inter'
+                      backgroundColor: 'red', fontFamily: 'inter'
                     }}>
                     {
                       loader ?
@@ -440,9 +521,74 @@ const AnimatedForm = () => {
             transition={{ duration: 1 }}
             style={styles}
           >
-            <div>
-              <h2>Box 5</h2>
-              <button onClick={handleBack}>Back</button>
+            <div className='w-full'>
+              <div className="w-full"
+                style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
+                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
+                  ONBOARDING
+                </p>
+                <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                  Save your work
+                </p>
+                <div className="flex flex-col justify-center">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    className="mt-8 w-11/12"
+                    style={{
+                      outline: 'none', border: 'none', backgroundColor: '#00000000',
+                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                    }}
+                    placeholder="Email Address" />
+                  <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-12 w-11/12"
+                  style={{
+                    outline: 'none', border: 'none', backgroundColor: '#00000000',
+                    fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                  }}
+                  placeholder="Password" />
+                <div className="flex flex-col gap-y-20">
+                  <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                  <div className="mt-6 flex flex-row gap-8">
+                    <Button
+                      onClick={handleBack}
+                      className="p-3 py-4"
+                      style={{
+                        height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                        backgroundColor: '', fontFamily: 'inter'
+                      }}>
+                      Back
+                    </Button>
+                    {email && password ? <Button
+                      onClick={handleContinueClick}
+                      className="p-3 py-4"
+                      style={{
+                        height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                        backgroundColor: '#4011FA', fontFamily: 'inter'
+                      }}>
+                      {
+                        saveWorkLoader ?
+                          <CircularProgress size={30} /> : "Continue"
+                      }
+                    </Button> :
+                      <Button variant="disabled"
+                        className="p-3 py-4"
+                        style={{
+                          height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                          backgroundColor: '#4011FA50', fontFamily: 'inter'
+                        }}>
+                        Continue
+                      </Button>
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -599,6 +745,29 @@ const AnimatedForm = () => {
         </Box>
       </Modal>
 
+
+      {/* Errors */}
+      <div>
+        <Snackbar
+          open={showSaveWorkError}
+          autoHideDuration={3000}
+          onClose={onClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          TransitionComponent={Slide}
+          TransitionProps={{
+            direction: 'left'
+          }}
+        >
+          <Alert
+            onClose={onClose} severity="error"
+            sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+            Enter all Credientials.
+          </Alert>
+        </Snackbar>
+      </div>
 
     </div>
   );

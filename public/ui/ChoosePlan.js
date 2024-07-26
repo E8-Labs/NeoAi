@@ -1,6 +1,9 @@
 import { Box, Button, Modal, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import style from 'react-syntax-highlighter/dist/esm/styles/hljs/a11y-dark';
+import Apis from '../Apis/Apis';
+import AddCard from '../addcard/AddCard';
 
 const ChoosePlan = () => {
 
@@ -183,6 +186,13 @@ const ChoosePlan = () => {
         }
     }
 
+    //code for add card api
+
+    const ADDNEWCARD = async () => {
+        // const 
+        const response = await axios.post()
+    }
+
     //code for removing scrollIndicator
     <style>
         {`
@@ -191,6 +201,48 @@ const ChoosePlan = () => {
         }
       `}
     </style>
+
+    //code for getting card api call
+
+    const getCards = async () => {
+        // const ApiPath = Apis.GetCards;
+        const ApiPath = "http://localhost:8005/api/user/list_cards";
+        const LocalData = localStorage.getItem('User');
+        const D = JSON.parse(LocalData);
+        const AuthToken = D.data.token;
+        console.log("Authtoken for get cards is :", AuthToken);
+        try {
+            const response = await axios.get(ApiPath, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + AuthToken
+                }
+            });
+            if (response) {
+                console.log("Response for gat cards api is :", response);
+            }
+        } catch (error) {
+            console.log("Error occured in api is", error);
+        }
+    }
+
+    useEffect(() => {
+        getCards();
+    }, []);
+
+    const addCardApi = async () => {
+        const ApiPath = Apis.AddCard;
+        const LocalData = localStorage.getItem('User');
+        const D = JSON.parse(LocalData);
+        const AuthToken = D.data.token;
+        console.log("Authtoken for get cards is :", AuthToken);
+        const response = await axios.get(ApiPath, cardNumber, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + AuthToken
+            }
+        })
+    }
 
     return (
         <div className='w-full flex flex-col items-center'>
@@ -321,7 +373,7 @@ const ChoosePlan = () => {
                             </u>
                         </button>
                     </div>
-                    <div className='w-full mt-12' style={{ overflow: 'auto', height: '42vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className='w-full mt-12 pb-4' style={{ overflow: 'auto', height: '42vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         {
                             bankCards.map((item) => (
                                 <div key={item.id} className='w-10/12 flex flex-row justify-between mt-4' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
@@ -407,7 +459,12 @@ const ChoosePlan = () => {
                 onClose={handleClose}
             >
                 <Box sx={style}>
-                    <div className='text-white'>
+
+                    <div>
+                        <AddCard onClose={handleClose} />
+                    </div>
+
+                    {/* <div className='text-white'>
                         <div className='w-full flex flex-row justify-end'>
                             <button onClick={handleClose}>
                                 <img src='/assets/cross2.png' alt='cross'
@@ -569,7 +626,7 @@ const ChoosePlan = () => {
                                 Add Card
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
                 </Box>
             </Modal>
         </div>
