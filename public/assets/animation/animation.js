@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, color } from 'framer-motion';
 import { Box, Button, CircularProgress, Modal, TextField } from '@mui/material';
 import Apis from '@/public/Apis/Apis';
@@ -59,19 +59,13 @@ const AnimatedForm = () => {
   const [appIdea, setAppIdea] = useState('');
   const [audienceName, setAudienceName] = useState('');
   const [appName, setAppName] = useState('');
-  const [founders, setFounders] = useState([
-    {
-      founderName: "Hamza",
-      role: "Admin",
-      founderEmail: "hamza@gmail.com"
-    }
-  ]);
+  const [founders, setFounders] = useState([]);
   const [addFounder, setAddFounder] = useState(false);
   const [founderName, setFounderName] = useState('');
   const [founderEmail, setFounderEmail] = useState('');
   const [role, setRole] = useState('');
   const [AddFounderError, setAddFounderError] = useState(false);
-  const [email, setUserEmail] = useState('');
+  const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState('');
   const [saveWorkLoader, setSaveWorkLoader] = useState(false);
   const [showSaveWorkError, setShowSaveWorkError] = useState(false);
@@ -80,6 +74,13 @@ const AnimatedForm = () => {
   const handleAddFounder = () => {
     setAddFounder(true);
   }
+  
+  const handleSaveEmail = () => {
+    setUserEmail(founders[0].founderEmail)
+    console.log("function working");
+  }
+
+  // console.log("data in founders array is :", founders[0].founderEmail);
 
   const onClose = () => {
     setAddFounder(false);
@@ -485,7 +486,10 @@ const AnimatedForm = () => {
                 </Button>
                 {founders ? <Button
                   // variant="disabled"
-                  onClick={handleContinue}
+                  onClick={() => {
+                    handleSaveEmail();
+                    handleContinue();
+                  }}
                   className="p-3 py-4"
                   style={{
                     height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,

@@ -786,8 +786,10 @@ const Page = () => {
               <div>
                 {
                   myProjects.length === 0 ?
-                    <div className='text-white mt-2' style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
-                      No projects
+                    <div className='w-full flex items-center p-1'>
+                      <div className='text-white mt-2 w-11/12' style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
+                        No projects
+                      </div>
                     </div> :
                     <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                       {
@@ -827,25 +829,27 @@ const Page = () => {
           ))} */}
         </div>
 
-        <div className='flex flex-col items-start w-full p-1'>
-          <Button onClick={handleSettingClick} sx={{ textTransform: 'none' }}
-            style={{
-              fontWeight: '500', fontSize: 12, fontFamily: 'inter',
-              color: openSetting ? '#ffffff' : '#ffffff60', backgroundColor: openSetting ? '#ffffff60' : ''
-            }}>
-            Settings
-          </Button>
-          <Button onClick={handleTeamClick} sx={{ textTransform: 'none' }}
-            style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#ffffff' : '#ffffff60', backgroundColor: openTeam ? '#ffffff60' : '' }}>
-            My Team
-          </Button>
-          <Button onClick={handlePlanClick} sx={{ textTransform: 'none', padding: 0, margin: 0 }}
-            style={{
-              fontWeight: '500', fontSize: 12, textAlign: 'start', fontFamily: 'inter', color: openPlan ? '#ffffff' : '#ffffff60',
-              backgroundColor: openPlan ? '#ffffff60' : ''
-            }}>
-            Plans
-          </Button>
+        <div className='flex flex-col items-start w-full items-center p-1'>
+          <div className='flex flex-col gap-3 items-start w-11/12 p-1'>
+            <button onClick={handleSettingClick} sx={{ textTransform: 'none' }}
+              style={{
+                fontWeight: '500', fontSize: 12, fontFamily: 'inter',
+                color: openSetting ? '#2548FD' : '#ffffff60', backgroundColor: openSetting ? '' : ''
+              }}>
+              Settings
+            </button>
+            <button onClick={handleTeamClick} sx={{ textTransform: 'none' }}
+              style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : '' }}> {/* 2548FD40 */}
+              My Team
+            </button>
+            <button onClick={handlePlanClick} sx={{ textTransform: 'none', padding: 0, margin: 0 }}
+              style={{
+                fontWeight: '500', fontSize: 12, textAlign: 'start', fontFamily: 'inter', color: openPlan ? '#2548FD' : '#ffffff60',
+                backgroundColor: openPlan ? '' : ''
+              }}>
+              Plans
+            </button>
+          </div>
         </div>
 
         {/* Code for modals of side menu */}

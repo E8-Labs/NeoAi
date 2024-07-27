@@ -47,9 +47,8 @@ const AddCardDetails = ({ handleClose }) => {
         }
     
         // Close the modal
-        handleClose4(e);
-        return
-        setAddCardLoader(true);
+        // handleClose4(e);
+        // return
         if (!stripeReact || !elements) {
             return
         }
@@ -57,10 +56,8 @@ const AddCardDetails = ({ handleClose }) => {
         const cardNumberElement = elements.getElement(CardNumberElement);
 
         stripeReact.createToken(cardNumberElement).then(async function (tok) {
-            console.log("Token generating for card number :", tok.token.id)
-            const tokenId = tok.token.id;
             if (tok.error) {
-                // setCredentialsErr(true);
+                setCredentialsErr(true);
                 toast.error(tok.error.code, {
                     position: "bottom-right",
                     pauseOnHover: true,
@@ -68,6 +65,9 @@ const AddCardDetails = ({ handleClose }) => {
                     theme: "dark"
                 });
             } else if (tok.token.id) {
+                setAddCardLoader(true);
+                console.log("Token generating for card number :", tok.token.id)
+                const tokenId = tok.token.id;
                 let api = process.env.NEXT_PUBLIC_REACT_APP_ENVIRONMENT === "Development2" ? "https://bf59-119-156-82-235.ngrok-free.app" : "https://plurawlapp.com/plurawl";
                 const ApiPath = "http://localhost:8005/api/user/add_card";
                 const AddCardData = {
@@ -88,7 +88,7 @@ const AddCardDetails = ({ handleClose }) => {
                         console.log("Response of add card api is", response);
                     }
                     if (response.status === 200) {
-                        handleClose4()
+                        handleClose4(e);
                     }
                 } catch (error) {
                     console.error("Error occured in adding user card api is :", error);

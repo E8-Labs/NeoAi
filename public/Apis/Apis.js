@@ -10,7 +10,8 @@ const Apis = {
     AddTeamMember: `${BasePath}api/user/invite_user`,
     GetTeamMembers: `${BasePath}api/user/my_team`,
     AddCard: `${BasePath}api/user/add_card`,
-    GetCards: `${BasePath}api/user/list_cards`
+    GetCards: `${BasePath}api/user/list_cards`,
+    SubscribePlan: `${BasePath}api/user/subscribe`
 }
 
 export default Apis;

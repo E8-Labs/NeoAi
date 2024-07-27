@@ -53,7 +53,7 @@ const Page = () => {
                         </div>
                         {/* Code for logo3 */}
                         <div className="lg:flex hidden flex justify-end w-6/12" style={{}}>
-                            <img src="/assets/logo3.png" alt="globe" style={{ height: '648px', width: '648px', objectFit: 'cover' }} />
+                            <img src="/assets/logo3.png" alt="globe" style={{ objectFit: 'cover', resize: "cover" }} />
                         </div>
                     </div>
                 </div>
