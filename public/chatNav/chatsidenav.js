@@ -94,6 +94,13 @@ const Chatsidenav = () => {
                 console.log("Update profile api reponse:", response);
             }
 
+            if (response.status === 200) {
+                const Result = response.data.data;
+                localStorage.setItem('profileData', JSON.stringify(Result));
+            } else {
+                console.log('Profile not updated');
+            }
+
             setOpen(false);
             setOpenRefer(false);
             setOpenAddTeam(false);
@@ -274,7 +281,10 @@ const Chatsidenav = () => {
                                             <Link className='text-white' sx={{ textDecoration: 'none' }}
                                                 key={link.name}
                                                 href={link.href}
-                                                style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : '' }}> {/* 2548FD40 */}
+                                                style={{
+                                                    fontWeight: '500', fontSize: 12, fontFamily: 'inter',
+                                                    color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : ''
+                                                }}> {/* 2548FD40 */}
                                                 {link.name}
                                             </Link>
                                         </div>
@@ -285,41 +295,44 @@ const Chatsidenav = () => {
                     </div>
                 </div>
 
-                <div style={{ position: 'absolute', bottom: 0, padding: 10 }}>
+                <div style={{ paddingLeft: 5, position: 'absolute', bottom: 0 }}>
                     <div className='flex mt-4'>
-                        <Button sx={{ textTransform: 'none' }}
+                        <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenRefer}
                             style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
                             Refer
-                        </Button>
+                        </button>
                     </div>
                     <div className='flex mt-3'>
-                        <Button sx={{ textTransform: 'none' }}
+                        <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenSupport}
                             style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
                             Support
-                        </Button>
+                        </button>
                     </div>
                     <div className='flex mt-3'>
-                        <Button sx={{ textTransform: 'none' }}
+                        <button sx={{ textTransform: 'none' }}
                             style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
                             Feedback
-                        </Button>
+                        </button>
                     </div>
                     <div className='flex flex-row mt-3 gap-3 items-center w-full'>
-                        <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center w-full'>
-                            {selectedImage ? <img
-                                className='w-2/12'
-                                src={selectedImage} alt='Profile'
-                                style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
-                                <img
-                                    className='w-2/12'
-                                    src='/assets/profile1.jpeg' alt='Profile'
-                                    style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />}
-                            <div className='w-8/12 text-start text-white' style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
-                                hamza@gmail.com
+                        <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center justify-between w-full'>
+                            <div className='flex flex-row gap-2 items-center'>
+                                {selectedImage ? <img
+                                    className=''
+                                    src={selectedImage} alt='Profile'
+                                    style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
+                                    <img
+                                        className=''
+                                        src='/assets/profile1.jpeg' alt='Profile'
+                                        style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />}
+                                <div className=' text-start text-white'
+                                    style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
+                                    Hamza
+                                </div>
                             </div>
-                            <div className='flex items-center justify-center w-1/12' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>
+                            <div className='flex items-center justify-center ' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>
                                 <img src='/assets/nextIcon.png' alt='nextarrow' style={{ height: '10', width: '13px' }} />
                             </div>
                         </button>
@@ -455,7 +468,7 @@ const Chatsidenav = () => {
                                             fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter',
                                             borderBottom: '1px solid #ffffff'
                                         }}
-                                        placeholder="Enter Email" />
+                                        placeholder="Enter Name" />
                                     <div className='w-full flex justify-center mt-14'>
                                         {
                                             updateLoader ?

@@ -190,6 +190,49 @@ const AnimatedForm = () => {
     }
   }
 
+  //create project when user already logged in
+
+//   const handleContinueFounderClick = async () => {
+//     const data = localStorage.getItem('User');
+//     if (data) {
+//         const ParsedLocalData = JSON.parse(data);
+//         const AuthToken = ParsedLocalData.data.token;
+//         try {
+//             // setLoader(true);
+//             const response2 = await axios.post(Apis.CreateProject, {
+//                 appIdea: appIdea,
+//                 targettedAudience: audienceName,
+//                 projectName: appName
+//             }, {
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Authorization': 'Bearer ' + AuthToken
+//                 }
+//             });
+//             if (response2.status === 200) {
+//                 const Result = response2.data;
+//                 localStorage.setItem('NewProject', JSON.stringify(Result));
+//                 console.log('Response of API is:', Result);
+//                 router.push('/chat');
+//                 // router.push('/onboarding/founders');
+//             } else {
+//                 console.log('Response is not ok', response2);
+//             }
+//         } catch (error) {
+//             console.error("Error occured in api is:", error);
+//         } finally {
+//             // setLoader(false);
+//         }
+//     } else {
+//         localStorage.setItem("createProject", JSON.stringify(CreateProject1));
+
+//         // router.push('/onboarding/savework');
+//     }
+// }
+
+
+
+
   return (
     <div style={{ position: 'relative', height: '60vh', overflow: 'hidden' }}>
       <AnimatePresence initial={false} custom={direction}>

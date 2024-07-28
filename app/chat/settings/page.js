@@ -2,7 +2,7 @@ import React from 'react'
 
 const Page = () => {
     return (
-        <div>Settings screen</div>
+        <div style={{ height: '100vh', color: 'white' }}>Settings screen</div>
     )
 }
 

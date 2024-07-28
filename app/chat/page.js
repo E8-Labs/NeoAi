@@ -322,40 +322,40 @@ const Page = () => {
     };
 
     //code for calling get projects api
-    const getProjects = async () => {
-        try {
-            setMyProjectsLoader(true)
-            const ApiPath = Apis.GetProjects;
-            const LSD = localStorage.getItem('User');
-            const localStorageData = JSON.parse(LSD);
-            console.log('Data from localstorage fopr get project is :', localStorageData);
-            const AuthToken = localStorageData.data.token;
-            console.log('Auth token is', AuthToken);
-            const response = await axios.get(ApiPath, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + AuthToken
-                }
-            });
-            if (response) {
-                console.log('Response is', response);
-            }
-            if (response.status === 200) {
-                console.log('Response of api is', response.data);
-                setMyProjects(response.data.data)
-            } else if (!response.status === 200) {
-                console.log('Response is not ok due to:', response);
-            }
-        } catch (error) {
-            console.log('error occured is', error);
-        } finally {
-            setMyProjectsLoader(false)
-        }
-    };
+    // const getProjects = async () => {
+    //     try {
+    //         setMyProjectsLoader(true)
+    //         const ApiPath = Apis.GetProjects;
+    //         const LSD = localStorage.getItem('User');
+    //         const localStorageData = JSON.parse(LSD);
+    //         console.log('Data from localstorage fopr get project is :', localStorageData);
+    //         const AuthToken = localStorageData.data.token;
+    //         console.log('Auth token is', AuthToken);
+    //         const response = await axios.get(ApiPath, {
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': 'Bearer ' + AuthToken
+    //             }
+    //         });
+    //         if (response) {
+    //             console.log('Response is', response);
+    //         }
+    //         if (response.status === 200) {
+    //             console.log('Response of api is', response.data);
+    //             setMyProjects(response.data.data)
+    //         } else if (!response.status === 200) {
+    //             console.log('Response is not ok due to:', response);
+    //         }
+    //     } catch (error) {
+    //         console.log('error occured is', error);
+    //     } finally {
+    //         setMyProjectsLoader(false)
+    //     }
+    // };
 
-    useEffect(() => {
-        getProjects();
-    }, []);
+    // useEffect(() => {
+    //     getProjects();
+    // }, []);
 
     //code for selecting previous chat
     const handleChatSelect = (index) => {
@@ -535,13 +535,16 @@ const Page = () => {
     const handleOpenProfile = () => setOpenProfile(true);
     const handleOpenAddTeam = () => setOpenAddTeam(true);
     const handleCloseShareProject = () => setOpenShareApp(false);
-    const handleCloseEditProject = async () => {
+
+    const handleCloseEditProject = () => {
         setOpen(false);
         setOpenRefer(false);
         setOpenAddTeam(false);
         setOpenSupport(false);
         setOpenProfile(false);
+    }
 
+    const handleUpdateEditProject = async () => {
 
         try {
             setPUpdateLoader(true);
@@ -575,6 +578,11 @@ const Page = () => {
                 const PData = response.data.data;
                 localStorage.setItem('ProjectDetails', JSON.stringify(PData));
                 setProjectDetails(PData);
+                setOpen(false);
+                setOpenRefer(false);
+                setOpenAddTeam(false);
+                setOpenSupport(false);
+                setOpenProfile(false);
             }
         } catch (error) {
             console.log("Error occured in update project api :", error);
@@ -1000,7 +1008,7 @@ const Page = () => {
                                     <div className='w-10/12' style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
                                 </div>
                                 <div className='w-full flex flex-row justify-center mt-14 pb-4'>
-                                    <Button onClick={handleCloseEditProject} sx={{ textTransform: 'none' }}
+                                    <Button onClick={handleUpdateEditProject} sx={{ textTransform: 'none' }}
                                         style={{
                                             height: '46px', width: '186px', backgroundColor: '#4011FA', fontWeight: '500',
                                             fontSize: 15, color: 'white'

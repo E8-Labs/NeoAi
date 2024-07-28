@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Apis from '../Apis/Apis';
 import axios from 'axios';
-import { Link } from '@mui/material';
+import { Box, Link } from '@mui/material';
 
 const GetProjects = () => {
 
@@ -44,6 +44,11 @@ const GetProjects = () => {
         getProjects();
     }, []);
 
+    const handleLinkClick = (item) => {
+        console.log('ITem data sending is', item);
+        localStorage.setItem('projectDetails', JSON.stringify(item));
+    }
+
     return (
         <div>
             <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -52,10 +57,17 @@ const GetProjects = () => {
                         {
                             myProjects.map((item) => (
                                 <div key={item.id} className='w-full flex flex-row items-center mt-6' style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
-                                    <Link sx={{ textDecoration: 'none' }} className='w-8/12 text-white items-start p-3' href={`/chat/${item.chat.id}`} passHref>
+                                    <Link sx={{ textDecoration: 'none' }}
+                                        className='w-8/12 text-white items-start p-3'
+                                        href={`/chat/${item.chat.id}`}>
                                         {/* <button className='w-full text-start text-white'> */}
-                                        {item.projectName ? item.projectName : "App Name"}
-                                        {/* </button> */}
+                                        <Box
+                                            sx={{ textDecoration: 'none' }}
+                                            className='w-8/12 text-white items-start p-3'
+                                            onClick={() => handleLinkClick(item)}
+                                        >
+                                            {item.projectName ? item.projectName : "App Name"}
+                                        </Box>                                 {/* </button> */}
                                     </Link>
                                     <div className='w-4/12 p-3 flex justify-end'>
                                         <button>
@@ -67,7 +79,7 @@ const GetProjects = () => {
                         }
                     </div> :
                     <div>
-                        hello
+                        No Projects
                     </div>}
             </div>
         </div>
