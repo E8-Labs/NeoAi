@@ -37,13 +37,15 @@ export default function RootLayout({ children }) {
             </head>
             <body className={inter.className}>
                 <div className="flex w-full flex-row">
-                    <div className="w-2/12">
+                    <div className="w-2/12" style={{ borderRight: "1px solid grey", backgroundColor: "#050221" }}>
                         {/* <chatsidenav /> */}
                         <Chatsidenav />
                     </div>
                     <div className="flex flex-col w-10/12">
-                        <div>top</div>
-                        <div>
+                        {/* <div style={{ backgroundColor: "#050221", borderBottom: "1px solid grey", color: "white" }}>
+                            top
+                        </div> */}
+                        <div style={{ backgroundColor: "#050221" }}>
                             {children}
                         </div>
                     </div>

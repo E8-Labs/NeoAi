@@ -1,0 +1,388 @@
+'use client'
+import { Box, Button, CircularProgress, Grid, Modal, TextField } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import Apis from '@/public/Apis/Apis';
+import axios from 'axios';
+
+const Page = () => {
+
+    const [teamProfiles, setTeamProfiles] = useState([]);
+    const [teamLoader, setLoadTeamLoader] = useState(false);
+    const [showAcceptBtn, setShowAcceptBtn] = useState(false);
+    const [openAddTeam, setOpenAddTeam] = useState(false);
+    const [addTeamLoader, setAddTeamLoader] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [role, setRole] = useState("");
+    const handleOpenAddTeam = () => setOpenAddTeam(true);
+
+    const handleCloseModal = () => {
+        setOpenAddTeam(false);
+    }
+
+    const addTeamStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        // height: 450,
+        bgcolor: 'background.paper',
+        // border: '2px solid #000',
+        boxShadow: 24,
+        p: 3,
+        borderRadius: 2,
+        backgroundColor: '#0F0C2D'
+    };
+
+    //add team member
+    const handleAddTeam = async (e) => {
+        if (name && email && role) {
+
+            //api call for adding team member
+
+            try {
+                setAddTeamLoader(true)
+                const AddMember = {
+                    toUserEmail: email,
+                    name: name,
+                    role: role,
+                }
+
+                console.log("add member is:", AddMember);
+                // return
+                //Auth token from local storage add team loader
+                const LSD = localStorage.getItem('User');
+                const localStorageData = JSON.parse(LSD);
+                // console.log('Data2 from localstorage for add team is :', localStorageData);
+                const AuthToken = localStorageData.data.token;
+                // console.log('Auth token is', AuthToken);
+
+                const response = await axios.post(Apis.AddTeamMember, AddMember, {
+                    headers: {
+                        'Authorization': 'Bearer ' + AuthToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response) {
+                    console.log('Response of add team member is :', response);
+                }
+                if (response.status === 200) {
+                    setOpenAddTeam
+                    setName('');
+                    setEmail('');
+                    setRole('');
+                }
+
+            } catch (error) {
+                console.error("Error occured in api call is :", error);
+            } finally {
+                setOpenAddTeam(false);
+                setAddTeamLoader(false);
+            }
+
+        } else {
+            console.log('Cannot');
+        }
+    }
+
+    useEffect(() => {
+        const LSD = localStorage.getItem('User');
+        const localStorageData = JSON.parse(LSD);
+        // console.log('Data2 from localstorage for match email is :', localStorageData);
+        const toUser2 = localStorageData.data.user.id;
+        // console.log('email to match is:', toUser2);
+        // const toUserId = teamProfiles.toUser.id;
+        // console.log('Id getting is:', teamProfiles[0].toUser.id);
+        teamProfiles.forEach(element => {
+            if (element.toUser.id == toUser2) {
+                console.log('Id of user and ined user matches');
+                setShowAcceptBtn(true);
+            } else {
+                console.log('id donot match');
+            }
+        });
+    }, [])
+
+    const getTeam = async () => {
+        try {
+            //Auth token from local storage add team loader
+            const LSD = localStorage.getItem('User');
+            const localStorageData = JSON.parse(LSD);
+            const AuthToken = localStorageData.data.token;
+            // console.log('Auth token is', AuthToken);
+            setLoadTeamLoader(true);
+            const response = await axios.get(Apis.GetTeamMembers, {
+                headers: {
+                    'Authorization': 'Bearer ' + AuthToken
+                }
+            });
+            if (response) {
+                console.log('Response of get team members api is :', response);
+            }
+            if (response.status === 200) {
+                setTeamProfiles(response.data.data);
+            } else {
+                console.log("Status is not ok");
+            }
+        } catch (error) {
+            console.error("Error occured in api is :", error);
+        } finally {
+            setLoadTeamLoader(false);
+        }
+    }
+
+    useEffect(() => {
+        getTeam();
+    }, [])
+
+    return (
+        <div className='w-full flex justify-center' style={{ height: '100vh', backgroundColor: "#050221" }}>
+            {
+                teamLoader ?
+                    <CircularProgress size={30} /> :
+                    <div className='w-11/12 mt-8 flex gap-6'>
+                        {
+                            teamProfiles ?
+                                <Grid container spacing={2} style={{ height: 'fit-content', display: 'flex', alignItems: 'flex-start' }}>
+                                    {teamProfiles.map((item) => (
+                                        <Grid key={item.id} item xs={12} sm={6} md={4} lg={4} xl={3} style={{ height: 'fit-content' }}>
+                                            <div className='w-full gap-8 p-4 flex flex-row'
+                                                style={{ backgroundColor: '#ffffff20', borderRadius: 2, height: 'fit-content', width: '100%', maxWidth: '335px' }}>
+                                                <div>
+                                                    <img src='/assets/profile1.png' alt='TM_Profile' style={{ height: '50px', width: '50px', objectFit: 'cover' }} />
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
+                                                        {item.name}
+                                                    </div>
+                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
+                                                        {item.role}
+                                                    </div>
+                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
+                                                        Email:
+                                                        <span style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
+                                                            {item.toUserEmail}
+                                                        </span>
+                                                    </div>
+                                                    {item.status === 'accepted' ?
+                                                        <div className='flex items-center justify-center mt-3'
+                                                            style={{
+                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                            }}>
+                                                            Accepted
+                                                        </div> :
+                                                        <div>
+                                                            {
+                                                                showAcceptBtn ?
+                                                                    <div className='flex flex-row justify-between w-full'>
+                                                                        <Button className='flex items-center justify-center mt-3'
+                                                                            style={{
+                                                                                height: '35px', width: '96px', borderRadius: 5,
+                                                                                backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                            }}>
+                                                                            Accept
+                                                                        </Button>
+                                                                        <Button className='flex items-center justify-center mt-3'
+                                                                            style={{
+                                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                                backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                            }}>
+                                                                            Decline
+                                                                        </Button>
+                                                                    </div> :
+                                                                    <div>
+                                                                        {item.status === 'pending' && (
+                                                                            <div className='flex items-center justify-center mt-3'
+                                                                                style={{
+                                                                                    height: '35px', width: '96px', borderRadius: 1,
+                                                                                    backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                                }}>
+                                                                                Pending
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </Grid>
+                                    ))}
+                                    <Grid item xs={12} sm={6} md={4} lg={4} xl={3} style={{ height: 'fit-content' }}>
+                                        <div className='w-full p-4 flex flex-col justify-center items-center'
+                                            style={{
+                                                backgroundColor: '#ffffff20', borderRadius: 2, height: '137px',
+                                                border: '1px dashed #ffffff60', width: '100%', maxWidth: '335px'
+                                            }}>
+                                            <div className='flex flex-row justify-center gap-2'>
+                                                <button
+                                                    sx={{ textTransform: 'none' }}
+                                                    onClick={handleOpenAddTeam}
+                                                    className='flex items-center justify-center'
+                                                    style={{ height: '30px', width: '30px', backgroundColor: '#2548FD', borderRadius: '50%' }}>
+                                                    <img src='/assets/addIcon.png' alt='Add' style={{ height: '10px', width: '10px', objectFit: 'cover' }} />
+                                                </button>
+                                                <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginTop: 8 }}>
+                                                    New Team Member
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Grid>
+                                </Grid> :
+                                <div className='text-white flex items-center justify-center w-full'>
+                                    <div className='lg:w-3/12 w-4/12 flex flex-col items-center p-4'>
+                                        <div style={{ width: '100%', height: '276px', backgroundColor: '#ffffff13' }} />
+                                        <div className='text-center mt-4'
+                                            style={{ fontWeight: '500', fontSize: 20, fontFamily: 'inter' }}>
+                                            Looks like you have no active team members
+                                        </div>
+                                        <Button className='rounded mt-6' sx={{ textTransform: 'none' }}
+                                            style={{
+                                                backgroundColor: '#4011FA', fontWeight: '500', fontSize: 15, fontFamily: 'inter', color: 'white',
+                                                height: '47px', width: '170px'
+                                            }}>
+                                            Create Invite
+                                        </Button>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+            }
+
+
+            {/* Code for adding team member */}
+
+            <div>
+                <Modal
+                    open={openAddTeam}
+                    onClose={handleCloseModal}
+                >
+                    <Box sx={addTeamStyle}>
+                        <div>
+                            <div className='w-full flex flex-row justify-end'>
+                                <button onClick={handleCloseModal}>
+                                    <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
+                                </button>
+                            </div>
+                            <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: '#ffffff' }}>
+                                Add Team Member
+                            </div>
+                            <TextField id="standard-basic" label="Name" variant="standard"
+                                placeholder="Enter Name"
+                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value);
+                                }}
+                                sx={{
+                                    width: '100%', // Change the width here
+                                    '& .MuiInputBase-root': {
+                                        color: 'white', // Change the text color here
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60', // Change the underline color here
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60', // Change the label color here
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff', // Change the label color when focused
+                                    },
+                                    marginTop: 1
+                                }}
+                            />
+                            <TextField id="standard-basic" label="Role" variant="standard"
+                                placeholder="Role"
+                                value={role}
+                                onChange={(e) => {
+                                    setRole(e.target.value);
+                                }}
+                                sx={{
+                                    width: '100%', // Change the width here
+                                    '& .MuiInputBase-root': {
+                                        color: 'white', // Change the text color here
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60', // Change the underline color here
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60', // Change the label color here
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff', // Change the label color when focused
+                                    },
+                                    marginTop: 2
+                                }}
+                            />
+                            <TextField id="standard-basic" label="Email" variant="standard"
+                                placeholder="Enter Email"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                }}
+                                sx={{
+                                    width: '100%', // Change the width here
+                                    '& .MuiInputBase-root': {
+                                        color: 'white', // Change the text color here
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff ', // Change the underline color here
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff60', // Change the underline color on hover here
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60', // Change the label color here
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff', // Change the label color when focused
+                                    },
+                                    marginTop: 2
+                                }}
+                            />
+                            <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
+                                style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
+                                {
+                                    addTeamLoader ?
+                                        <CircularProgress size={30} /> :
+                                        "Add"
+                                }
+                            </Button>
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+
+        </div>
+    )
+}
+
+export default Page

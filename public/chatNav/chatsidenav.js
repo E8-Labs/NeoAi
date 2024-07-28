@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import ImagePicker from '@/public/ui/ImagePicker';
 import Apis from '../Apis/Apis';
 import GetProjects from './GetProjects';
+import axios from 'axios';
 
 const Chatsidenav = () => {
     const Router = useRouter();
@@ -23,10 +24,24 @@ const Chatsidenav = () => {
     const [openAddTeam, setOpenAddTeam] = useState(false);
     const [loadTeamLoader, setLoadTeamLoader] = useState(false);
     const [open, setOpen] = useState(false);
+    const [updateLoader, setUpdateLoader] = useState(false);
+    const [userProfiledata, setUserProfiledata] = useState("");
+    const [userEmail, setUserEmail] = useState("");
     const links1 = [
         {
+            id: 1,
             name: 'Settings',
             href: '/chat/settings'
+        },
+        {
+            id: 2,
+            name: 'My Team',
+            href: '/chat/team'
+        },
+        {
+            id: 3,
+            name: 'Plans',
+            href: '/chat/plans'
         }
     ]
     //code for image picker1
@@ -44,7 +59,87 @@ const Chatsidenav = () => {
         fileInputRef.current.click();
     };
 
-    const handleCloseEditProject = () => {
+    //code for update profile api
+    const handleSaveChanges = async () => {
+
+        try {
+            setUpdateLoader(true);
+            const ApiPath = Apis.UpdateProfile;
+            const Ls = localStorage.getItem('User');
+            const LocalData = JSON.parse(Ls);
+            const AuthToken = LocalData.data.token;
+
+            const formData = new FormData();
+            formData.append('name', userEmail);
+
+            const urlToFile = async (url, filename, mimeType) => {
+                const res = await axios.get(url, { responseType: 'blob' });
+                const blob = res.data;
+                return new File([blob], filename, { type: mimeType });
+            };
+            if (selectedImage) {
+                console.log('Imagr sending in');
+                const file = await urlToFile(selectedImage, 'image.png', 'image/png');
+                formData.append('media', file);
+            };
+
+            const response = await axios.post(ApiPath, formData, {
+                headers: {
+                    'Authorization': 'Bearer ' + AuthToken,
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+
+            if (response) {
+                console.log("Update profile api reponse:", response);
+            }
+
+            setOpen(false);
+            setOpenRefer(false);
+            setOpenAddTeam(false);
+            setOpenSupport(false);
+            setOpenProfile(false);
+        } catch (error) {
+            console.error('error in update profile api', error);
+        } finally {
+            setUpdateLoader(false)
+        }
+    }
+
+
+    //code for closing modals
+    const handleCloseEditProject = async () => {
+
+        const ApiPath = Apis.UpdateProfile;
+        const Ls = localStorage.getItem('User');
+        const LocalData = JSON.parse(Ls);
+        const AuthToken = LocalData.data.token;
+
+        const formData = new FormData();
+        formData.append('name', userEmail);
+
+        const urlToFile = async (url, filename, mimeType) => {
+            const res = await axios.get(url, { responseType: 'blob' });
+            const blob = res.data;
+            return new File([blob], filename, { type: mimeType });
+        };
+        if (selectedImage) {
+            console.log('Imagr sending in');
+            const file = await urlToFile(selectedImage, 'image.png', 'image/png');
+            formData.append('media', file);
+        };
+
+        const response = await axios.post(ApiPath, formData, {
+            headers: {
+                'Authorization': 'Bearer ' + AuthToken,
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+
+        if (response) {
+            console.log("Update profile api reponse:", response);
+        }
+
         setOpen(false);
         setOpenRefer(false);
         setOpenAddTeam(false);
@@ -52,81 +147,18 @@ const Chatsidenav = () => {
         setOpenProfile(false);
     };
 
-    const handleSettingClick = () => {
-        setOpenSetting(true);
-        setOpenPlan(false);
-        setOpenProjects(false);
-        setOpenTeam(false);
-    }
 
-    const handleOpenEditproject = () => setOpen(true);
-    const handleOpenShareproject = () => setOpenShareApp(true);
+
+
     const handleOpenRefer = () => setOpenRefer(true);
     const handleOpenSupport = () => setOpenSupport(true);
     const handleOpenProfile = () => setOpenProfile(true);
     const handleOpenAddTeam = () => setOpenAddTeam(true);
     const handleCloseShareProject = () => setOpenShareApp(false);
 
-    const handleTeamClick2 = () => {
-        Router.push()
-    }
 
-    const handleTeamClick = async () => {
-        setOpenTeam(true);
-        setOpenProjects(false);
-        setOpenPlan(false);
-        setOpenSetting(false);
-        try {
-            //Auth token from local storage add team loader
-            const LSD = localStorage.getItem('User');
-            const localStorageData = JSON.parse(LSD);
-            const AuthToken = localStorageData.data.token;
-            // console.log('Auth token is', AuthToken);
-            setLoadTeamLoader(true);
-            const response = await axios.get(Apis.GetTeamMembers, {
-                headers: {
-                    'Authorization': 'Bearer ' + AuthToken
-                }
-            });
-            if (response) {
-                console.log('Response of get team members api is :', response);
-            }
-            if (response.status === 200) {
-                setTeamProfiles(response.data.data);
-            } else {
-                console.log("Status is not ok");
-            }
-        } catch (error) {
-            console.error("Error occured in api is :", error);
-        } finally {
-            setLoadTeamLoader(false);
-        }
 
-        //code for showing and hiding accept and decline button
 
-        // const LSD = localStorage.getItem('User');
-        // const localStorageData = JSON.parse(LSD);
-        // console.log('Data2 from localstorage for add btn is :', localStorageData);
-        // const toUser2 = localStorageData.data.user.email;
-        // console.log('email to match is:',toUser2);
-        // // const toUserId = teamProfiles.toUser.id;
-        // // console.log('Id getting is:', teamProfiles[0].toUser.id);
-        // teamProfiles.forEach(element => {
-        //   if (element.fromuser.email !== toUser2) {
-        //     console.log('Email id of user and sender user donot matches');
-        //   }else{
-        //     console.log('Log matches');
-        //   }
-        // });
-
-    }
-
-    const handlePlanClick = () => {
-        setOpenPlan(true);
-        setOpenProjects(false);
-        setOpenTeam(false);
-        setOpenSetting(false);
-    }
 
     const referStyle = {
         position: 'absolute',
@@ -177,7 +209,7 @@ const Chatsidenav = () => {
 
 
     return (
-        <div className='w-full flex flex-flex-col justify-center' style={{ backgroundColor: 'black', height: '100%' }}>
+        <div className='w-full flex flex-flex-col justify-center' style={{ backgroundColor: '#050221', height: '100%' }}>
             <div className='w-9/12'>
                 <div className='flex justify-center mt-6 w-full'>
                     <button>
@@ -203,15 +235,24 @@ const Chatsidenav = () => {
                         New Project
                     </p>
                 </Button>
-                <div>
+                <div className='mt-4'>
                     <Button
                         sx={{ textTransform: 'none' }}
                         style={{
                             color: openProjects ? '#ffffff' : '#ffffff60', fontWeight: '500',
                             fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '#ffffff60' : ''
                         }}>
-                        My Projects
+                        <Link href="/chat" sx={{ textDecoration: 'none' }}
+                            style={{
+                                color: openProjects ? '#ffffff' : '#ffffff60', fontWeight: '500',
+                                fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '' : ''
+                            }}
+                            className='w-full'>
+                            My Projects
+                        </Link>
                     </Button>
+
+                    {/* user projects */}
                     <GetProjects />
                 </div>
 
@@ -228,32 +269,23 @@ const Chatsidenav = () => {
                         <div>
                             {
                                 links1.map((link, index) => {
-                                    <div>
-                                        <Link className='text-white'
-                                            key={link.name}
-                                            href={link.href}>
-                                            {link.name}
-                                        </Link>
-                                    </div>
+                                    return (
+                                        <div>
+                                            <Link className='text-white' sx={{ textDecoration: 'none' }}
+                                                key={link.name}
+                                                href={link.href}
+                                                style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : '' }}> {/* 2548FD40 */}
+                                                {link.name}
+                                            </Link>
+                                        </div>
+                                    )
                                 })
                             }
                         </div>
-
-                        <button onClick={handleTeamClick2} sx={{ textTransform: 'none' }}
-                            style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter', color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : '' }}> {/* 2548FD40 */}
-                            My Team
-                        </button>
-                        <button onClick={handlePlanClick} sx={{ textTransform: 'none', padding: 0, margin: 0 }}
-                            style={{
-                                fontWeight: '500', fontSize: 12, textAlign: 'start', fontFamily: 'inter', color: openPlan ? '#2548FD' : '#ffffff60',
-                                backgroundColor: openPlan ? '' : ''
-                            }}>
-                            Plans
-                        </button>
                     </div>
                 </div>
 
-                <div className='w-2/12' style={{ position: 'absolute', bottom: 0, padding: 10 }}>
+                <div style={{ position: 'absolute', bottom: 0, padding: 10 }}>
                     <div className='flex mt-4'>
                         <Button sx={{ textTransform: 'none' }}
                             onClick={handleOpenRefer}
@@ -287,12 +319,14 @@ const Chatsidenav = () => {
                             <div className='w-8/12 text-start text-white' style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                 hamza@gmail.com
                             </div>
-                            <div className='w-1/12' style={{}}>
+                            <div className='flex items-center justify-center w-1/12' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>
                                 <img src='/assets/nextIcon.png' alt='nextarrow' style={{ height: '10', width: '13px' }} />
                             </div>
                         </button>
                     </div>
                 </div>
+
+
 
                 {/* modals code starts here */}
                 <div>
@@ -423,10 +457,14 @@ const Chatsidenav = () => {
                                         }}
                                         placeholder="Enter Email" />
                                     <div className='w-full flex justify-center mt-14'>
-                                        <Button onClick={handleCloseEditProject} sx={{ textTransform: 'none' }}
-                                            className='mt-4 px-4 py-3' style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
-                                            Save Changes
-                                        </Button>
+                                        {
+                                            updateLoader ?
+                                                <CircularProgress className='mt-4' size={30} /> :
+                                                <Button onClick={handleSaveChanges} sx={{ textTransform: 'none' }}
+                                                    className='mt-4 px-4 py-3' style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
+                                                    Save Changes
+                                                </Button>
+                                        }
                                     </div>
                                 </div>
                             </Box>

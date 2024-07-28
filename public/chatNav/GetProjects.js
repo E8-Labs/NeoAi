@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Apis from '../Apis/Apis';
-
+import axios from 'axios';
+import { Link } from '@mui/material';
 
 const GetProjects = () => {
 
@@ -22,6 +23,7 @@ const GetProjects = () => {
                     'Authorization': 'Bearer ' + AuthToken
                 }
             });
+            console.log("auht working")
             if (response) {
                 console.log('Response on navbar is', response);
             }
@@ -44,20 +46,19 @@ const GetProjects = () => {
 
     return (
         <div>
-            <div className='text-white'>gejksdhf00</div>
             <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {myProjects ?
                     <div>
                         {
                             myProjects.map((item) => (
                                 <div key={item.id} className='w-full flex flex-row items-center mt-6' style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
-                                    {/* <Link className='w-8/12 items-start p-3' href={`/chat/${item.chat.id}`} passHref> */}
-                                    <button className='w-full text-start text-white'>
+                                    <Link sx={{ textDecoration: 'none' }} className='w-8/12 text-white items-start p-3' href={`/chat/${item.chat.id}`} passHref>
+                                        {/* <button className='w-full text-start text-white'> */}
                                         {item.projectName ? item.projectName : "App Name"}
-                                    </button>
-                                    {/* </Link> */}
+                                        {/* </button> */}
+                                    </Link>
                                     <div className='w-4/12 p-3 flex justify-end'>
-                                        <button onClick={handleOpenEditproject}>
+                                        <button>
                                             <img src='/assets/edit.png' alt='edit' style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover' }} />
                                         </button>
                                     </div>

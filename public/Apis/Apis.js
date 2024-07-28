@@ -1,4 +1,4 @@
-const BasePath= 'http://localhost:8005/'//'https://www.blindcircle.com:444/neo/';
+const BasePath = 'http://localhost:8005/'//'https://www.blindcircle.com:444/neo/';
 // const BasePath='192.168.10.2:8005/';
 
 const Apis = {
@@ -11,7 +11,9 @@ const Apis = {
     GetTeamMembers: `${BasePath}api/user/my_team`,
     AddCard: `${BasePath}api/user/add_card`,
     GetCards: `${BasePath}api/user/list_cards`,
-    SubscribePlan: `${BasePath}api/user/subscribe`
+    SubscribePlan: `${BasePath}api/user/subscribe`,
+    UpdateProject: `${BasePath}api/chat/update_project`,
+    UpdateProfile: `${BasePath}api/user/update_profile`,
 }
 
 export default Apis;
