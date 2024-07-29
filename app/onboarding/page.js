@@ -18,19 +18,6 @@ const Page = () => {
         setShowError(false);
     }
 
-    const handleContinueClick = () => {
-        if (appIdea.length !== 0) {
-            localStorage.setItem('createProject', JSON.stringify(appIdea));
-            router.push('/onboarding/audience');
-        } else {
-            setShowError(true);
-        }
-    }
-
-    // useEffect(() => {
-    //     console.log('App idea of user is :', appIdea);
-    // }, [appIdea]);
-
     return (
         <div className="flex justify-center" style={{ color: 'white' }}>
             <div className="w-11/12">

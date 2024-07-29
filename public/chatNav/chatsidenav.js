@@ -1,6 +1,6 @@
 "use client"
 import { Box, Button, CircularProgress, Link, Modal } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import ImagePicker from '@/public/ui/ImagePicker';
 import Apis from '../Apis/Apis';
@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const Chatsidenav = () => {
     const Router = useRouter();
+    const pathName = usePathname();
 
     const [myProjectsLoader, setMyprojectsLoader] = useState(false);
     const [myProjects, setMyProjects] = useState([]);
@@ -211,8 +212,13 @@ const Chatsidenav = () => {
         backgroundColor: '#0F0C2D'
     };
 
-    //code for calling get projects api
+    //code for loging out the user
+    const handleLogout = () => {
+        localStorage.removeItem('User');
+        Router.push('/onboarding');
+    }
 
+    const dashboardPath = "/chat"
 
 
     return (
@@ -246,13 +252,13 @@ const Chatsidenav = () => {
                     <Button
                         sx={{ textTransform: 'none' }}
                         style={{
-                            color: openProjects ? '#ffffff' : '#ffffff60', fontWeight: '500',
-                            fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '#ffffff60' : ''
+                            fontWeight: '500',
+                            fontSize: 12, fontFamily: 'inter', backgroundColor: pathName === dashboardPath ? "#ffffff70" : ""
                         }}>
-                        <Link href="/chat" sx={{ textDecoration: 'none' }}
+                        <Link href={dashboardPath} sx={{ textDecoration: 'none' }}
                             style={{
-                                color: openProjects ? '#ffffff' : '#ffffff60', fontWeight: '500',
-                                fontSize: 12, fontFamily: 'inter', backgroundColor: openProjects ? '' : ''
+                                color: pathName === dashboardPath ? '#ffffff' : '#ffffff60', fontWeight: '500',
+                                fontSize: 12, fontFamily: 'inter'
                             }}
                             className='w-full'>
                             My Projects
@@ -263,8 +269,8 @@ const Chatsidenav = () => {
                     <GetProjects />
                 </div>
 
-                <div className='flex flex-col items-start w-full items-center p-1'>
-                    <div className='flex flex-col gap-3 items-start w-11/12 p-1'>
+                <div className='flex flex-col items-start w-full items-center'>
+                    <div className='flex flex-col gap-3 items-start w-11/12'>
                         {/* <button onClick={handleSettingClick} sx={{ textTransform: 'none' }}
                             style={{
                                 fontWeight: '500', fontSize: 12, fontFamily: 'inter',
@@ -273,17 +279,18 @@ const Chatsidenav = () => {
                             Settings
                         </button> */}
 
-                        <div>
+                        <div className='mt-2'>
                             {
-                                links1.map((link, index) => {
+                                links1.map((link) => {
                                     return (
-                                        <div>
+                                        <div key={link.id}>
                                             <Link className='text-white' sx={{ textDecoration: 'none' }}
                                                 key={link.name}
                                                 href={link.href}
                                                 style={{
                                                     fontWeight: '500', fontSize: 12, fontFamily: 'inter',
-                                                    color: openTeam ? '#2548FD' : '#ffffff60', backgroundColor: openTeam ? '' : ''
+                                                    color: pathName === link.href ? '#ffffff' : '#ffffff60', backgroundColor: pathName === link.href ? '#ffffff60' : '',
+                                                    padding: pathName === link.href ? 4 : "", borderRadius: 5
                                                 }}> {/* 2548FD40 */}
                                                 {link.name}
                                             </Link>
@@ -295,7 +302,7 @@ const Chatsidenav = () => {
                     </div>
                 </div>
 
-                <div style={{ paddingLeft: 5, position: 'absolute', bottom: 0 }}>
+                <div className='w-full' style={{ paddingLeft: 5, position: 'absolute', bottom: 0 }}>
                     <div className='flex mt-4'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenRefer}
@@ -316,8 +323,8 @@ const Chatsidenav = () => {
                             Feedback
                         </button>
                     </div>
-                    <div className='flex flex-row mt-3 gap-3 items-center w-full'>
-                        <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center justify-between w-full'>
+                    <div className='flex flex-row mt-3 gap-3 items-center w-2/12'>
+                        <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center w-10/12 justify-between'>
                             <div className='flex flex-row gap-2 items-center'>
                                 {selectedImage ? <img
                                     className=''
@@ -326,7 +333,8 @@ const Chatsidenav = () => {
                                     <img
                                         className=''
                                         src='/assets/profile1.jpeg' alt='Profile'
-                                        style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />}
+                                        style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />
+                                }
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                     Hamza
@@ -335,6 +343,11 @@ const Chatsidenav = () => {
                             <div className='flex items-center justify-center ' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>
                                 <img src='/assets/nextIcon.png' alt='nextarrow' style={{ height: '10', width: '13px' }} />
                             </div>
+                        </button>
+                    </div>
+                    <div className='mt-4'>
+                        <button onClick={handleLogout} style={{ color: '#FF4242' }}>
+                            Logout
                         </button>
                     </div>
                 </div>

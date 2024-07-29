@@ -74,7 +74,7 @@ const AnimatedForm = () => {
   const handleAddFounder = () => {
     setAddFounder(true);
   }
-  
+
   const handleSaveEmail = () => {
     setUserEmail(founders[0].founderEmail)
     console.log("function working");
@@ -148,6 +148,7 @@ const AnimatedForm = () => {
           if (ApiResponse.status === true) {
 
             const AuthToken = ApiResponse.data.token;
+            console.log("Auth token for create project :", AuthToken);
 
             const response2 = await axios.post(Apis.CreateProject, {
               appIdea: appIdea,
@@ -164,7 +165,6 @@ const AnimatedForm = () => {
               localStorage.setItem('NewProject', JSON.stringify(Result));
               console.log('Response of create project API is:', Result);
               router.push('/chat');
-              // router.push('/onboarding/founders');
             } else {
               console.log('Create project Response is not ok', response2);
             }
@@ -192,43 +192,43 @@ const AnimatedForm = () => {
 
   //create project when user already logged in
 
-//   const handleContinueFounderClick = async () => {
-//     const data = localStorage.getItem('User');
-//     if (data) {
-//         const ParsedLocalData = JSON.parse(data);
-//         const AuthToken = ParsedLocalData.data.token;
-//         try {
-//             // setLoader(true);
-//             const response2 = await axios.post(Apis.CreateProject, {
-//                 appIdea: appIdea,
-//                 targettedAudience: audienceName,
-//                 projectName: appName
-//             }, {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'Authorization': 'Bearer ' + AuthToken
-//                 }
-//             });
-//             if (response2.status === 200) {
-//                 const Result = response2.data;
-//                 localStorage.setItem('NewProject', JSON.stringify(Result));
-//                 console.log('Response of API is:', Result);
-//                 router.push('/chat');
-//                 // router.push('/onboarding/founders');
-//             } else {
-//                 console.log('Response is not ok', response2);
-//             }
-//         } catch (error) {
-//             console.error("Error occured in api is:", error);
-//         } finally {
-//             // setLoader(false);
-//         }
-//     } else {
-//         localStorage.setItem("createProject", JSON.stringify(CreateProject1));
+  //   const handleContinueFounderClick = async () => {
+  //     const data = localStorage.getItem('User');
+  //     if (data) {
+  //         const ParsedLocalData = JSON.parse(data);
+  //         const AuthToken = ParsedLocalData.data.token;
+  //         try {
+  //             // setLoader(true);
+  //             const response2 = await axios.post(Apis.CreateProject, {
+  //                 appIdea: appIdea,
+  //                 targettedAudience: audienceName,
+  //                 projectName: appName
+  //             }, {
+  //                 headers: {
+  //                     'Content-Type': 'application/json',
+  //                     'Authorization': 'Bearer ' + AuthToken
+  //                 }
+  //             });
+  //             if (response2.status === 200) {
+  //                 const Result = response2.data;
+  //                 localStorage.setItem('NewProject', JSON.stringify(Result));
+  //                 console.log('Response of API is:', Result);
+  //                 router.push('/chat');
+  //                 // router.push('/onboarding/founders');
+  //             } else {
+  //                 console.log('Response is not ok', response2);
+  //             }
+  //         } catch (error) {
+  //             console.error("Error occured in api is:", error);
+  //         } finally {
+  //             // setLoader(false);
+  //         }
+  //     } else {
+  //         localStorage.setItem("createProject", JSON.stringify(CreateProject1));
 
-//         // router.push('/onboarding/savework');
-//     }
-// }
+  //         // router.push('/onboarding/savework');
+  //     }
+  // }
 
 
 
@@ -465,15 +465,22 @@ const AnimatedForm = () => {
               <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
                 ONBOARDING
               </p>
-              <div className="mt-4 flex flex-row justify-between">
-                <p style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+              <div className="mt-4 w-full flex flex-row">
+                <p className='w-8/12' style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   Who are the founders involved?
                 </p>
-                <button onClick={handleAddFounder}>
-                  <div className="flex justify-center items-center" style={{ height: '40px', width: '40px', backgroundColor: '#4011FA', borderRadius: '50%' }}>
-                    <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} />
-                  </div>
-                </button>
+                <div className='w-4/12 flex justify-end items-start'>
+                  {
+                    founders.length > 0 && (
+                      <button onClick={handleAddFounder}>
+                        <div className="flex justify-center items-center p-4" style={{ backgroundColor: '#4011FA', borderRadius: 10 }}>
+                          {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                          Add Founder
+                        </div>
+                      </button>
+                    )
+                  }
+                </div>
               </div>
               {
                 founders.length ?
@@ -514,7 +521,12 @@ const AnimatedForm = () => {
                     }
                   </div> :
                   <div className="mt-6" style={{ height: '24vh', fontSize: 14, fontWeight: '600', color: '#ffffff' }}>
-                    No Founders
+                    <button onClick={handleAddFounder}>
+                      <div className="flex justify-center items-center p-4" style={{ backgroundColor: '#4011FA', borderRadius: 10 }}>
+                        {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                        Add Founder
+                      </div>
+                    </button>
                   </div>
               }
               <div className="mt-8 flex flex-row gap-8">
