@@ -519,7 +519,7 @@ const Page = () => {
 */}
               <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
               <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                ho{projectData.projectName}
+                {projectData ? projectData.projectName : ''}
               </div>
             </div>
             <div className='flex flex-row gap-2 items-center'>
