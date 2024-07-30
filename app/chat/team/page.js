@@ -1,8 +1,9 @@
 'use client'
-import { Box, Button, CircularProgress, Grid, Modal, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Drawer, Grid, Modal, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import Apis from '@/public/Apis/Apis';
 import axios from 'axios';
+import Notifications from '@/public/assets/notifications/Notifications';
 
 const Page = () => {
 
@@ -14,6 +15,7 @@ const Page = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("");
+    const [openSideNav, setOpenSideNav] = useState(false);
     const handleOpenAddTeam = () => setOpenAddTeam(true);
 
     const handleCloseModal = () => {
@@ -135,10 +137,29 @@ const Page = () => {
 
     useEffect(() => {
         getTeam();
-    }, [])
+    }, []);
+
+    //opening side drawer of notifications
+    const openSideBar = () => {
+        setOpenSideNav(true);
+    }
+
+    const closeSideNav = () => {
+        setOpenSideNav(false);
+    }
 
     return (
-        <div className='w-full flex justify-center' style={{ height: '100vh', backgroundColor: "#050221" }}>
+        <div className='w-full flex flex-col items-center' style={{ height: '100vh', backgroundColor: "#050221" }}>
+
+            <div className='px-4 mt-6 flex w-full text-white flex-row justify-between'>
+                <div>
+                    My Team
+                </div>
+                <button onClick={openSideBar}>
+                    <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
+                </button>
+            </div>
+
             {
                 teamLoader ?
                     <CircularProgress size={30} /> :
@@ -380,6 +401,18 @@ const Page = () => {
                 </Modal>
             </div>
 
+            <div className='w-full'>
+                <Drawer open={openSideNav}
+                    onClose={() => setOpenSideNav(false)}
+                    anchor='right'
+                    sx={{ '& .MuiDrawer-paper': { width: '25%' } }}>
+                    <div className='pt-6 px-4 text-white' style={{ backgroundColor: "#0F0C2D", height: "100%" }}>
+                        <div>
+                            <Notifications closeNav={closeSideNav} />
+                        </div>
+                    </div>
+                </Drawer>
+            </div>
 
         </div>
     )

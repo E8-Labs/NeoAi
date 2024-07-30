@@ -26,12 +26,28 @@ const boxVariants = {
     opacity: 0,
   }),
 };
+//animation ends here
 
 const AnimatedForm = () => {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [appIdea, setAppIdea] = useState('');
+  const [audienceName, setAudienceName] = useState('');
+  const [appName, setAppName] = useState('');
+  const [founders, setFounders] = useState([]);
+  const [addFounder, setAddFounder] = useState(false);
+  const [founderName, setFounderName] = useState('');
+  const [founderEmail, setFounderEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [AddFounderError, setAddFounderError] = useState(false);
+  const [email, setUserEmail] = useState("");
+  const [password, setPassword] = useState('');
+  const [saveWorkLoader, setSaveWorkLoader] = useState(false);
+  const [showSaveWorkError, setShowSaveWorkError] = useState(false);
+  const [founderContinueLoader, setFounderContinueLoader] = useState(false);
 
+  //code for animation continue
   const handleContinue = () => {
     setDirection(1);
     setCurrentIndex((prevIndex) => prevIndex + 1);
@@ -53,23 +69,6 @@ const AnimatedForm = () => {
     color: 'white',
     // border: "2px solid red"
   }
-
-  //code for animation ends
-
-  const [appIdea, setAppIdea] = useState('');
-  const [audienceName, setAudienceName] = useState('');
-  const [appName, setAppName] = useState('');
-  const [founders, setFounders] = useState([]);
-  const [addFounder, setAddFounder] = useState(false);
-  const [founderName, setFounderName] = useState('');
-  const [founderEmail, setFounderEmail] = useState('');
-  const [role, setRole] = useState('');
-  const [AddFounderError, setAddFounderError] = useState(false);
-  const [email, setUserEmail] = useState("");
-  const [password, setPassword] = useState('');
-  const [saveWorkLoader, setSaveWorkLoader] = useState(false);
-  const [showSaveWorkError, setShowSaveWorkError] = useState(false);
-
   //code for adding and deleting founder
   const handleAddFounder = () => {
     setAddFounder(true);
@@ -191,44 +190,52 @@ const AnimatedForm = () => {
   }
 
   //create project when user already logged in
+  const handleFounderClick = () => {
+    const data = localStorage.getItem('User')
+    if (data) {
+      handleContinueFounderClick();
+    } else {
+      handleContinue();
+    }
+  };
 
-  //   const handleContinueFounderClick = async () => {
-  //     const data = localStorage.getItem('User');
-  //     if (data) {
-  //         const ParsedLocalData = JSON.parse(data);
-  //         const AuthToken = ParsedLocalData.data.token;
-  //         try {
-  //             // setLoader(true);
-  //             const response2 = await axios.post(Apis.CreateProject, {
-  //                 appIdea: appIdea,
-  //                 targettedAudience: audienceName,
-  //                 projectName: appName
-  //             }, {
-  //                 headers: {
-  //                     'Content-Type': 'application/json',
-  //                     'Authorization': 'Bearer ' + AuthToken
-  //                 }
-  //             });
-  //             if (response2.status === 200) {
-  //                 const Result = response2.data;
-  //                 localStorage.setItem('NewProject', JSON.stringify(Result));
-  //                 console.log('Response of API is:', Result);
-  //                 router.push('/chat');
-  //                 // router.push('/onboarding/founders');
-  //             } else {
-  //                 console.log('Response is not ok', response2);
-  //             }
-  //         } catch (error) {
-  //             console.error("Error occured in api is:", error);
-  //         } finally {
-  //             // setLoader(false);
-  //         }
-  //     } else {
-  //         localStorage.setItem("createProject", JSON.stringify(CreateProject1));
+  const handleContinueFounderClick = async () => {
+    const data = localStorage.getItem('User');
+    if (data) {
+      const ParsedLocalData = JSON.parse(data);
+      const AuthToken = ParsedLocalData.data.token;
+      try {
+        setFounderContinueLoader(true);
+        const response2 = await axios.post(Apis.CreateProject, {
+          appIdea: appIdea,
+          targettedAudience: audienceName,
+          projectName: appName
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + AuthToken
+          }
+        });
+        if (response2.status === 200) {
+          const Result = response2.data;
+          localStorage.setItem('NewProject', JSON.stringify(Result));
+          console.log('Response of API is:', Result);
+          router.push('/chat');
+          // router.push('/onboarding/founders');
+        } else {
+          console.log('Response is not ok', response2);
+        }
+      } catch (error) {
+        console.error("Error occured in api is:", error);
+      } finally {
+        setFounderContinueLoader(false);
+      }
+    } else {
+      localStorage.setItem("createProject", JSON.stringify(CreateProject1));
 
-  //         // router.push('/onboarding/savework');
-  //     }
-  // }
+      // router.push('/onboarding/savework');
+    }
+  }
 
 
 
@@ -469,60 +476,67 @@ const AnimatedForm = () => {
                 <p className='w-8/12' style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   Who are the founders involved?
                 </p>
-                <div className='w-4/12 flex justify-end items-start'>
-                  {
-                    founders.length > 0 && (
-                      <button onClick={handleAddFounder}>
-                        <div className="flex justify-center items-center p-4" style={{ backgroundColor: '#4011FA', borderRadius: 10 }}>
-                          {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
-                          Add Founder
-                        </div>
-                      </button>
-                    )
-                  }
-                </div>
+
               </div>
               {
                 founders.length ?
-                  <div className="mt-4" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {
-                      founders.map((item) => (
-                        <div key={item.id} className="flex justify-center mt-4">
-                          <div className="w-full px-4 py-6" style={{ border: '2px solid #ffffff35' }}>
-                            <div className="flex flex-row justify-between">
-                              <div className="flex flex-row gap-2 items-center">
-                                <p
-                                  style={{
-                                    fontWeight: '600', fontFamily: 'inter',
-                                    fontSize: '15px'
+                  <div className="mt-4 flex flex-col gap-8  w-full" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className='w-full'>
+                      {
+                        founders.map((item) => (
+                          <div key={item.id} className="flex justify-center w-full mt-4">
+                            <div className="w-full px-4 py-6" style={{ border: '2px solid #ffffff35' }}>
+                              <div className="flex flex-row justify-between">
+                                <div className="flex flex-row gap-2 items-center">
+                                  <p
+                                    style={{
+                                      fontWeight: '600', fontFamily: 'inter',
+                                      fontSize: '15px'
+                                    }}>
+                                    {item.founderName} ,
+                                  </p>
+                                  <p style={{
+                                    fontWeight: '400', fontFamily: 'inter',
+                                    fontSize: '13px', color: '#ffffff60'
                                   }}>
-                                  {item.founderName} ,
-                                </p>
-                                <p style={{
-                                  fontWeight: '400', fontFamily: 'inter',
-                                  fontSize: '13px', color: '#ffffff60'
-                                }}>
-                                  {item.role}
-                                </p>
+                                    {item.role}
+                                  </p>
+                                </div>
+                                <button onClick={() => handleDelfounder(item.id)}>
+                                  <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
+                                </button>
                               </div>
-                              <button onClick={() => handleDelfounder(item.id)}>
-                                <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
-                              </button>
+                              <p style={{
+                                fontWeight: '400', fontFamily: 'inter',
+                                fontSize: '13px', color: '#ffffff60'
+                              }}>
+                                {item.founderEmail}
+                              </p>
                             </div>
-                            <p style={{
-                              fontWeight: '400', fontFamily: 'inter',
-                              fontSize: '13px', color: '#ffffff60'
-                            }}>
-                              {item.founderEmail}
-                            </p>
                           </div>
-                        </div>
-                      ))
-                    }
+                        ))
+                      }
+                    </div>
+                    <div className='flex justify-center items-start'>
+                      {
+                        founders.length > 0 && (
+                          <button onClick={handleAddFounder}>
+                            <div className="flex justify-center items-center px-4 py-2"
+                              style={{
+                                backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
+                                fontWeight: '500', fontFamily: "inter"
+                              }}>
+                              {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                              Add Founder
+                            </div>
+                          </button>
+                        )
+                      }
+                    </div>
                   </div> :
-                  <div className="mt-6" style={{ height: '24vh', fontSize: 14, fontWeight: '600', color: '#ffffff' }}>
+                  <div className="mt-6" style={{ height: '24vh', fontSize: 10, fontWeight: '500', color: '#ffffff' }}>
                     <button onClick={handleAddFounder}>
-                      <div className="flex justify-center items-center p-4" style={{ backgroundColor: '#4011FA', borderRadius: 10 }}>
+                      <div className="flex justify-center items-center px-4 py-2" style={{ backgroundColor: '#4011FA', borderRadius: 4 }}>
                         {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
                         Add Founder
                       </div>
@@ -543,17 +557,23 @@ const AnimatedForm = () => {
                   // variant="disabled"
                   onClick={() => {
                     handleSaveEmail();
-                    handleContinue();
+                    handleFounderClick()
+                    // handleContinue();
+                    // handleContinueFounderClick();
                   }}
                   className="p-3 py-4"
                   style={{
                     height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
                     backgroundColor: '#4011FA', fontFamily: 'inter'
                   }}>
-                  Continue
+                  {
+                    founderContinueLoader ?
+                      <CircularProgress size={30} /> :
+                      "Continue"
+                  }
                 </Button> :
                   <Button
-                    onClick={handleContinue}
+                    // onClick={handleContinue}
                     className="p-3 py-4"
                     style={{
                       height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,

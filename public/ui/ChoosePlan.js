@@ -21,6 +21,9 @@ const ChoosePlan = () => {
     const [monthlyPlanId, setMonthlyPlanId] = useState("");
     const [yearlyPlanId, setYearlyPlanId] = useState("");
     const [getCardsLoader, setGetCardsLoader] = useState(false);
+    const [paymentLoader, setMakePaymentLoader] = useState(false);
+    const [sendApiData, setsendApiData] = useState("");
+    const [alpha, setalpha] = useState(null);
 
     const openAddCardModal = () => {
         setAddCard(true);
@@ -243,21 +246,7 @@ const ChoosePlan = () => {
     }, []);
 
     //subscription api call
-    const [paymentLoader, setMakePaymentLoader] = useState(false);
-    const [sendApiData, setsendApiData] = useState("");
     const handleMakePayment = async () => {
-        // let sendApiData = null;
-        // if (yearlyPlanId) {
-        //     const data = {
-        //         sub_type: yearlyPlanId
-        //     }
-        //     setsendApiData(data);
-        // } else if (monthlyPlanId) {
-        //     const data = {
-        //         sub_type: monthlyPlanId
-        //     }
-        //     setsendApiData(data);
-        // }
         let valueToSend = null;
 
         if (yearlyPlanId) {
@@ -275,7 +264,7 @@ const ChoosePlan = () => {
             const LD = localStorage.getItem('User');
             const LocalData = JSON.parse(LD);
             const AuthToken = LocalData.data.token;
-            const response = await axios.post(ApiPath, {sub_type : valueToSend}, {
+            const response = await axios.post(ApiPath, { sub_type: valueToSend }, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + AuthToken
@@ -286,11 +275,23 @@ const ChoosePlan = () => {
             }
             if (response.status === 200) {
                 setMakePaymentLoader(false);
+                localStorage.setItem('ProfileId', JSON.stringify(valueToSend))
             }
         } catch (error) {
             console.error("Error occured in api is :", error);
         }
     }
+
+    useEffect(() => {
+        const d = localStorage.getItem('ProfileId');
+        const c = JSON.parse(d);
+        const b = c
+        setalpha(b)
+    }, [])
+
+    useEffect(() => {
+        console.log('id get', alpha);
+    }, [handleMakePayment])
 
     // const addCardApi = async () => {
     //     const ApiPath = Apis.AddCard;
@@ -314,7 +315,7 @@ const ChoosePlan = () => {
                         <div style={{ fontSize: 20, fontWeight: '500', fontFamily: 'inter' }}>
                             Choose Plan
                         </div>
-                        <div className='flex flex-row gap-4'>
+                        <div className='flex flex-row gap-2'>
                             <Button
                                 onClick={monthlyPlanClick}
                                 className='px-4 py-3'
@@ -343,7 +344,7 @@ const ChoosePlan = () => {
                                 {
                                     yearlyPlans.map((item) => (
                                         <div key={item.id} className='w-full flex flex-row mt-4 mb-6 justify-between' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
-                                            <div className='flex flex-row gap-4'>
+                                            <div className='flex flex-row gap-2'>
                                                 <div>
                                                     {
                                                         monthlyPlanId ?
@@ -370,13 +371,16 @@ const ChoosePlan = () => {
                                                 <div style={{ fontWeight: '600', fontSize: 24, fontFamily: 'inter', textAlign: 'end' }}>
                                                     ${item.amount}
                                                 </div>
-                                                {/* <div className='flex items-center justify-center mt-3'
-                                                    style={{
-                                                        height: '35px', width: '96px', borderRadius: 1,
-                                                        backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                    }}>
-                                                    Current Plan
-                                                </div> */}
+                                                {/* {
+                                                    alpha ?
+                                                        <div className='flex items-center justify-center mt-3'
+                                                            style={{
+                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                            }}>
+                                                            Current Plan
+                                                        </div> : ""
+                                                } */}
                                             </div>
                                         </div>
                                     ))
@@ -393,7 +397,7 @@ const ChoosePlan = () => {
                                     {
                                         monthlyPlans.map((item) => (
                                             <div key={item.id} className='w-full flex flex-row justify-between mt-4' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
-                                                <div className='flex flex-row gap-4'>
+                                                <div className='flex flex-row gap-2'>
                                                     <div>
                                                         {
                                                             yearlyPlanId ?
@@ -460,7 +464,7 @@ const ChoosePlan = () => {
                                                 {
                                                     bankCards.map((item) => (
                                                         <div key={item.id} className='w-10/12 flex flex-row justify-between mt-4' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
-                                                            <div className='flex flex-row gap-4'>
+                                                            <div className='flex flex-row gap-2'>
                                                                 <div>
                                                                     <button onClick={() => handlePlanSel(item.id)}>
                                                                         <img src={selCard == item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />

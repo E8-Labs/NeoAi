@@ -28,6 +28,7 @@ const Chatsidenav = () => {
     const [updateLoader, setUpdateLoader] = useState(false);
     const [userProfiledata, setUserProfiledata] = useState("");
     const [userEmail, setUserEmail] = useState("");
+    const [getProfileData, setProfileData] = useState(null);
     const links1 = [
         {
             id: 1,
@@ -218,7 +219,42 @@ const Chatsidenav = () => {
         Router.push('/onboarding');
     }
 
-    const dashboardPath = "/chat"
+    const dashboardPath = "/chat";
+
+    //code for profiledata
+
+    // const formatEmail = (email) => {
+    //     if (email.length <= 10) {
+    //         return email;
+    //     }
+    //     return email.slice(0, 10) + "...";
+    // }
+
+    const [formattedEmail, setFormattedEmail] = useState('');
+    const [separateLetters, setSeparateLetters] = useState('');
+    useEffect(() => {
+        const formatEmail = (email) => {
+            if (email.length <= 15) {
+                return email;
+            }
+            else if (email.length > 15) {
+                return email.slice(0, 15) + "...";
+            }
+        };
+        const reduceemail = (email) => {
+            if (email.length) {
+                return email.slice(0, 1).toUpperCase()
+            }
+        }
+        const A = localStorage.getItem('User');
+        const B = JSON.parse(A);
+        const email = B.data.user.email;
+        setProfileData(B);
+        if (email) {
+            setFormattedEmail(formatEmail(email));
+            setSeparateLetters(reduceemail(email));
+        };
+    }, []);
 
 
     return (
@@ -232,11 +268,12 @@ const Chatsidenav = () => {
                 </div>
                 <Button
                     sx={{ textTransform: 'none' }}
-                    className='flex flex-row justify-canter items-center gap-4 mt-4'
+                    className='flex flex-row items-center justify-center mt-4'
                     variant='contained'
                     style={{
                         borderRadius: 5, width: '100%', display: 'flex',
-                        backgroundColor: '#4011FA', height: '50px', fontWeight: '500', fontSize: 15, fontFamily: 'inter'
+                        backgroundColor: '#4011FA', height: '50px', fontWeight: '500', fontSize: 15, fontFamily: 'inter',
+                        gap: 8
                     }}
                     onClick={() => {
                         // setUserChat([]);
@@ -279,11 +316,11 @@ const Chatsidenav = () => {
                             Settings
                         </button> */}
 
-                        <div className='mt-2'>
+                        <div className='mt-'>
                             {
                                 links1.map((link) => {
                                     return (
-                                        <div key={link.id}>
+                                        <div key={link.id} className='mt-4'>
                                             <Link className='text-white' sx={{ textDecoration: 'none' }}
                                                 key={link.name}
                                                 href={link.href}
@@ -326,18 +363,26 @@ const Chatsidenav = () => {
                     <div className='flex flex-row mt-3 gap-3 items-center w-2/12'>
                         <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center w-10/12 justify-between'>
                             <div className='flex flex-row gap-2 items-center'>
-                                {selectedImage ? <img
-                                    className=''
-                                    src={selectedImage} alt='Profile'
-                                    style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
+                                {selectedImage ?
                                     <img
                                         className=''
-                                        src='/assets/profile1.jpeg' alt='Profile'
-                                        style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />
+                                        src={selectedImage} alt='Profile'
+                                        style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
+                                    <div className='flex items-center justify-center'
+                                        style={{
+                                            height: '33px', width: '33px', borderRadius: "50%",
+                                            backgroundColor: "#4011FA", color: "white", fontWeight: "500", fontSize: 14
+                                        }}>
+                                        {separateLetters}
+                                    </div>
+                                    // <img
+                                    //     className=''
+                                    //     src='/assets/profile1.jpeg' alt='Profile'
+                                    //     style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />
                                 }
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
-                                    Hamza
+                                    {formattedEmail}
                                 </div>
                             </div>
                             <div className='flex items-center justify-center ' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>

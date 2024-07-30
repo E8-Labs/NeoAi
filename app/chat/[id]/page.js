@@ -7,8 +7,9 @@ import Apis from '@/public/Apis/Apis';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import styles from '../../Home.module.css';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { Box, Button, CircularProgress, Modal } from '@mui/material';
+import { Box, Button, CircularProgress, Drawer, Modal } from '@mui/material';
 import LogoPicker from '@/public/ui/LogoPicker';
+import Notifications from '@/public/assets/notifications/Notifications';
 
 const Page = () => {
   const fileInputRef = useRef(null);
@@ -24,15 +25,30 @@ const Page = () => {
   const [userChatMsg, setUserChatMessage] = useState("");
   const chatContainerRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [openShareApp, setOpenShareApp] = useState(false);
   const [copied, setCopied] = useState(false);
   // const [chatMessage, setChatMessage] = useState([]);
   const [pUpdateLoader, setPUpdateLoader] = useState(false);
   const [appName, setAppName] = useState("");
   const [SelectedLogo, setSelectedLogo] = useState(null);
-
+  const [openSideNav, setOpenSideNav] = useState(false);
+  const [updatedData, setUpdatedData] = useState(null);
 
   const handleOpenEditproject = () => setOpen(true);
   const handleCloseEditProject = () => setOpen(false);
+  const handleOpenShareproject = () => setOpenShareApp(true);
+  const handleCloseShareProject = () => setOpenShareApp(false);
+
+  const handleCopyLink = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl)
+      .then(() => {
+        alert('Link copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  }
 
   const handleLogoSelect = (file) => {
     // Handle the selected file here (e.g., upload to server, display preview, etc.)
@@ -89,18 +105,20 @@ const Page = () => {
           'Content-Type': 'multipart/form-data',
         }
       });
-      if (response) {
-        console.log("UpdateProject Api Response is", response);
-      }
+      // if (response) {
+      // }
       if (response.status === 200) {
         const PData = response.data.data;
+        setUpdatedData(PData);
+        console.log("UpdateProject Api Response is", PData);
         localStorage.setItem('projectDetails', JSON.stringify(PData));
         // setProjectDetails(PData);
+        // setOpenRefer(false);
+        // setOpenAddTeam(false);
+        // setOpenSupport(false);
+        // setOpenProfile(false);
         setOpen(false);
-        setOpenRefer(false);
-        setOpenAddTeam(false);
-        setOpenSupport(false);
-        setOpenProfile(false);
+        // window.location.reload();
       }
     } catch (error) {
       console.log("Error occured in update project api :", error);
@@ -125,6 +143,14 @@ const Page = () => {
   // useEffect(() => {
   //   console.log('Data of project details is :', projectData);
   // }, [])
+
+  const updatProj = () => {
+    setPUpdateLoader(true);
+    setTimeout(() => {
+      handleUpdateEditProject();
+      setAppName("");
+    }, 2000);
+  }
 
   useEffect(() => {
     const storedData = localStorage.getItem('projectDetails');
@@ -238,12 +264,16 @@ const Page = () => {
     const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
     const updatedChat = [...chat, newChat];
     setChat(updatedChat);
+    setUserChatMessage("");
+    setLoading(true);
 
     setTimeout(async () => {
-      setUserChatMessage("");
       if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      }
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
 
       const LSD = localStorage.getItem('User');
       const localStorageData = JSON.parse(LSD);
@@ -294,6 +324,8 @@ const Page = () => {
       } catch (error) {
         console.error('Error calling API:', error);
         return "Sorry, I can't respond right now.";
+      } finally {
+        setLoading(false);
       }
     }, 2000);
   };
@@ -468,7 +500,7 @@ const Page = () => {
 
   const fetchChatData = async (chatId) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const ApiPath = Apis.GetMessages
       const LSD = localStorage.getItem('User');
       const localStorageData = JSON.parse(LSD);
@@ -490,7 +522,7 @@ const Page = () => {
     } catch (error) {
       console.error('Error occurred in API call:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -505,12 +537,20 @@ const Page = () => {
     }
   };
 
+  //code for opening and closing drawer
+  const openSideBar = () => {
+    setOpenSideNav(true);
+  }
+
+  const closeSideNav = () => {
+    setOpenSideNav(false);
+  }
 
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
-        <div className='w-full mb-2 ms-4'>
-          <div className='flex flex-row items-center gap-12 mt-8'>
+        <div className='mb-2 px-4 flex flex-row justify-between items-center'>
+          <div className='flex flex-row items-center gap-12 mt-8' style={{ width: "fit-content" }}>
             <div className='flex flex-row gap-2 items-center text-white'>
               {/*
             SelectedLogo ?
@@ -519,7 +559,7 @@ const Page = () => {
 */}
               <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
               <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                {projectData ? projectData.projectName : ''}
+                {updatedData ? updatedData.projectName : projectData.projectName}
               </div>
             </div>
             <div className='flex flex-row gap-2 items-center'>
@@ -529,120 +569,127 @@ const Page = () => {
                 <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
               </button>
               <button
-              // onClick={handleOpenShareproject}
+                onClick={handleOpenShareproject}
               >
                 <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
               </button>
             </div>
           </div>
+          <button onClick={openSideBar}>
+            <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
+          </button>
         </div>
       </div>
       <div className='w-full flex justify-center'>
-        <div className='w-9/12' style={{ backgroundColor: '#ffffff10' }}>
-          <div style={{ overflow: 'auto', height: '90vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
-            {chat.map((message, index) => (
-              <div key={index}>
-                {
-                  message.senderType === 'user' ?
-                    <div className='flex justify-end w-full pe-4'>
-                      <div className='px-2 py-2'
-                        style={{
-                          color: 'white', textAlign: 'end', width: 'fit-content',
-                          maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
-                          borderBottomLeftRadius: 20
-                        }}>
-                        {message.content}
-                      </div>
-                    </div> :
-                    (
-                      <div>
-                        {getResponseView(message.content)}
-                      </div>
-                    )
-                }
-              </div>
-            ))}
+        <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "85vh" }}>
 
-          </div>
-
-
-
-
-
-
-          <div className='flex rounded-xl w-7/12 flex-row justify-between'
-            style={{ position: 'absolute', bottom: 0, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
-            <div className='w-full flex flex-col items-center'>
-              <div className='text-white w-full items-start px-4 py-2'>
-                {selectedFile ?
-                  <img src={previewURL} alt='Inputimg' className='rounded-md'
-                    style={{ height: '50px', width: '50px', resize: 'cover', objectFit: 'cover' }} /> : ''
-                }
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
-              <div className='flex flex-row gap-2 w-full pb-2'>
-                <button>
-                  <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
-                </button>
-                <button onClick={handleInputFileChange}>
-                  <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
-                </button>
-                <input
-                  type='text'
-                  placeholder='Message GPT'
-                  value={userChatMsg}
-                  onChange={(e) => {
-                    // setMessage(e.target.value)
-                    setUserChatMessage(e.target.value);
-                  }}
-                  onKeyDown={handleKeyDown}
-                  className='rounded w-full'
-                  style={{
-                    backgroundColor: 'transparent', fontWeight: '500', fontSize: 12, fontFamily: 'inter',
-                    color: 'white', paddingLeft: 10, outline: 'none', border: 'none'
-                  }}
-                />
-                <div
-                  style={{ textTransform: 'none', backgroundColor: '#00000000' }} disabled={loading}>
-                  <div
-                    className='flex items-center justify-center'
-                    style={{ height: '34px', width: '34px', borderRadius: '50%' }}>
-                    {loading ?
-                      <div
-                        className='flex items-center justify-center me-6'
-                        style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD40' }}>
-                        <Button variant='disabled' style={{ backgroundColor: '#00000000' }}>
-                          <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
-                        </Button>
+          <div className='w-full flex flex-col items-center' style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
+              {chat.map((message, index) => (
+                <div key={index}>
+                  {
+                    message.senderType === 'user' ?
+                      <div className='flex justify-end w-full pe-4'>
+                        <div className='px-2 py-2'
+                          style={{
+                            color: 'white', textAlign: 'end', width: 'fit-content',
+                            maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
+                            borderBottomLeftRadius: 20
+                          }}>
+                          {message.content}
+                        </div>
                       </div> :
-                      <div
-                        className='flex items-center justify-center me-6'
-                        style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD' }}>
-                        <button
-                          onClick={handleSubmit}
-                          className='flex justify-center items-center'
-                          style={{ height: '34px', width: '34px' }}>
-                          <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
-                        </button>
-                      </div>
-                    }
+                      (
+                        <div>
+                          {getResponseView(message.content)}
+                        </div>
+                      )
+                  }
+                </div>
+              ))}
+
+            </div>
+
+            {/* <div>
+              <input placeholder='Enter mail' style={{ backgroundColor: "#00000020" }} />
+            </div> */}
+
+
+
+
+            <div className='flex rounded-xl w-7/12 flex-row justify-between'
+              style={{ position: 'absolute', bottom: 0, paddingLeft: 10, marginBottom: 30, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
+              <div className='w-full flex flex-col items-center'>
+                <div className='text-white w-full items-start px-4 py-2'>
+                  {selectedFile ?
+                    <img src={previewURL} alt='Inputimg' className='rounded-md'
+                      style={{ height: '50px', width: '50px', resize: 'cover', objectFit: 'cover' }} /> : ''
+                  }
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+                <div className='flex flex-row gap-2 w-full pb-2'>
+                  <button>
+                    <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
+                  </button>
+                  <button onClick={handleInputFileChange}>
+                    <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
+                  </button>
+                  <input
+                    type='text'
+                    placeholder='Message GPT'
+                    value={userChatMsg}
+                    onChange={(e) => {
+                      // setMessage(e.target.value)
+                      setUserChatMessage(e.target.value);
+                    }}
+                    onKeyDown={handleKeyDown}
+                    className='rounded w-full'
+                    style={{
+                      backgroundColor: 'transparent', fontWeight: '500', fontSize: 12, fontFamily: 'inter',
+                      color: 'white', paddingLeft: 10, outline: 'none', border: 'none'
+                    }}
+                  />
+                  <div
+                    style={{ textTransform: 'none', backgroundColor: '#00000000' }} disabled={loading}>
+                    <div
+                      className='flex items-center justify-center'
+                      style={{ height: '34px', width: '34px', borderRadius: '50%' }}>
+                      {loading ?
+                        <div
+                          className='flex items-center justify-center me-6'
+                          style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD40' }}>
+                          <button
+                            // onClick={handleSubmit}
+                            disabled
+                            className='flex justify-center items-center'
+                            style={{ height: '34px', width: '34px' }}>
+                            <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
+                          </button>
+                        </div> :
+                        <div
+                          className='flex items-center justify-center me-6'
+                          style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD' }}>
+                          <button
+                            onClick={handleSubmit}
+                            className='flex justify-center items-center'
+                            style={{ height: '34px', width: '34px' }}>
+                            <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
+                          </button>
+                        </div>
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
+
             </div>
-
           </div>
-
-
-
-
-
 
         </div>
       </div>
@@ -678,7 +725,7 @@ const Page = () => {
                 <div className='w-10/12' style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
               </div>
               <div className='w-full flex flex-row justify-center mt-14 pb-4'>
-                <Button onClick={handleUpdateEditProject} sx={{ textTransform: 'none' }}
+                <Button onClick={updatProj} sx={{ textTransform: 'none' }}
                   style={{
                     height: '46px', width: '186px', backgroundColor: '#4011FA', fontWeight: '500',
                     fontSize: 15, color: 'white'
@@ -688,6 +735,52 @@ const Page = () => {
                       <CircularProgress size={30} /> :
                       "Save Changes"
                   }
+                </Button>
+              </div>
+            </div>
+          </Box>
+        </Modal>
+
+        <div className='w-full'>
+          <Drawer open={openSideNav}
+            onClose={() => setOpenSideNav(false)}
+            anchor='right'
+            sx={{ '& .MuiDrawer-paper': { width: '25%' } }}>
+            <div className='pt-6 px-4 text-white' style={{ backgroundColor: "#0F0C2D", height: "100%" }}>
+              <div>
+                <Notifications closeNav={closeSideNav} />
+              </div>
+            </div>
+          </Drawer>
+        </div>
+
+      </div>
+      <div>
+        <Modal
+          open={openShareApp}
+          onClose={handleCloseShareProject}
+        >
+          <Box sx={style}>
+            <div className='w-full'>
+              <button onClick={handleCloseShareProject} className='w-full flex flex-row justify-end pe-2'>
+                <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
+              </button>
+              <div className='flex flex-col items-start'>
+                <img src='/assets/applogo.png' alt='applogo' style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover' }} />
+              </div>
+              <div className='mt-4' style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: 'white' }}>
+                Changes
+              </div>
+              <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
+                I’m building <b style={{ color: 'white' }}>AirBnB</b>. Powered by Neo
+              </div>
+              <div className='w-full mt-8 pb-4'>
+                <Button onClick={handleCopyLink} sx={{ textTransform: 'none' }}
+                  style={{
+                    height: '35px', width: '97px', backgroundColor: '#2548FD', fontWeight: '400',
+                    fontSize: 12, color: 'white'
+                  }}>
+                  Copy Link
                 </Button>
               </div>
             </div>

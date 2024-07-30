@@ -90,6 +90,13 @@ const Notifications = ({ closeNav }) => {
                 </div>
             }
 
+            {
+                unreadNot &&
+                <div className='text-white mt-4'>
+                    No Notification
+                </div>
+            }
+
         </div>
     )
 }

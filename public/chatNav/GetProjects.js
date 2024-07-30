@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Apis from '../Apis/Apis';
 import axios from 'axios';
 import { Box, Link } from '@mui/material';
+import { usePathname } from 'next/navigation';
 
 const GetProjects = () => {
 
     const [myProjects, setMyProjects] = useState([]);
+    const [focusedLink, setFocusedLink] = useState(null);
 
     const getProjects = async () => {
         try {
@@ -47,6 +49,14 @@ const GetProjects = () => {
     const handleLinkClick = (item) => {
         console.log('ITem data sending is', item);
         localStorage.setItem('projectDetails', JSON.stringify(item));
+    };
+
+    const handleFocusClick = (id) => {
+        setFocusedLink(id);
+    }
+
+    const handleBlurClick = () => {
+        setFocusedLink(null);
     }
 
     return (
@@ -56,20 +66,22 @@ const GetProjects = () => {
                     <div>
                         {
                             myProjects.map((item) => (
-                                <div key={item.id} className='w-full flex flex-row items-center mt-6' style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
+                                <div key={item.id} className='w-full flex flex-row items-center mt-6'
+                                    style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
                                     <Link sx={{ textDecoration: 'none' }}
-                                        className='w-8/12 text-white items-start p-3'
+                                        className='w-9/12 text-white items-start p-3'
                                         href={`/chat/${item.chat.id}`}>
                                         {/* <button className='w-full text-start text-white'> */}
                                         <Box
                                             sx={{ textDecoration: 'none' }}
-                                            className='w-8/12 text-white items-start p-3'
+                                            className='w-full text-white items-start'
                                             onClick={() => handleLinkClick(item)}
                                         >
                                             {item.projectName ? item.projectName : "App Name"}
-                                        </Box>                                 {/* </button> */}
+                                        </Box>
+                                        {/* </button> */}
                                     </Link>
-                                    <div className='w-4/12 p-3 flex justify-end'>
+                                    <div className='w-3/12 p-3 flex justify-end'>
                                         <button>
                                             <img src='/assets/edit.png' alt='edit' style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover' }} />
                                         </button>

@@ -276,8 +276,11 @@ const Page = () => {
         e.preventDefault();
         setLoading(true);
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        };
 
 
         const newChat = { role: 'user', content: message };
@@ -1138,7 +1141,7 @@ const Page = () => {
                                             </div>
                                         ) : (
                                             <div style={{ width: '100%' }}>
-                                                <div style={{ overflow: 'auto', height: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                                <div style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }} ref={chatContainerRef}>
                                                     {userChat.map((chat, index) => (
                                                         <div key={index} style={{ gap: 20 }}>
                                                             {
