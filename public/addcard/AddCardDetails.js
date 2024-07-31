@@ -45,7 +45,7 @@ const AddCardDetails = ({ handleClose }) => {
         if (e && e.preventDefault) {
             e.preventDefault();
         }
-    
+
         // Close the modal
         // handleClose4(e);
         // return
@@ -102,7 +102,10 @@ const AddCardDetails = ({ handleClose }) => {
 
     return (
         <div style={{ width: '100%' }}>
-            <div>
+            <div style={{ fontSize: 18, fontWeight: "500", fontFamily: "inter" }}>
+                Add Card
+            </div>
+            <div className='mt-4'>
                 <CardNumberElement
                     options={elementOptions}
                     style={{
@@ -110,7 +113,7 @@ const AddCardDetails = ({ handleClose }) => {
                         color: 'white', fontSize: '22px', border: '1px solid blue', borderRadius: '4px'
                     }} />
             </div>
-            <div className='flex flex-row gap-3 w-full'>
+            <div className='flex flex-row gap-2 w-full'>
                 <div className='mt-2 w-6/12'>
                     <CardExpiryElement
                         options={elementOptions}

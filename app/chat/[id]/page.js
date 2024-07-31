@@ -19,7 +19,7 @@ const Page = () => {
   const [projectData, setProjectData] = useState(null);
   console.log("Dta ", id)
   const [chat, setChat] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [userChatMsg, setUserChatMessage] = useState("");
@@ -33,6 +33,7 @@ const Page = () => {
   const [SelectedLogo, setSelectedLogo] = useState(null);
   const [openSideNav, setOpenSideNav] = useState(false);
   const [updatedData, setUpdatedData] = useState(null);
+  const [testLoader, setTestLoader] = useState(false)
 
   const handleOpenEditproject = () => setOpen(true);
   const handleCloseEditProject = () => setOpen(false);
@@ -112,11 +113,8 @@ const Page = () => {
         setUpdatedData(PData);
         console.log("UpdateProject Api Response is", PData);
         localStorage.setItem('projectDetails', JSON.stringify(PData));
-        // setProjectDetails(PData);
-        // setOpenRefer(false);
-        // setOpenAddTeam(false);
-        // setOpenSupport(false);
-        // setOpenProfile(false);
+        const event = new CustomEvent('apiSuccess', { detail: 'Api call was successfull' });
+        document.dispatchEvent(event);
         setOpen(false);
         // window.location.reload();
       }
@@ -155,6 +153,7 @@ const Page = () => {
   useEffect(() => {
     const storedData = localStorage.getItem('projectDetails');
     if (storedData) {
+      console.log("Data recieved from local of project details is", storedData);
       setProjectData(JSON.parse(storedData));
     }
   }, []);
@@ -413,7 +412,9 @@ const Page = () => {
   }
   function getResponseView(text) {
     // return <p className={styles.simpleText}>{formatInlineText(text)}</p>;
-    let separatedContent = separateTextAndCode(text)
+    let separatedContent = separateTextAndCode(text);
+
+    // setTestLoader(true);
 
     return (
       <div className='flex mt-8 mb-8' style={{ width: "80%" }}>
@@ -480,6 +481,7 @@ const Page = () => {
         </div>
       </div>
     );
+    setTestLoader(false);
   }
 
 
@@ -552,14 +554,22 @@ const Page = () => {
         <div className='mb-2 px-4 flex flex-row justify-between items-center'>
           <div className='flex flex-row items-center gap-12 mt-8' style={{ width: "fit-content" }}>
             <div className='flex flex-row gap-2 items-center text-white'>
-              {/*
-            SelectedLogo ?
-              <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
-              <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-*/}
+
+              {/* {projectData ?
+                <img src={projectData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
+                <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+              } */}
               <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
               <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                {updatedData ? updatedData.projectName : projectData.projectName}
+                {
+                  updatedData ?
+                    <div>
+                      {updatedData ? updatedData.projectName : ""}
+                    </div> :
+                    <div>
+                      {projectData ? projectData.projectName : ""}
+                    </div>
+                }
               </div>
             </div>
             <div className='flex flex-row gap-2 items-center'>
@@ -584,7 +594,7 @@ const Page = () => {
         <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "85vh" }}>
 
           <div className='w-full flex flex-col items-center' style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
+            <div className='w-full' style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
               {chat.map((message, index) => (
                 <div key={index}>
                   {
@@ -600,8 +610,16 @@ const Page = () => {
                         </div>
                       </div> :
                       (
-                        <div>
-                          {getResponseView(message.content)}
+                        <div className='ps-2'>
+                          {
+                            loading ?
+                              <div className='text-white'>
+                                Loading ....
+                              </div> :
+                              <div>
+                                {getResponseView(message.content)}
+                              </div>
+                          }
                         </div>
                       )
                   }
@@ -613,9 +631,6 @@ const Page = () => {
             {/* <div>
               <input placeholder='Enter mail' style={{ backgroundColor: "#00000020" }} />
             </div> */}
-
-
-
 
             <div className='flex rounded-xl w-7/12 flex-row justify-between'
               style={{ position: 'absolute', bottom: 0, paddingLeft: 10, marginBottom: 30, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
@@ -656,7 +671,7 @@ const Page = () => {
                     }}
                   />
                   <div
-                    style={{ textTransform: 'none', backgroundColor: '#00000000' }} disabled={loading}>
+                    style={{ textTransform: 'none', backgroundColor: '#00000000' }}>
                     <div
                       className='flex items-center justify-center'
                       style={{ height: '34px', width: '34px', borderRadius: '50%' }}>

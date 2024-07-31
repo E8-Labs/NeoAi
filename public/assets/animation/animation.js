@@ -557,7 +557,7 @@ const AnimatedForm = () => {
                   // variant="disabled"
                   onClick={() => {
                     handleSaveEmail();
-                    handleFounderClick()
+                    handleFounderClick();
                     // handleContinue();
                     // handleContinueFounderClick();
                   }}

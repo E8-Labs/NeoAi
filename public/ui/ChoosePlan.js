@@ -21,9 +21,12 @@ const ChoosePlan = () => {
     const [monthlyPlanId, setMonthlyPlanId] = useState("");
     const [yearlyPlanId, setYearlyPlanId] = useState("");
     const [getCardsLoader, setGetCardsLoader] = useState(false);
-    const [paymentLoader, setMakePaymentLoader] = useState(false);
+    const [makePaymentLoader, setMakePaymentLoader] = useState(false);
     const [sendApiData, setsendApiData] = useState("");
-    const [alpha, setalpha] = useState(null);
+    const [currentPlanCheck, setCurrentPlanCheck] = useState(false);
+    const [yearlyPlanCheck, setYearlyPlanCheck] = useState(false);
+    const [updatedResponse, setUpdatedResponse] = useState('');
+    const [bankCards, setBankCards] = useState([]);
 
     const openAddCardModal = () => {
         setAddCard(true);
@@ -31,8 +34,39 @@ const ChoosePlan = () => {
 
     const handleClose = () => {
         setAddCard(false);
-        getCards()
-    }
+        getCards();
+    };
+
+    //code for get profile
+    // const getProfile = async () => {
+    //     const ApiPath = Apis.GetProfile;
+    //     const L = localStorage.getItem('User');
+    //     const U = JSON.parse(L);
+    //     const AuthToken = U.data.token;
+    //     // console.log('Auth token is', U);
+    //     const response = await axios.get(ApiPath, {
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': 'Bearer ' + AuthToken
+    //         }
+    //     });
+    //     if (response) {
+    //         // console.log('Response of getprofile api is', response.data.data);
+    //     }
+    //     if (response.status === !null) {
+    //         const Result = response.data.data;
+    //         const Plan = Result.plan.subscriptionType;
+    //         if (Plan === "monthly") {
+    //             setCurrentPlanCheck(true);
+    //         } else {
+    //             setCurrentPlanCheck(false);
+    //         }
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     getProfile()
+    // }, [])
 
     const radioInActive = '/assets/Radio.png';
     const radioActive = '/assets/activeRadio.png';
@@ -93,33 +127,6 @@ const ChoosePlan = () => {
     ]
 
     //cards array
-    const [bankCards, setBankCards] = useState([
-        // {
-        //     id: 1,
-        //     cardNumber: '3201',
-        //     cardName: 'Visa Card',
-        // },
-        // {
-        //     id: 2,
-        //     cardNumber: '3202',
-        //     cardName: 'Meezan Card',
-        // },
-        // {
-        //     id: 3,
-        //     cardNumber: '3203',
-        //     cardName: 'HBL Card',
-        // },
-        // {
-        //     id: 4,
-        //     cardNumber: '3202',
-        //     cardName: 'Meezan Card',
-        // },
-        // {
-        //     id: 5,
-        //     cardNumber: '3202',
-        //     cardName: 'Meezan Card',
-        // }
-    ])
 
     const [monthlyPlans, setMonthlyPlans] = useState([
         {
@@ -128,12 +135,6 @@ const ChoosePlan = () => {
             description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
             amount: '19.99'
         },
-        // {
-        //     id: 2,
-        //     title: 'Task Manager',
-        //     description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-        //     amount: '497'
-        // }
     ])
 
     const [yearlyPlans, setYearlyPlans] = useState([
@@ -143,24 +144,6 @@ const ChoosePlan = () => {
             description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
             amount: '179.99'
         },
-        // {
-        //     id: 2,
-        //     title: 'Task Manager',
-        //     description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-        //     amount: '799'
-        // },
-        // {
-        //     id: 3,
-        //     title: 'Task Manager',
-        //     description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-        //     amount: '899'
-        // },
-        // {
-        //     id: 4,
-        //     title: 'Task Manager4',
-        //     description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-        //     amount: '899'
-        // }
     ])
 
 
@@ -180,46 +163,16 @@ const ChoosePlan = () => {
         color: '#ffffff'
     };
 
-    const handleAddNewCard = () => {
-        if (cardNumber && expiryDate) {
-            setAddCard(false);
-            const newCard = {
-                id: bankCards.length + 1,
-                cardNumber,
-                cardName: 'Visa Card'
-            };
-            setBankCards([...bankCards, newCard]);
-            setCardNumber();
-            setCVV();
-            setExpiryDate();
-        }
-    }
-
-    //code for add card api
-
-    const ADDNEWCARD = async () => {
-        // const 
-        const response = await axios.post()
-    }
-
-    //code for removing scrollIndicator
-    <style>
-        {`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;  /* Chrome, Safari, and Opera */
-        }
-      `}
-    </style>
 
     //code for getting card api call
 
     const getCards = async () => {
-        // const ApiPath = Apis.GetCards;
-        const ApiPath = "http://localhost:8005/api/user/list_cards";
+        const ApiPath = Apis.GetCards;
+        // const ApiPath = "http://localhost:8005/api/user/list_cards";
         const LocalData = localStorage.getItem('User');
         const D = JSON.parse(LocalData);
         const AuthToken = D.data.token;
-        console.log("Authtoken for get cards is :", AuthToken);
+        // console.log("Authtoken for get cards is :", AuthToken);
         try {
             setGetCardsLoader(true)
             const response = await axios.get(ApiPath, {
@@ -229,10 +182,15 @@ const ChoosePlan = () => {
                 }
             });
             if (response) {
-                console.log("Response for gat cards api is :", response);
+                console.log("Response for gat cards api is :", response.data);
             }
             if (response.status === 200) {
-                setBankCards(response.data.data);
+                const data = response.data;
+                if (data === null) {
+                    console.log('Cards response is null');
+                } else {
+                    setBankCards(response.data.data);
+                }
             }
         } catch (error) {
             console.log("Error occured in api is", error);
@@ -247,6 +205,7 @@ const ChoosePlan = () => {
 
     //subscription api call
     const handleMakePayment = async () => {
+        setMakePaymentLoader(true);
         let valueToSend = null;
 
         if (yearlyPlanId) {
@@ -254,8 +213,6 @@ const ChoosePlan = () => {
         } else if (monthlyPlanId) {
             valueToSend = monthlyPlanId;
         }
-        setMakePaymentLoader(true);
-        console.log("Data2 sending in make payment is :", valueToSend);
         // return
         try {
             const ApiPath = Apis.SubscribePlan;
@@ -263,7 +220,9 @@ const ChoosePlan = () => {
             // return
             const LD = localStorage.getItem('User');
             const LocalData = JSON.parse(LD);
+            console.log('Testdataresieved', LocalData);
             const AuthToken = LocalData.data.token;
+            // return
             const response = await axios.post(ApiPath, { sub_type: valueToSend }, {
                 headers: {
                     "Content-Type": "application/json",
@@ -274,38 +233,46 @@ const ChoosePlan = () => {
                 console.log("Response of subscription api is :", response);
             }
             if (response.status === 200) {
+                // console.log('dta test', response.data);
+                const newUser = response.data.data;
+                console.log('changing data', newUser);
+                if (LocalData) {
+                    LocalData.data.user = newUser;
+                    // console.log('Testing', LocalData.data.data);
+                    localStorage.setItem('User', JSON.stringify(LocalData));
+                }
                 setMakePaymentLoader(false);
-                localStorage.setItem('ProfileId', JSON.stringify(valueToSend))
+                // getProfile();
             }
         } catch (error) {
             console.error("Error occured in api is :", error);
+        } finally {
+            const LocalDataUpdated = localStorage.getItem('User');
+            const result = await JSON.parse(LocalDataUpdated);
+            setUpdatedResponse(result);
         }
     }
 
     useEffect(() => {
-        const d = localStorage.getItem('ProfileId');
-        const c = JSON.parse(d);
-        const b = c
-        setalpha(b)
-    }, [])
-
-    useEffect(() => {
-        console.log('id get', alpha);
-    }, [handleMakePayment])
-
-    // const addCardApi = async () => {
-    //     const ApiPath = Apis.AddCard;
-    //     const LocalData = localStorage.getItem('User');
-    //     const D = JSON.parse(LocalData);
-    //     const AuthToken = D.data.token;
-    //     console.log("Authtoken for get cards is :", AuthToken);
-    //     const response = await axios.get(ApiPath, cardNumber, {
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Bearer ' + AuthToken
-    //         }
-    //     })
-    // }
+        const S = localStorage.getItem('User');
+        // setCurrentPlanCheck(true)
+        const response = JSON.parse(S);
+        if (response) {
+            console.log('response of local is', response);
+            if (response.data.user.plan === null) {
+                console.log('plan is null');
+            } else {
+                if (response.data.user.plan.subscriptionType === "monthly") {
+                    console.log('Test 1 clear');
+                    setYearlyPlanCheck(false);
+                    setCurrentPlanCheck(true);
+                } else {
+                    setCurrentPlanCheck(false);
+                    setYearlyPlanCheck(true);
+                }
+            }
+        }
+    }, [updatedResponse])
 
     return (
         <div className='w-full flex flex-col items-center'>
@@ -371,16 +338,16 @@ const ChoosePlan = () => {
                                                 <div style={{ fontWeight: '600', fontSize: 24, fontFamily: 'inter', textAlign: 'end' }}>
                                                     ${item.amount}
                                                 </div>
-                                                {/* {
-                                                    alpha ?
-                                                        <div className='flex items-center justify-center mt-3'
-                                                            style={{
-                                                                height: '35px', width: '96px', borderRadius: 1,
-                                                                backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                            }}>
-                                                            Current Plan
-                                                        </div> : ""
-                                                } */}
+                                                {
+                                                    yearlyPlanCheck &&
+                                                    <div className='flex items-center justify-center mt-3'
+                                                        style={{
+                                                            height: '35px', width: '96px', borderRadius: 1,
+                                                            backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                        }}>
+                                                        Current Plan
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                     ))
@@ -423,13 +390,16 @@ const ChoosePlan = () => {
                                                     <div style={{ fontWeight: '600', fontSize: 24, fontFamily: 'inter', textAlign: 'end' }}>
                                                         ${item.amount}
                                                     </div>
-                                                    {/* <div className='flex items-center justify-center mt-3'
-                                                        style={{
-                                                            height: '35px', width: '96px', borderRadius: 1,
-                                                            backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                        }}>
-                                                        Current Plan
-                                                    </div> */}
+                                                    {
+                                                        currentPlanCheck &&
+                                                        <div className='flex items-center justify-center mt-3'
+                                                            style={{
+                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                backgroundColor: '#00EE7C10', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                            }}>
+                                                            Current Plan
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         ))
@@ -459,7 +429,7 @@ const ChoosePlan = () => {
                                 </div> :
                                 <div>
                                     {
-                                        bankCards.length !== 0 ?
+                                        bankCards ?
                                             <div className='w-full mt-12 pb-4' style={{ overflow: 'auto', maxHeight: '42vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                                 {
                                                     bankCards.map((item) => (
@@ -488,7 +458,7 @@ const ChoosePlan = () => {
                                                     ))
                                                 }
                                             </div> :
-                                            <div className='w-full mt-12 py-3 rounded flex items-center justify-center' style={{ backgroundColor: '#2548FD30' }}>
+                                            <div className='w-full mt-12 py-3 rounded flex items-center justify-center'>
                                                 No payment source
                                             </div>
                                     }
@@ -496,35 +466,40 @@ const ChoosePlan = () => {
                         }
                     </div>
                     {
-                        bankCards.length > 0 && (
-                            <div>
-                                {
-                                    paymentLoader ?
-                                        <div className='w-full flex justify-center'>
-                                            <CircularProgress size={30} />
-                                        </div> :
-                                        <div className='w-full'>
-                                            {
-                                                selCard ?
-                                                    <Button onClick={handleMakePayment} className='w-10/12 flex items-center justify-center mt-6'
-                                                        style={{
-                                                            height: '56px', backgroundColor: '#2548FD', color: 'white',
-                                                            fontSize: 15, fontWeight: '500', fontFamily: 'inter'
-                                                        }}>
-                                                        Make Payment
-                                                    </Button> :
-                                                    <Button className='w-10/12 flex items-center justify-center mt-6' variant='disabled'
-                                                        style={{
-                                                            height: '56px', backgroundColor: '#2548FD50', color: 'white',
-                                                            fontSize: 15, fontWeight: '500', fontFamily: 'inter'
-                                                        }}>
-                                                        Make Payment
-                                                    </Button>
-                                            }
-                                        </div>
-                                }
-                            </div>
-                        )
+                        bankCards ?
+                           <div>
+                                <div className='w-full'>
+                                    {
+                                        selCard ?
+
+                                            <div>
+                                                {
+                                                    makePaymentLoader ?
+                                                        <div className='w-10/12 flex items-center justify-center mt-6'>
+                                                            <CircularProgress size={30} />
+                                                        </div> :
+                                                        <Button onClick={handleMakePayment} className='w-10/12 flex items-center justify-center mt-6'
+                                                            style={{
+                                                                height: '56px', backgroundColor: '#2548FD', color: 'white',
+                                                                fontSize: 15, fontWeight: '500', fontFamily: 'inter'
+                                                            }}>
+                                                            Make Payment
+                                                        </Button>
+                                                }
+                                            </div>
+
+                                            :
+                                            <Button variant='disabled' className='w-10/12 flex items-center justify-center mt-6'
+                                                style={{
+                                                    height: '56px', backgroundColor: '#2548FD50', color: 'white',
+                                                    fontSize: 15, fontWeight: '500', fontFamily: 'inter'
+                                                }}>
+                                                Make Payment
+                                            </Button>
+                                    }
+                                </div>
+                            </div> :
+                            ""
                     }
                 </div>
             </div>
@@ -571,170 +546,6 @@ const ChoosePlan = () => {
                     <div>
                         <AddCard onClose={handleClose} />
                     </div>
-
-                    {/* <div className='text-white'>
-                        <div className='w-full flex flex-row justify-end'>
-                            <button onClick={handleClose}>
-                                <img src='/assets/cross2.png' alt='cross'
-                                    style={{ height: '10px', width: '10px', resize: 'cover' }} />
-                            </button>
-                        </div>
-                        <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter' }}>
-                            Add Card
-                        </div>
-                        <div>
-                            <TextField id="standard-basic" label="Card Number" variant="standard"
-                                type='number'
-                                placeholder="Card Number"
-                                value={cardNumber}
-                                onChange={(e) => {
-                                    setCardNumber(e.target.value);
-                                    // setAddFounderError(false);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: 'transparent', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    '& input[type=number]': {
-                                        '-moz-appearance': 'textfield',
-                                    },
-                                    '& input[type=number]::-webkit-outer-spin-button': {
-                                        '-webkit-appearance': 'none',
-                                        margin: 0,
-                                    },
-                                    '& input[type=number]::-webkit-inner-spin-button': {
-                                        '-webkit-appearance': 'none',
-                                        margin: 0,
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <div className='w-full flex flex-row gap-6'>
-                                <TextField id="standard-basic" label="Expiry Date" variant="standard"
-                                    type='number'
-                                    placeholder="Expiry Date"
-                                    value={expiryDate}
-                                    onChange={(e) => {
-                                        setExpiryDate(e.target.value);
-                                        // setAddFounderError(false);
-                                    }}
-                                    sx={{
-                                        width: '50%', // Change the width here
-                                        '& .MuiInputBase-root': {
-                                            color: 'white', // Change the text color here
-                                            fontWeight: '400',
-                                            fontSize: 13,
-                                            fontFamily: 'inter'
-                                        },
-                                        '& .MuiInput-underline:before': {
-                                            borderBottomColor: '#ffffff60', // Change the underline color here
-                                        },
-                                        '& .MuiInput-underline:hover:before': {
-                                            borderBottomColor: 'transparent', // Change the underline color on hover here
-                                        },
-                                        '& .MuiInput-underline:after': {
-                                            borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                        },
-                                        '& .MuiFormLabel-root': {
-                                            color: '#ffffff60', // Change the label color here
-                                        },
-                                        '& .MuiFormLabel-root.Mui-focused': {
-                                            color: '#ffffff', // Change the label color when focused
-                                        },
-                                        '& input[type=number]': {
-                                            '-moz-appearance': 'textfield',
-                                        },
-                                        '& input[type=number]::-webkit-outer-spin-button': {
-                                            '-webkit-appearance': 'none',
-                                            margin: 0,
-                                        },
-                                        '& input[type=number]::-webkit-inner-spin-button': {
-                                            '-webkit-appearance': 'none',
-                                            margin: 0,
-                                        },
-                                        marginTop: 2
-                                    }}
-                                />
-                                <TextField
-                                    id="standard-basic"
-                                    label="CVV"
-                                    variant="standard"
-                                    type='number'
-                                    placeholder="CVV"
-                                    value={CVV}
-                                    onChange={(e) => {
-                                        setCVV(e.target.value);
-                                        // setAddFounderError(false);
-                                    }}
-                                    sx={{
-                                        width: '50%', // Change the width here
-                                        '& .MuiInputBase-root': {
-                                            color: 'white', // Change the text color here
-                                            fontWeight: '400',
-                                            fontSize: 13,
-                                            fontFamily: 'inter'
-                                        },
-                                        '& .MuiInput-underline:before': {
-                                            borderBottomColor: '#ffffff60', // Change the underline color here
-                                        },
-                                        '& .MuiInput-underline:hover:before': {
-                                            borderBottomColor: 'transparent', // Change the underline color on hover here
-                                        },
-                                        '& .MuiInput-underline:after': {
-                                            borderBottomColor: 'white', // Change the underline color on hover here
-                                        },
-                                        '& .MuiFormLabel-root': {
-                                            color: '#ffffff60', // Change the label color here
-                                        },
-                                        '& .MuiFormLabel-root.Mui-focused': {
-                                            color: '#ffffff', // Change the label color when focused
-                                        },
-                                        marginTop: 2,
-                                        '& input[type=number]': {
-                                            '-moz-appearance': 'textfield',
-                                        },
-                                        '& input[type=number]::-webkit-outer-spin-button': {
-                                            '-webkit-appearance': 'none',
-                                            margin: 0,
-                                        },
-                                        '& input[type=number]::-webkit-inner-spin-button': {
-                                            '-webkit-appearance': 'none',
-                                            margin: 0,
-                                        },
-                                    }}
-                                />
-                            </div>
-                            <Button className='mt-12 w-full'
-                                onClick={handleAddNewCard}
-                                style={{
-                                    backgroundColor: '#2548FD',
-                                    color: 'white',
-                                    fontSize: 12,
-                                    fontFamily: 'inter'
-                                }}>
-                                Add Card
-                            </Button>
-                        </div>
-                    </div> */}
                 </Box>
             </Modal>
         </div>

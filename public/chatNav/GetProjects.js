@@ -46,6 +46,20 @@ const GetProjects = () => {
         getProjects();
     }, []);
 
+    useEffect(() => {
+        const handleApiSuccess = (event) => {
+            console.log("event call working");
+            getProjects();
+        };
+
+        document.addEventListener('apiSuccess', handleApiSuccess);
+
+        // Cleanup listener on component unmount
+        return () => {
+            document.removeEventListener('apiSuccess', handleApiSuccess);
+        };
+    }, []);
+
     const handleLinkClick = (item) => {
         console.log('ITem data sending is', item);
         localStorage.setItem('projectDetails', JSON.stringify(item));

@@ -99,7 +99,7 @@ const Page = () => {
     const [copied, setCopied] = useState(false);
     const [boatReplyLoader, setBotReplyLoader] = useState(false);
     const chatContainerRef = useRef(null);
-    const [projectDetails, setProjectDetails] = useState("");
+    const [projectDetails, setProjectDetails] = useState(null);
     const [pUpdateLoader, setPUpdateLoader] = useState(false);
 
 
@@ -324,42 +324,6 @@ const Page = () => {
         }
     };
 
-    //code for calling get projects api
-    // const getProjects = async () => {
-    //     try {
-    //         setMyProjectsLoader(true)
-    //         const ApiPath = Apis.GetProjects;
-    //         const LSD = localStorage.getItem('User');
-    //         const localStorageData = JSON.parse(LSD);
-    //         console.log('Data from localstorage fopr get project is :', localStorageData);
-    //         const AuthToken = localStorageData.data.token;
-    //         console.log('Auth token is', AuthToken);
-    //         const response = await axios.get(ApiPath, {
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': 'Bearer ' + AuthToken
-    //             }
-    //         });
-    //         if (response) {
-    //             console.log('Response is', response);
-    //         }
-    //         if (response.status === 200) {
-    //             console.log('Response of api is', response.data);
-    //             setMyProjects(response.data.data)
-    //         } else if (!response.status === 200) {
-    //             console.log('Response is not ok due to:', response);
-    //         }
-    //     } catch (error) {
-    //         console.log('error occured is', error);
-    //     } finally {
-    //         setMyProjectsLoader(false)
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     getProjects();
-    // }, []);
-
     //code for selecting previous chat
     const handleChatSelect = (index) => {
         setActiveChat(index);
@@ -580,7 +544,6 @@ const Page = () => {
             if (response.status === 200) {
                 const PData = response.data.data;
                 localStorage.setItem('ProjectDetails', JSON.stringify(PData));
-                setProjectDetails(PData);
                 setOpen(false);
                 setOpenRefer(false);
                 setOpenAddTeam(false);
@@ -595,6 +558,13 @@ const Page = () => {
 
 
     };
+    
+    useEffect(() => {
+        const L = localStorage.getItem('projectDetails');
+        const D = JSON.parse(L);
+        setProjectDetails(D);
+        console.log('Data recieved is', D);
+    }, [])
 
     const style = {
         position: 'absolute',
@@ -812,7 +782,7 @@ const Page = () => {
                                                     <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
                                             }
                                             <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                                                {appName ?
+                                                {projectDetails ?
                                                     <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
                                                         {projectDetails.projectName}
                                                     </div> :
@@ -830,23 +800,6 @@ const Page = () => {
                                             </button>
                                         </div>
                                     </div>
-                                </div>
-                            }
-                            {openPlan &&
-                                <div className='flex items-center w-11/12'
-                                    style={{ height: '50px', fontSize: 20, fontWeight: '500', fontFamily: 'inter' }}>
-                                    Subscription Plan
-                                </div>
-                            }
-                            {
-                                openSetting &&
-                                <div className='flex items-center w-11/12' style={{ height: '50px' }}>
-                                    Settings
-                                </div>
-                            }
-                            {openTeam &&
-                                <div className='flex items-center w-11/12' style={{ height: '50px' }}>
-                                    My Team
                                 </div>
                             }
                         </div>
