@@ -105,6 +105,8 @@ const Page = () => {
     const [active, setActive] = useState(0);
     const controls = [useAnimation(), useAnimation(), useAnimation()];
     const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
+    const [projDet, showProjDet] = useState(false);
+    const [updatedData, setUpdatedData] = useState(null);
 
 
 
@@ -129,6 +131,9 @@ const Page = () => {
             const projectChatId = JSON.parse(NewProject);
             console.log('New project from local storage is :', projectChatId.data.chat.id);
             setChatId(projectChatId.data.chat.id);
+            showProjDet(true);
+        } else {
+            showProjDet(false);
         }
     }, []);
 
@@ -301,7 +306,7 @@ const Page = () => {
                 if (Data.data.user.message > 1) {
                     setSubscribePlanPopup(true);
                 }
-            }else{
+            } else {
                 setSubscribePlanPopup(false);
             }
         }
@@ -580,6 +585,15 @@ const Page = () => {
             if (response.status === 200) {
                 const PData = response.data.data;
                 localStorage.setItem('ProjectDetails', JSON.stringify(PData));
+                console.log('Data updated', PData);
+                const D = localStorage.getItem('NewProject');
+                const LocalD = JSON.parse(D);
+                if(LocalD){
+                    const updatedProjName = PData.projectName;
+                    LocalD.data.projectName = updatedProjName;
+                    localStorage.setItem('NewProject', JSON.stringify(LocalD))
+                }
+                setUpdatedData(PData);
                 setOpen(false);
                 setOpenRefer(false);
                 setOpenAddTeam(false);
@@ -596,11 +610,11 @@ const Page = () => {
     };
 
     useEffect(() => {
-        const L = localStorage.getItem('projectDetails');
+        const L = localStorage.getItem('NewProject');
         const D = JSON.parse(L);
-        setProjectDetails(D);
+        setProjectDetails(D.data);
         console.log('Data recieved is', D);
-    }, [])
+    }, []);
 
     const style = {
         position: 'absolute',
@@ -669,7 +683,7 @@ const Page = () => {
         // bgcolor: 'background.paper',
         // border: '2px solid #000',
         boxShadow: 24,
-        p: 2,
+        p: 4,
         borderRadius: 2,
         backgroundColor: '#0F0C2D'
     };
@@ -850,36 +864,41 @@ const Page = () => {
                             {
                                 openProjects &&
                                 <div className='w-full mb-2'>
-                                    <div className='flex flex-row items-center gap-12 mt-8'>
-                                        <div className='flex flex-row gap-2 items-center'>
-                                            {
-                                                SelectedLogo ?
-                                                    <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
+                                    {
+                                        projDet ?
+                                            <div className='flex flex-row items-center gap-12 mt-8'>
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    {/*
+                                                        SelectedLogo ?
+                                                            <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
+                                                            <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+                                    */}
                                                     <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-                                            }
-                                            <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                                                {projectDetails ?
                                                     <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                                                        {projectDetails.projectName}
-                                                    </div> :
-                                                    <div>
-                                                        App Name
-                                                    </div>}
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-row gap-2 items-center'>
-                                            <button onClick={handleOpenEditproject}>
-                                                <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-                                            </button>
-                                            <button onClick={handleOpenShareproject}>
-                                                <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-                                            </button>
-                                        </div>
-                                    </div>
+                                                        {updatedData ?
+                                                            <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
+                                                                {updatedData.projectName}
+                                                            </div> :
+                                                            <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
+                                                                {projectDetails.projectName}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <button onClick={handleOpenEditproject}>
+                                                        <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                                                    </button>
+                                                    <button onClick={handleOpenShareproject}>
+                                                        <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                                                    </button>
+                                                </div>
+                                            </div> : ""
+                                    }
                                 </div>
                             }
                         </div>
-                        <div className='w-6/12 flex justify-end'>
+                        <div className='w-6/12 flex justify-end py-2'>
                             <button>
                                 <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
                             </button>
@@ -1439,7 +1458,7 @@ const Page = () => {
                             <div style={{ fontWeight: "600", fontSize: 24, fontFamily: "inter", marginTop: 10 }}>
                                 UPGRADE TO A PLAN
                             </div>
-                            <div>
+                            <div className='pb-2'>
                                 <button onClick={() => router.push('/chat/plans')} style={{ backgroundColor: "#2548FD", color: "white", marginTop: 10, padding: 8, borderRadius: 5 }}>
                                     Upgrade
                                 </button>

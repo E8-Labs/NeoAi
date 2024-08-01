@@ -35,7 +35,7 @@ const Page = () => {
   const [SelectedLogo, setSelectedLogo] = useState(null);
   const [openSideNav, setOpenSideNav] = useState(false);
   const [updatedData, setUpdatedData] = useState(null);
-  const [testLoader, setTestLoader] = useState(false)
+  const [testLoader, setTestLoader] = useState(false);
   const [active, setActive] = useState(0);
   const controls = [useAnimation(), useAnimation(), useAnimation()];
   const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
@@ -124,6 +124,11 @@ const Page = () => {
         const event = new CustomEvent('apiSuccess', { detail: 'Api call was successfull' });
         document.dispatchEvent(event);
         setOpen(false);
+        if(PData){
+          setAppName(PData.projectName)
+        }else if(projectData) {
+          setAppName(projectData.projectName)
+        }
         // window.location.reload();
       }
     } catch (error) {
@@ -308,7 +313,13 @@ const Page = () => {
         }
       } else {
         setSubscribePlanPopup(false);
-        const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
+
+      }
+    }
+
+    // getProfile();
+
+    const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
         const updatedChat = [...chat, newChat];
         setChat(updatedChat);
         setLoading(true);
@@ -369,10 +380,7 @@ const Page = () => {
             setLoading(false);
           }
         }, 1000);
-      }
-    }
 
-    // getProfile();
 
   };
 
@@ -636,34 +644,6 @@ const Page = () => {
 
   //code for animation loader
 
-  useEffect(() => {
-    let interval;
-    if (loading) {
-      interval = setInterval(() => {
-        setActive((prev) => (prev === 2 ? 0 : prev + 1));
-      }, 300);
-    } else {
-      setActive(0);
-    }
-
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  useEffect(() => {
-    controls.forEach((control, index) => {
-      if (index === active) {
-        control.start({
-          opacity: 1,
-          scale: 0.8
-        });
-      } else {
-        control.start({
-          opacity: 0.2,
-          scale: 0.5
-        });
-      }
-    });
-  }, [active, controls]);
 
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
@@ -735,7 +715,7 @@ const Page = () => {
                 </div>
               ))}
 
-              {
+              {/*
                 loading &&
                 <div className='flex flex-row ms-2'>
                   {controls.map((control, index) => (
@@ -748,7 +728,7 @@ const Page = () => {
                     />
                   ))}
                 </div>
-              }
+                */}
 
             </div>
 
@@ -907,7 +887,7 @@ const Page = () => {
                 Changes
               </div>
               <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
-                I'm building <b style={{ color: 'white' }}>AirBnB</b>. Powered by Neo
+                I am building <b style={{ color: 'white' }}>AirBnB</b>. Powered by Neo
               </div>
               <div className='w-full mt-8 pb-4'>
                 <Button onClick={handleCopyLink} sx={{ textTransform: 'none' }}

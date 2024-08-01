@@ -27,8 +27,10 @@ const Chatsidenav = () => {
     const [open, setOpen] = useState(false);
     const [updateLoader, setUpdateLoader] = useState(false);
     const [userProfiledata, setUserProfiledata] = useState("");
-    const [userEmail, setUserEmail] = useState("");
+    const [userName, setUserName] = useState("");
     const [getProfileData, setProfileData] = useState(null);
+
+
     const links1 = [
         {
             id: 1,
@@ -72,7 +74,7 @@ const Chatsidenav = () => {
             const AuthToken = LocalData.data.token;
 
             const formData = new FormData();
-            formData.append('name', userEmail);
+            formData.append('name', userName);
 
             const urlToFile = async (url, filename, mimeType) => {
                 const res = await axios.get(url, { responseType: 'blob' });
@@ -98,6 +100,8 @@ const Chatsidenav = () => {
 
             if (response.status === 200) {
                 const Result = response.data.data;
+                console.log('Profile data updated', Result);
+                setProfileData(Result);
                 localStorage.setItem('profileData', JSON.stringify(Result));
             } else {
                 console.log('Profile not updated');
@@ -117,38 +121,7 @@ const Chatsidenav = () => {
 
 
     //code for closing modals
-    const handleCloseEditProject = async () => {
-
-        const ApiPath = Apis.UpdateProfile;
-        const Ls = localStorage.getItem('User');
-        const LocalData = JSON.parse(Ls);
-        const AuthToken = LocalData.data.token;
-
-        const formData = new FormData();
-        formData.append('name', userEmail);
-
-        const urlToFile = async (url, filename, mimeType) => {
-            const res = await axios.get(url, { responseType: 'blob' });
-            const blob = res.data;
-            return new File([blob], filename, { type: mimeType });
-        };
-        if (selectedImage) {
-            console.log('Imagr sending in');
-            const file = await urlToFile(selectedImage, 'image.png', 'image/png');
-            formData.append('media', file);
-        };
-
-        const response = await axios.post(ApiPath, formData, {
-            headers: {
-                'Authorization': 'Bearer ' + AuthToken,
-                'Content-Type': 'multipart/form-data',
-            }
-        });
-
-        if (response) {
-            console.log("Update profile api reponse:", response);
-        }
-
+    const handleCloseEditProject = () => {
         setOpen(false);
         setOpenRefer(false);
         setOpenAddTeam(false);
@@ -249,7 +222,7 @@ const Chatsidenav = () => {
         const A = localStorage.getItem('User');
         const B = JSON.parse(A);
         const email = B.data.user.email;
-        setProfileData(B);
+        // setProfileData(B);
         if (email) {
             setFormattedEmail(formatEmail(email));
             setSeparateLetters(reduceemail(email));
@@ -382,7 +355,15 @@ const Chatsidenav = () => {
                                 }
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
-                                    {formattedEmail}
+                                    {
+                                        getProfileData ?
+                                            <div style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
+                                                {getProfileData.name}
+                                            </div> :
+                                            <div style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
+                                                {formattedEmail}
+                                            </div>
+                                    }
                                 </div>
                             </div>
                             <div className='flex items-center justify-center ' style={{ backgroundColor: '#4011FA', height: "23px", width: "23px", borderRadius: "50%" }}>
@@ -518,8 +499,8 @@ const Chatsidenav = () => {
                                     {/*<ImagePicker onFile={handleFileSelect} />*/}
                                     <input
                                         // rows={6}
-                                        // value={appIdea}
-                                        // onChange={(e) => setAppIdea(e.target.value)}
+                                        value={userName}
+                                        onChange={(e) => setUserName(e.target.value)}
                                         className="mt-8 w-full"
                                         style={{
                                             outline: 'none', border: 'none', backgroundColor: '#00000000', height: '40px',
