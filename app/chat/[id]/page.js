@@ -307,6 +307,7 @@ const Page = () => {
           setSubscribePlanPopup(true)
         }
       } else {
+        setSubscribePlanPopup(false);
         const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
         const updatedChat = [...chat, newChat];
         setChat(updatedChat);
