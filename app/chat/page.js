@@ -60,7 +60,7 @@ const Page = () => {
 
 
 
-    const Router = useRouter();
+    const router = useRouter();
     const [message, setMessage] = useState('');
     const [userChat, setUserChat] = useState([]);
     const [chatHistory, setChatHistory] = useState([]);
@@ -104,6 +104,7 @@ const Page = () => {
     const [pUpdateLoader, setPUpdateLoader] = useState(false);
     const [active, setActive] = useState(0);
     const controls = [useAnimation(), useAnimation(), useAnimation()];
+    const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
 
 
 
@@ -277,7 +278,38 @@ const Page = () => {
 
 
     const handleSubmit = async (e) => {
+        setMessage('');
         // setSelectedFile(null);
+        const LSD = localStorage.getItem('User');
+        const localStorageData = JSON.parse(LSD);
+        // console.log('Data from localstorage is :', localStorageData.data.user.message);
+        // const AuthToken = localStorageData.data.token;
+
+        if (localStorageData) {
+            const prevMsg = localStorageData.data.user.message;
+            const msg = prevMsg + 1;
+            localStorageData.data.user.message = msg;
+            localStorage.setItem('User', JSON.stringify(localStorageData));
+        }
+
+        const Test = localStorage.getItem('User');
+        const Data = JSON.parse(Test);
+        console.log('Test data', Data.data.user);
+
+        if (Test) {
+            if (Data.data.user.plan === null) {
+                if (Data.data.user.message > 1) {
+                    setSubscribePlanPopup(true);
+                }
+            }else{
+                setSubscribePlanPopup(false);
+            }
+        }
+
+
+
+
+
         e.preventDefault();
         setLoading(true);
         if (chatContainerRef.current) {
@@ -303,7 +335,6 @@ const Page = () => {
         }
 
         setUserChat(updatedChat);
-        setMessage('');
 
         // Call OpenAI API
         const botMessage = await callOpenAIAPI(updatedChat);
@@ -629,6 +660,20 @@ const Page = () => {
         backgroundColor: '#0F0C2D'
     };
 
+    const style2 = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        // bgcolor: 'background.paper',
+        // border: '2px solid #000',
+        boxShadow: 24,
+        p: 2,
+        borderRadius: 2,
+        backgroundColor: '#0F0C2D'
+    };
+
     const handleAddTeam = async (e) => {
         if (name && email && role) {
 
@@ -763,36 +808,36 @@ const Page = () => {
         // }
     }
 
-      //code for animation loader
+    //code for animation loader
 
-  useEffect(() => {
-    let interval;
-    if (loading) {
-      interval = setInterval(() => {
-        setActive((prev) => (prev === 2 ? 0 : prev + 1));
-      }, 300);
-    } else {
-      setActive(0);
-    }
+    useEffect(() => {
+        let interval;
+        if (loading) {
+            interval = setInterval(() => {
+                setActive((prev) => (prev === 2 ? 0 : prev + 1));
+            }, 300);
+        } else {
+            setActive(0);
+        }
 
-    return () => clearInterval(interval);
-  }, [loading]);
+        return () => clearInterval(interval);
+    }, [loading]);
 
-  useEffect(() => {
-    controls.forEach((control, index) => {
-      if (index === active) {
-        control.start({
-          opacity: 1,
-          scale: 0.8
+    useEffect(() => {
+        controls.forEach((control, index) => {
+            if (index === active) {
+                control.start({
+                    opacity: 1,
+                    scale: 0.8
+                });
+            } else {
+                control.start({
+                    opacity: 0.2,
+                    scale: 0.5
+                });
+            }
         });
-      } else {
-        control.start({
-          opacity: 0.2,
-          scale: 0.5
-        });
-      }
-    });
-  }, [active, controls]);
+    }, [active, controls]);
 
     return (
         <div className='text-white' style={{ display: 'flex', backgroundColor: '#050221' }}>
@@ -1381,7 +1426,30 @@ const Page = () => {
                 </Modal>
             </div>
 
-        </div >
+            {/* Code for subscribe plan modal */}
+
+            <div>
+                <Modal
+                    open={subscribePlanPopup}
+                // onClose={() => setSubscribePlanPopup(false)}
+                >
+                    <Box sx={style2}>
+                        <div className='text-white flex flex-col items-center justify-center'>
+                            <img src='/assets/logo2.png' alt='logo' style={{ height: "184px", width: "184px", resize: "cover", objectFit: "conver" }} />
+                            <div style={{ fontWeight: "600", fontSize: 24, fontFamily: "inter", marginTop: 10 }}>
+                                UPGRADE TO A PLAN
+                            </div>
+                            <div>
+                                <button onClick={() => router.push('/chat/plans')} style={{ backgroundColor: "#2548FD", color: "white", marginTop: 10, padding: 8, borderRadius: 5 }}>
+                                    Upgrade
+                                </button>
+                            </div>
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+        </div>
     );
 };
 

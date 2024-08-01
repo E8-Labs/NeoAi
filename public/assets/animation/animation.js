@@ -241,402 +241,111 @@ const AnimatedForm = () => {
 
 
   return (
-    <div style={{ position: 'relative', height: '60vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
       <AnimatePresence initial={false} custom={direction}>
         {currentIndex === 0 && (
-          <motion.div
-            key="box1"
-            custom={direction}
-            variants={boxVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 1 }}
-            style={styles}
-          >
-            <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-              {/* test */}
-              <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                ONBOARDING
-              </p>
-              <p className="mt-2" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                What's your app idea about
-              </p>
-              <div className="flex justify-center">
-                <textarea
-                  rows={4}
-                  value={appIdea}
-                  onChange={(e) => setAppIdea(e.target.value)}
-                  className="mt-4 w-11/12"
-                  style={{
-                    outline: 'none', border: 'none', backgroundColor: '#00000000',
-                    fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                  }}
-                  placeholder="Type here" />
-              </div>
-              <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-              <div className='mt-2' style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
-                By submitting, I consent to Hebbia's communications and acknowledge
-                my data will be handled per their Privacy Policy.
-              </div>
-              <div>
-                {
-                  appIdea ?
-                    <Button
-                      className="p-3 py-4"
-                      style={{
-                        height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                        backgroundColor: '#4011FA', fontFamily: 'inter', marginTop: 20
-                      }}
-                      onClick={handleContinue}>
-                      Continue
-                    </Button> :
-                    <Button disabled
-                      className="p-3 py-4"
-                      style={{
-                        height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
-                        backgroundColor: '#4011FA40', fontFamily: 'inter', marginTop: 20
-                      }}
-                      onClick={handleContinue}>
-                      Continue
-                    </Button>
-                }
-              </div>
-            </div>
-            {/* end test */}
-          </motion.div>
-        )}
-        {currentIndex === 1 && (
-          <motion.div
-            key="box2"
-            custom={direction}
-            variants={boxVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 1 }}
-            style={styles}
-          >
-            <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-              {/* test */}
-              <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                ONBOARDING
-              </p>
-              <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                Who are the customers you're building this for?
-              </p>
-              <div className="flex justify-center">
-                <textarea
-                  rows={1}
-                  value={audienceName}
-                  onChange={(e) => setAudienceName(e.target.value)}
-                  className="mt-4 w-11/12"
-                  style={{
-                    outline: 'none', border: 'none', backgroundColor: '#00000000',
-                    fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                  }}
-                  placeholder="Ex: Real estate agents, fitness coaches," />
-              </div>
-              <div className="flex flex-col gap-y-24">
-                <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-                <div className="mt-6 flex flex-row gap-8">
-
-                  {/* add continue btn here */}
-                  <Button onClick={handleBack}
-                    className="p-3 py-4"
-                    style={{
-                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                      backgroundColor: '', fontFamily: 'inter'
-                    }}>
-                    Back
-                  </Button>
-
-                  {
-                    audienceName ?
-                      <Button
-                        className="p-3 py-4"
-                        style={{
-                          height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                          backgroundColor: '#4011FA', fontFamily: 'inter'
-                        }}
-                        onClick={handleContinue}>
-                        Continue
-                      </Button> :
-                      <Button
-                        disabled
-                        className="p-3 py-4"
-                        style={{
-                          height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
-                          backgroundColor: '#4011FA50', fontFamily: 'inter'
-                        }}
-                        onClick={handleContinue}>
-                        Continue
-                      </Button>
-                  }
-
-
-                </div>
-              </div>
-              {/* end test */}
-            </div>
-          </motion.div>
-        )}
-        {currentIndex === 2 && (
-          <motion.div
-            key="box3"
-            custom={direction}
-            variants={boxVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 1 }}
-            style={styles}
-          >
-            <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-              {/* test */}
-              <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                ONBOARDING
-              </p>
-              <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                What is your app name
-              </p>
-              <div className="flex justify-center">
-                <textarea
-                  rows={4}
-                  value={appName}
-                  onChange={(e) => setAppName(e.target.value)}
-                  className="mt-4 w-11/12"
-                  style={{
-                    outline: 'none', border: 'none', backgroundColor: '#00000000',
-                    fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                  }}
-                  placeholder="Type here" />
-              </div>
-              <div className="flex flex-col gap-y-24">
-                <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-                <div className="mt-6 flex flex-row gap-8">
-
-                  {/* add continue btn here */}
-                  <Button onClick={handleBack}
-                    className="p-3 py-4"
-                    style={{
-                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                      backgroundColor: '', fontFamily: 'inter'
-                    }}>
-                    Back
-                  </Button>
-
-                  {
-                    appName ?
-                      <Button
-                        className="p-3 py-4"
-                        style={{
-                          height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                          backgroundColor: '#4011FA', fontFamily: 'inter'
-                        }}
-                        onClick={handleContinue}>
-                        Continue
-                      </Button> :
-                      <Button
-                        disabled
-                        className="p-3 py-4"
-                        style={{
-                          height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
-                          backgroundColor: '#4011FA50', fontFamily: 'inter'
-                        }}
-                        onClick={handleContinue}>
-                        Continue
-                      </Button>
-                  }
-
-
-                </div>
-              </div>
-              {/* end test */}
-            </div>
-          </motion.div>
-        )}
-        {currentIndex === 3 && (
-          <motion.div
-            key="box4"
-            custom={direction}
-            variants={boxVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 1 }}
-            style={styles}
-          >
-            <div className="w-full"
-              style={{ paddingInline: 26, paddingTop: 18, paddingBottom: 18, backgroundColor: '#0F0C2D' }}>
-              <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
-                ONBOARDING
-              </p>
-              <div className="mt-4 w-full flex flex-row">
-                <p className='w-8/12' style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                  Who are the founders involved?
-                </p>
-
-              </div>
-              {
-                founders.length ?
-                  <div className="mt-4 flex flex-col gap-8  w-full" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    <div className='w-full'>
-                      {
-                        founders.map((item) => (
-                          <div key={item.id} className="flex justify-center w-full mt-4">
-                            <div className="w-full px-4 py-6" style={{ border: '2px solid #ffffff35' }}>
-                              <div className="flex flex-row justify-between">
-                                <div className="flex flex-row gap-2 items-center">
-                                  <p
-                                    style={{
-                                      fontWeight: '600', fontFamily: 'inter',
-                                      fontSize: '15px'
-                                    }}>
-                                    {item.founderName} ,
-                                  </p>
-                                  <p style={{
-                                    fontWeight: '400', fontFamily: 'inter',
-                                    fontSize: '13px', color: '#ffffff60'
-                                  }}>
-                                    {item.role}
-                                  </p>
-                                </div>
-                                <button onClick={() => handleDelfounder(item.id)}>
-                                  <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
-                                </button>
-                              </div>
-                              <p style={{
-                                fontWeight: '400', fontFamily: 'inter',
-                                fontSize: '13px', color: '#ffffff60'
-                              }}>
-                                {item.founderEmail}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      }
-                    </div>
-                    <div className='flex justify-center items-start'>
-                      {
-                        founders.length > 0 && (
-                          <button onClick={handleAddFounder}>
-                            <div className="flex justify-center items-center px-4 py-2"
-                              style={{
-                                backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
-                                fontWeight: '500', fontFamily: "inter"
-                              }}>
-                              {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
-                              Add Founder
-                            </div>
-                          </button>
-                        )
-                      }
-                    </div>
-                  </div> :
-                  <div className="mt-6" style={{ height: '24vh', fontSize: 10, fontWeight: '500', color: '#ffffff' }}>
-                    <button onClick={handleAddFounder}>
-                      <div className="flex justify-center items-center px-4 py-2" style={{ backgroundColor: '#4011FA', borderRadius: 4 }}>
-                        {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
-                        Add Founder
-                      </div>
-                    </button>
-                  </div>
-              }
-              <div className="mt-8 flex flex-row gap-8">
-                <Button
-                  onClick={handleBack}
-                  className="p-3 py-4"
-                  style={{
-                    height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                    backgroundColor: '', fontFamily: 'inter'
-                  }}>
-                  Back
-                </Button>
-                {founders ? <Button
-                  // variant="disabled"
-                  onClick={() => {
-                    handleSaveEmail();
-                    handleFounderClick();
-                    // handleContinue();
-                    // handleContinueFounderClick();
-                  }}
-                  className="p-3 py-4"
-                  style={{
-                    height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                    backgroundColor: '#4011FA', fontFamily: 'inter'
-                  }}>
-                  {
-                    founderContinueLoader ?
-                      <CircularProgress size={30} /> :
-                      "Continue"
-                  }
-                </Button> :
-                  <Button
-                    // onClick={handleContinue}
-                    className="p-3 py-4"
-                    style={{
-                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                      backgroundColor: 'red', fontFamily: 'inter'
-                    }}>
-                    {
-                      loader ?
-                        <CircularProgress size={30} /> : "Continue"
-                    }
-                  </Button>
-                }
-              </div>
-            </div>
-          </motion.div>
-        )}
-        {currentIndex === 4 && (
-          <motion.div
-            key="box5"
-            custom={direction}
-            variants={boxVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 1 }}
-            style={styles}
-          >
-            <div className='w-full'>
-              <div className="w-full"
-                style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
-                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
+          <div style={{ height: '40vh' }}>
+            <motion.div
+              key="box1"
+              custom={direction}
+              variants={boxVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 1 }}
+              style={styles}
+            >
+              <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
+                {/* test */}
+                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
                   ONBOARDING
                 </p>
-                <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
-                  Save your work
+                <p className="mt-2" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                  What's your app idea about
                 </p>
-                <div className="flex flex-col justify-center">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    className="mt-8 w-11/12"
+                <div className="flex justify-center">
+                  <textarea
+                    rows={4}
+                    value={appIdea}
+                    onChange={(e) => setAppIdea(e.target.value)}
+                    className="mt-4 w-11/12"
                     style={{
                       outline: 'none', border: 'none', backgroundColor: '#00000000',
                       fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
                     }}
-                    placeholder="Email Address" />
-                  <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                    placeholder="Type here" />
                 </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-12 w-11/12"
-                  style={{
-                    outline: 'none', border: 'none', backgroundColor: '#00000000',
-                    fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                  }}
-                  placeholder="Password" />
-                <div className="flex flex-col gap-y-20">
+                <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                <div className='mt-2' style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
+                  By submitting, I consent to Hebbia's communications and acknowledge
+                  my data will be handled per their Privacy Policy.
+                </div>
+                <div>
+                  {
+                    appIdea ?
+                      <Button
+                        className="p-3 py-4"
+                        style={{
+                          height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                          backgroundColor: '#4011FA', fontFamily: 'inter', marginTop: 20
+                        }}
+                        onClick={handleContinue}>
+                        Continue
+                      </Button> :
+                      <Button disabled
+                        className="p-3 py-4"
+                        style={{
+                          height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
+                          backgroundColor: '#4011FA40', fontFamily: 'inter', marginTop: 20
+                        }}
+                        onClick={handleContinue}>
+                        Continue
+                      </Button>
+                  }
+                </div>
+              </div>
+              {/* end test */}
+            </motion.div>
+          </div>
+        )}
+        {currentIndex === 1 && (
+          <div style={{ height: '50vh' }}>
+            <motion.div
+              key="box2"
+              custom={direction}
+              variants={boxVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 1 }}
+              style={styles}
+            >
+              <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
+                {/* test */}
+                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
+                  ONBOARDING
+                </p>
+                <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                  Who are the customers you're building this for?
+                </p>
+                <div className="flex justify-center">
+                  <textarea
+                    rows={1}
+                    value={audienceName}
+                    onChange={(e) => setAudienceName(e.target.value)}
+                    className="mt-4 w-11/12"
+                    style={{
+                      outline: 'none', border: 'none', backgroundColor: '#00000000',
+                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                    }}
+                    placeholder="Ex: Real estate agents, fitness coaches," />
+                </div>
+                <div className="flex flex-col gap-y-24">
                   <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
                   <div className="mt-6 flex flex-row gap-8">
-                    <Button
-                      onClick={handleBack}
+
+                    {/* add continue btn here */}
+                    <Button onClick={handleBack}
                       className="p-3 py-4"
                       style={{
                         height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
@@ -644,32 +353,333 @@ const AnimatedForm = () => {
                       }}>
                       Back
                     </Button>
-                    {email && password ? <Button
-                      onClick={handleContinueClick}
+
+                    {
+                      audienceName ?
+                        <Button
+                          className="p-3 py-4"
+                          style={{
+                            height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                            backgroundColor: '#4011FA', fontFamily: 'inter'
+                          }}
+                          onClick={handleContinue}>
+                          Continue
+                        </Button> :
+                        <Button
+                          disabled
+                          className="p-3 py-4"
+                          style={{
+                            height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
+                            backgroundColor: '#4011FA50', fontFamily: 'inter'
+                          }}
+                          onClick={handleContinue}>
+                          Continue
+                        </Button>
+                    }
+
+
+                  </div>
+                </div>
+                {/* end test */}
+              </div>
+            </motion.div>
+          </div>
+        )}
+        {currentIndex === 2 && (
+          <div style={{ height: '55vh' }}>
+            <motion.div
+              key="box3"
+              custom={direction}
+              variants={boxVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 1 }}
+              style={styles}
+            >
+              <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
+                {/* test */}
+                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
+                  ONBOARDING
+                </p>
+                <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                  What is your app name
+                </p>
+                <div className="flex justify-center">
+                  <textarea
+                    rows={4}
+                    value={appName}
+                    onChange={(e) => setAppName(e.target.value)}
+                    className="mt-4 w-11/12"
+                    style={{
+                      outline: 'none', border: 'none', backgroundColor: '#00000000',
+                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                    }}
+                    placeholder="Type here" />
+                </div>
+                <div className="flex flex-col gap-y-24">
+                  <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                  <div className="mt-6 flex flex-row gap-8">
+
+                    {/* add continue btn here */}
+                    <Button onClick={handleBack}
                       className="p-3 py-4"
                       style={{
                         height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                        backgroundColor: '#4011FA', fontFamily: 'inter'
+                        backgroundColor: '', fontFamily: 'inter'
+                      }}>
+                      Back
+                    </Button>
+
+                    {
+                      appName ?
+                        <Button
+                          className="p-3 py-4"
+                          style={{
+                            height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                            backgroundColor: '#4011FA', fontFamily: 'inter'
+                          }}
+                          onClick={handleContinue}>
+                          Continue
+                        </Button> :
+                        <Button
+                          disabled
+                          className="p-3 py-4"
+                          style={{
+                            height: '40px', color: '#ffffff50', fontWeight: 'medium', fontSize: 15,
+                            backgroundColor: '#4011FA50', fontFamily: 'inter'
+                          }}
+                          onClick={handleContinue}>
+                          Continue
+                        </Button>
+                    }
+
+
+                  </div>
+                </div>
+                {/* end test */}
+              </div>
+            </motion.div>
+          </div>
+        )}
+        {currentIndex === 3 && (
+          <div style={{ height: '60vh' }}>
+            <motion.div
+              key="box4"
+              custom={direction}
+              variants={boxVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 1 }}
+              style={styles}
+            >
+              <div className="w-full"
+                style={{ paddingInline: 26, paddingTop: 18, paddingBottom: 18, backgroundColor: '#0F0C2D' }}>
+                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
+                  ONBOARDING
+                </p>
+                <div className="mt-4 w-full flex flex-row">
+                  <p className='w-8/12' style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                    Who are the founders involved?
+                  </p>
+
+                </div>
+                {
+                  founders.length ?
+                    <div className="mt-4 flex flex-col gap-8  w-full" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      <div className='w-full'>
+                        {
+                          founders.map((item) => (
+                            <div key={item.id} className="flex justify-center w-full mt-4">
+                              <div className="w-full px-4 py-6" style={{ border: '2px solid #ffffff35' }}>
+                                <div className="flex flex-row justify-between">
+                                  <div className="flex flex-row gap-2 items-center">
+                                    <p
+                                      style={{
+                                        fontWeight: '600', fontFamily: 'inter',
+                                        fontSize: '15px'
+                                      }}>
+                                      {item.founderName} ,
+                                    </p>
+                                    <p style={{
+                                      fontWeight: '400', fontFamily: 'inter',
+                                      fontSize: '13px', color: '#ffffff60'
+                                    }}>
+                                      {item.role}
+                                    </p>
+                                  </div>
+                                  <button onClick={() => handleDelfounder(item.id)}>
+                                    <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
+                                  </button>
+                                </div>
+                                <p style={{
+                                  fontWeight: '400', fontFamily: 'inter',
+                                  fontSize: '13px', color: '#ffffff60'
+                                }}>
+                                  {item.founderEmail}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                      <div className='flex justify-center items-start'>
+                        {
+                          founders.length > 0 && (
+                            <button onClick={handleAddFounder}>
+                              <div className="flex justify-center items-center px-4 py-2"
+                                style={{
+                                  backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
+                                  fontWeight: '500', fontFamily: "inter"
+                                }}>
+                                {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                                Add Founder
+                              </div>
+                            </button>
+                          )
+                        }
+                      </div>
+                    </div> :
+                    <div className="mt-6" style={{ height: '24vh', fontSize: 10, fontWeight: '500', color: '#ffffff' }}>
+                      <button onClick={handleAddFounder}>
+                        <div className="flex justify-center items-center px-4 py-2" style={{ backgroundColor: '#4011FA', borderRadius: 4 }}>
+                          {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                          Add Founder
+                        </div>
+                      </button>
+                    </div>
+                }
+                <div className="mt-8 flex flex-row gap-8">
+                  <Button
+                    onClick={handleBack}
+                    className="p-3 py-4"
+                    style={{
+                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                      backgroundColor: '', fontFamily: 'inter'
+                    }}>
+                    Back
+                  </Button>
+                  {founders ? <Button
+                    // variant="disabled"
+                    onClick={() => {
+                      handleSaveEmail();
+                      handleFounderClick();
+                      // handleContinue();
+                      // handleContinueFounderClick();
+                    }}
+                    className="p-3 py-4"
+                    style={{
+                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                      backgroundColor: '#4011FA', fontFamily: 'inter'
+                    }}>
+                    {
+                      founderContinueLoader ?
+                        <CircularProgress size={30} /> :
+                        "Continue"
+                    }
+                  </Button> :
+                    <Button
+                      // onClick={handleContinue}
+                      className="p-3 py-4"
+                      style={{
+                        height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                        backgroundColor: 'red', fontFamily: 'inter'
                       }}>
                       {
-                        saveWorkLoader ?
+                        loader ?
                           <CircularProgress size={30} /> : "Continue"
                       }
-                    </Button> :
-                      <Button variant="disabled"
+                    </Button>
+                  }
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+        {currentIndex === 4 && (
+          <div style={{ height: '60vh' }}>
+            <motion.div
+              key="box5"
+              custom={direction}
+              variants={boxVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 1 }}
+              style={styles}
+            >
+              <div className='w-full'>
+                <div className="w-full"
+                  style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
+                  <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
+                    ONBOARDING
+                  </p>
+                  <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
+                    Save your work
+                  </p>
+                  <div className="flex flex-col justify-center">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="mt-8 w-11/12"
+                      style={{
+                        outline: 'none', border: 'none', backgroundColor: '#00000000',
+                        fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                      }}
+                      placeholder="Email Address" />
+                    <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                  </div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-12 w-11/12"
+                    style={{
+                      outline: 'none', border: 'none', backgroundColor: '#00000000',
+                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                    }}
+                    placeholder="Password" />
+                  <div className="flex flex-col gap-y-20">
+                    <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                    <div className="mt-6 flex flex-row gap-8">
+                      <Button
+                        onClick={handleBack}
                         className="p-3 py-4"
                         style={{
                           height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                          backgroundColor: '#4011FA50', fontFamily: 'inter'
+                          backgroundColor: '', fontFamily: 'inter'
                         }}>
-                        Continue
+                        Back
                       </Button>
-                    }
+                      {email && password ? <Button
+                        onClick={handleContinueClick}
+                        className="p-3 py-4"
+                        style={{
+                          height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                          backgroundColor: '#4011FA', fontFamily: 'inter'
+                        }}>
+                        {
+                          saveWorkLoader ?
+                            <CircularProgress size={30} /> : "Continue"
+                        }
+                      </Button> :
+                        <Button variant="disabled"
+                          className="p-3 py-4"
+                          style={{
+                            height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                            backgroundColor: '#4011FA50', fontFamily: 'inter'
+                          }}>
+                          Continue
+                        </Button>
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

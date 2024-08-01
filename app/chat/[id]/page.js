@@ -47,9 +47,6 @@ const Page = () => {
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
 
-  const handleOpenSubscribeWarning = () => {
-    setSubscribePlanPopup(true)
-  }
 
   const handleCopyLink = () => {
     const currentUrl = window.location.href;
@@ -687,10 +684,6 @@ const Page = () => {
                     </div> :
                     <div>
                       {projectData ? projectData.projectName : ""}
-                      <button className='text-black bg-white'
-                        onClick={handleOpenSubscribeWarning}>
-                        click
-                      </button>
                     </div>
                 }
               </div>
