@@ -4,6 +4,7 @@ import { CardCvcElement, CardExpiryElement, CardNumberElement, Elements, useElem
 import { Alert, Button, CircularProgress, Slide, Snackbar } from '@mui/material'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import Apis from '../Apis/Apis';
 
 const AddCardDetails = ({ handleClose }) => {
 
@@ -69,7 +70,7 @@ const AddCardDetails = ({ handleClose }) => {
                 console.log("Token generating for card number :", tok.token.id)
                 const tokenId = tok.token.id;
                 let api = process.env.NEXT_PUBLIC_REACT_APP_ENVIRONMENT === "Development2" ? "https://bf59-119-156-82-235.ngrok-free.app" : "https://plurawlapp.com/plurawl";
-                const ApiPath = "http://localhost:8005/api/user/add_card";
+                const ApiPath = Apis.AddCard;
                 const AddCardData = {
                     source: tokenId
                 }
