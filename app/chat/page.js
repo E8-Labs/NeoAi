@@ -1,5 +1,6 @@
 'use client'
 import { Button, CircularProgress, Grid, TextField } from '@mui/material';
+import { motion, useAnimation } from 'framer-motion';
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
@@ -101,6 +102,8 @@ const Page = () => {
     const chatContainerRef = useRef(null);
     const [projectDetails, setProjectDetails] = useState(null);
     const [pUpdateLoader, setPUpdateLoader] = useState(false);
+    const [active, setActive] = useState(0);
+    const controls = [useAnimation(), useAnimation(), useAnimation()];
 
 
 
@@ -269,6 +272,8 @@ const Page = () => {
             setBotReplyLoader(false);
         }
     };
+
+    //test code for popup
 
 
     const handleSubmit = async (e) => {
@@ -558,7 +563,7 @@ const Page = () => {
 
 
     };
-    
+
     useEffect(() => {
         const L = localStorage.getItem('projectDetails');
         const D = JSON.parse(L);
@@ -758,10 +763,36 @@ const Page = () => {
         // }
     }
 
-    //code for calling get messages api
-    // const getMessages = async () => {
+      //code for animation loader
 
-    // }
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        setActive((prev) => (prev === 2 ? 0 : prev + 1));
+      }, 300);
+    } else {
+      setActive(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  useEffect(() => {
+    controls.forEach((control, index) => {
+      if (index === active) {
+        control.start({
+          opacity: 1,
+          scale: 0.8
+        });
+      } else {
+        control.start({
+          opacity: 0.2,
+          scale: 0.5
+        });
+      }
+    });
+  }, [active, controls]);
 
     return (
         <div className='text-white' style={{ display: 'flex', backgroundColor: '#050221' }}>
@@ -1108,11 +1139,6 @@ const Page = () => {
                                                                                             <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
                                                                                         </div> : ""
                                                                                 }
-                                                                                {/* <div className='mt-2'>
-                                              
-                                            </div> */}
-                                                                                {/* <img src='/assets/profile1.jpeg' alt='user'
-                                              style={{ height: '50px', width: '50px', resize: 'cover', borderRadius: '50%' }} /> */}
                                                                             </div>
                                                                             <div className='px-2 py-2'
                                                                                 style={{
@@ -1135,6 +1161,20 @@ const Page = () => {
 
                                                         </div>
                                                     ))}
+                                                    {
+                                                        loading &&
+                                                        <div className='flex flex-row ms-2'>
+                                                            {controls.map((control, index) => (
+                                                                <motion.div
+                                                                    key={index}
+                                                                    animate={control}
+                                                                    initial={{ opacity: 0.2 }}
+                                                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                                    style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         )}

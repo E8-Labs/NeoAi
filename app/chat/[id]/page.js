@@ -10,14 +10,16 @@ import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { Box, Button, CircularProgress, Drawer, Modal } from '@mui/material';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Notifications from '@/public/assets/notifications/Notifications';
+import { motion, useAnimation } from 'framer-motion';
 
 const Page = () => {
   const fileInputRef = useRef(null);
   const { id, data } = useParams();
+  const router = useRouter();
   // const id = 1
   // const data = router.query; // Access the dynamic route parameter
   const [projectData, setProjectData] = useState(null);
-  console.log("Dta ", id)
+  // console.log("Dta ", id)
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -34,11 +36,20 @@ const Page = () => {
   const [openSideNav, setOpenSideNav] = useState(false);
   const [updatedData, setUpdatedData] = useState(null);
   const [testLoader, setTestLoader] = useState(false)
+  const [active, setActive] = useState(0);
+  const controls = [useAnimation(), useAnimation(), useAnimation()];
+  const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
+  const [getProfileData, setGetProfileData] = useState(null);
+
 
   const handleOpenEditproject = () => setOpen(true);
   const handleCloseEditProject = () => setOpen(false);
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
+
+  const handleOpenSubscribeWarning = () => {
+    setSubscribePlanPopup(true)
+  }
 
   const handleCopyLink = () => {
     const currentUrl = window.location.href;
@@ -259,75 +270,150 @@ const Page = () => {
     backgroundColor: '#0F0C2D'
   };
 
-  const handleSubmit = async () => {
-    const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
-    const updatedChat = [...chat, newChat];
-    setChat(updatedChat);
-    setUserChatMessage("");
-    setLoading(true);
-
-    setTimeout(async () => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-      };
-
-      const LSD = localStorage.getItem('User');
-      const localStorageData = JSON.parse(LSD);
-      console.log('Data from localstorage is :', localStorageData);
-      const AuthToken = localStorageData.data.token;
-
-      const urlToFile = async (url, filename, mimeType) => {
-        const res = await axios.get(url, { responseType: 'blob' });
-        const blob = res.data;
-        return new File([blob], filename, { type: mimeType });
-      };
-
-      const formData = new FormData();
-      formData.append('chatId', id);
-      formData.append('content', userChatMsg);
-
-      // Convert the image URL to a File object and append it to the form data
-      if (previewURL) {
-        console.log('Image sending in');
-        const file = await urlToFile(previewURL, 'image.png', 'image/png');
-        formData.append('media', file);
-      }
-
-      console.log("Data sending in api is :", formData);
-
-      try {
-        const response = await axios.post(Apis.SendMessage, formData, {
-          headers: {
-            'Authorization': 'Bearer ' + AuthToken,
-            'Content-Type': 'multipart/form-data',
-          }
-        });
-
-        if (response.status === 200) {
-          const Result = response.data.data;
-          console.log('Response of API is', Result);
-
-          // Update the chat state by removing the last message and appending the response messages
-          setChat((prevChat) => {
-            // Remove the last message (user's message)
-            const updatedItems = prevChat.slice(0, -1);
-            // Append the response messages
-            return [...updatedItems, ...Result];
-          });
-        } else {
-          console.log('Response is not ok:', response);
-        }
-      } catch (error) {
-        console.error('Error calling API:', error);
-        return "Sorry, I can't respond right now.";
-      } finally {
-        setLoading(false);
-      }
-    }, 2000);
+  const style2 = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    // bgcolor: 'background.paper',
+    // border: '2px solid #000',
+    boxShadow: 24,
+    p: 2,
+    borderRadius: 2,
+    backgroundColor: '#0F0C2D'
   };
+
+
+  const handleSubmit = async () => {
+    // console.log('test working');
+    setUserChatMessage("");
+    const LSD = localStorage.getItem('User');
+    const localStorageData = JSON.parse(LSD);
+    console.log('Data from localstorage is :', localStorageData.data.user.message);
+    const AuthToken = localStorageData.data.token;
+
+    if (localStorageData) {
+      const prevMsg = localStorageData.data.user.message;
+      const msg = prevMsg + 1;
+      localStorageData.data.user.message = msg;
+      localStorage.setItem('User', JSON.stringify(localStorageData));
+    }
+
+    const Test = localStorage.getItem('User');
+    const Data = JSON.parse(Test);
+    console.log('Test data', Data.data.user);
+
+    if (Test) {
+      if (Data.data.user.plan === null) {
+        if (Data.data.user.message > 1) {
+          setSubscribePlanPopup(true)
+        }
+      } else {
+        const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
+        const updatedChat = [...chat, newChat];
+        setChat(updatedChat);
+        setLoading(true);
+
+        setTimeout(async () => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+              top: chatContainerRef.current.scrollHeight,
+              behavior: 'smooth'
+            });
+          };
+
+          const urlToFile = async (url, filename, mimeType) => {
+            const res = await axios.get(url, { responseType: 'blob' });
+            const blob = res.data;
+            return new File([blob], filename, { type: mimeType });
+          };
+
+          const formData = new FormData();
+          formData.append('chatId', id);
+          formData.append('content', userChatMsg);
+
+          // Convert the image URL to a File object and append it to the form data
+          if (previewURL) {
+            console.log('Image sending in');
+            const file = await urlToFile(previewURL, 'image.png', 'image/png');
+            formData.append('media', file);
+          }
+
+          console.log("Data sending in api is :", formData);
+
+          try {
+            const response = await axios.post(Apis.SendMessage, formData, {
+              headers: {
+                'Authorization': 'Bearer ' + AuthToken,
+                'Content-Type': 'multipart/form-data',
+              }
+            });
+
+            if (response.status === 200) {
+              const Result = response.data.data;
+              console.log('Response of API is', Result);
+
+              // Update the chat state by removing the last message and appending the response messages
+              setChat((prevChat) => {
+                // Remove the last message (user's message)
+                const updatedItems = prevChat.slice(0, -1);
+                // Append the response messages
+                return [...updatedItems, ...Result];
+              });
+            } else {
+              console.log('Response is not ok:', response);
+            }
+          } catch (error) {
+            console.error('Error calling API:', error);
+            return "Sorry, I can't respond right now.";
+          } finally {
+            setLoading(false);
+          }
+        }, 1000);
+      }
+    }
+
+    // getProfile();
+
+  };
+
+  //code for getprofile
+  // const getProfile = async () => {
+  //   try {
+  //     const L = localStorage.getItem('User');
+  //     const LocalData = JSON.parse(L);
+  //     const AuthToken = LocalData.data.token;
+  //     const ApiPath = Apis.GetProfile;
+  //     const response = await axios.get(ApiPath, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer ' + AuthToken
+  //       }
+  //     });
+  //     if (response.status === 20) {
+  //       const Result = response.data.data.messages;
+  //       console.log('Response is', response.data.data);
+  //       const PlanStatus = LocalData.data.user.plan;
+  //       setGetProfileData(Result);
+  //       // if(PlanStatus === null){
+  //       //   if(Result > 2){
+  //       //     setSubscribePlanPopup(true);
+  //       //   }else{
+  //       //     setSubscribePlanPopup(false);
+  //       //   }
+  //       // }else{
+  //       //   setSubscribePlanPopup(false);
+  //       // }
+  //     }
+  //   } catch (error) {
+  //     console.error('error occured is', error);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getProfile()
+  // }, [handleSubmit])
 
   //code for code separation
 
@@ -425,13 +511,13 @@ const Page = () => {
         <div className='px-2 py-2'
           style={{
             borderTopLeftRadius: 25, backgroundColor: '#ffffff00', borderTopRightRadius: 25,
-            borderBottomRightRadius: 25,
+            borderBottomRightRadius: 25, width: '55vw'
           }}>
           {separatedContent.map((part, index) => (
             <div key={index}>
               {part.type === 'code' ? (
                 // <pre><code>{part.value}</code></pre>
-                <div className='w-full' style={{
+                <div className='w-ful' style={{
                   backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, paddingBottom: 1, borderTop: 15,
                   flexDirection: 'column',
 
@@ -462,7 +548,7 @@ const Page = () => {
                   </SyntaxHighlighter>
                 </div>
               ) : (
-                <div className='flex flex-row items-center gap-2' style={{ color: 'white' }}>
+                <div className='flex w-ful flex-row items-center gap-2' style={{ color: 'white' }}>
                   {
                     ShowMessageTextBubble(part.value)
                   }
@@ -548,6 +634,39 @@ const Page = () => {
     setOpenSideNav(false);
   }
 
+
+
+  //code for animation loader
+
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        setActive((prev) => (prev === 2 ? 0 : prev + 1));
+      }, 300);
+    } else {
+      setActive(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  useEffect(() => {
+    controls.forEach((control, index) => {
+      if (index === active) {
+        control.start({
+          opacity: 1,
+          scale: 0.8
+        });
+      } else {
+        control.start({
+          opacity: 0.2,
+          scale: 0.5
+        });
+      }
+    });
+  }, [active, controls]);
+
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
@@ -568,6 +687,10 @@ const Page = () => {
                     </div> :
                     <div>
                       {projectData ? projectData.projectName : ""}
+                      <button className='text-black bg-white'
+                        onClick={handleOpenSubscribeWarning}>
+                        click
+                      </button>
                     </div>
                 }
               </div>
@@ -610,27 +733,30 @@ const Page = () => {
                         </div>
                       </div> :
                       (
-                        <div className='ps-2'>
-                          {
-                            loading ?
-                              <div className='text-white'>
-                                Loading ....
-                              </div> :
-                              <div>
-                                {getResponseView(message.content)}
-                              </div>
-                          }
+                        <div style={{ maxWidth: "60%" }}>
+                          {getResponseView(message.content)}
                         </div>
                       )
                   }
                 </div>
               ))}
 
-            </div>
+              {
+                loading &&
+                <div className='flex flex-row ms-2'>
+                  {controls.map((control, index) => (
+                    <motion.div
+                      key={index}
+                      animate={control}
+                      initial={{ opacity: 0.2 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
+                    />
+                  ))}
+                </div>
+              }
 
-            {/* <div>
-              <input placeholder='Enter mail' style={{ backgroundColor: "#00000020" }} />
-            </div> */}
+            </div>
 
             <div className='flex rounded-xl w-7/12 flex-row justify-between'
               style={{ position: 'absolute', bottom: 0, paddingLeft: 10, marginBottom: 30, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
@@ -787,7 +913,7 @@ const Page = () => {
                 Changes
               </div>
               <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
-                I’m building <b style={{ color: 'white' }}>AirBnB</b>. Powered by Neo
+                I'm building <b style={{ color: 'white' }}>AirBnB</b>. Powered by Neo
               </div>
               <div className='w-full mt-8 pb-4'>
                 <Button onClick={handleCopyLink} sx={{ textTransform: 'none' }}
@@ -797,6 +923,28 @@ const Page = () => {
                   }}>
                   Copy Link
                 </Button>
+              </div>
+            </div>
+          </Box>
+        </Modal>
+      </div>
+
+
+      <div>
+        <Modal
+          open={subscribePlanPopup}
+        // onClose={() => setSubscribePlanPopup(false)}
+        >
+          <Box sx={style2}>
+            <div className='text-white flex flex-col items-center justify-center'>
+              <img src='/assets/logo2.png' alt='logo' style={{ height: "184px", width: "184px", resize: "cover", objectFit: "conver" }} />
+              <div style={{ fontWeight: "600", fontSize: 24, fontFamily: "inter", marginTop: 10 }}>
+                UPGRADE TO A PLAN
+              </div>
+              <div>
+                <button onClick={() => router.push('/chat/plans')} style={{ backgroundColor: "#2548FD", color: "white", marginTop: 10, padding: 8, borderRadius: 5 }}>
+                  Upgrade
+                </button>
               </div>
             </div>
           </Box>

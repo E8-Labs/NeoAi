@@ -139,7 +139,7 @@ const ChoosePlan = () => {
 
     const [yearlyPlans, setYearlyPlans] = useState([
         {
-            id: 1,
+            id: 2,
             title: 'Task Runner for year',
             description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
             amount: '179.99'
@@ -429,7 +429,10 @@ const ChoosePlan = () => {
                                 </div> :
                                 <div>
                                     {
-                                        bankCards ?
+                                        bankCards.length === 0 ?
+                                            <div className='w-full mt-12 py-3 rounded flex items-center justify-center'>
+                                                No payment source
+                                            </div> :
                                             <div className='w-full mt-12 pb-4' style={{ overflow: 'auto', maxHeight: '42vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                                 {
                                                     bankCards.map((item) => (
@@ -457,17 +460,15 @@ const ChoosePlan = () => {
                                                         </div>
                                                     ))
                                                 }
-                                            </div> :
-                                            <div className='w-full mt-12 py-3 rounded flex items-center justify-center'>
-                                                No payment source
                                             </div>
                                     }
                                 </div>
                         }
                     </div>
                     {
-                        bankCards ?
-                           <div>
+                        bankCards.length === 0 ?
+                            "" :
+                            <div>
                                 <div className='w-full'>
                                     {
                                         selCard ?
@@ -498,8 +499,7 @@ const ChoosePlan = () => {
                                             </Button>
                                     }
                                 </div>
-                            </div> :
-                            ""
+                            </div>
                     }
                 </div>
             </div>
