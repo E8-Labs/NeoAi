@@ -107,13 +107,41 @@ const Page = () => {
     const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
     const [projDet, showProjDet] = useState(false);
     const [updatedData, setUpdatedData] = useState(null);
+    const [localImg, setImage] = useState(null);
 
 
 
+    useEffect(() => {
+        fetchGetMessagesApi()
+    }, [])
 
-
-
-
+    const fetchGetMessagesApi = async () => {
+        const NewProject = localStorage.getItem('NewProject');
+        if (NewProject) {
+            const projectChatId = JSON.parse(NewProject);
+            console.log('New project id from local storage for get messages api is :', projectChatId.data.chat.id);
+            const ID = projectChatId.data.chat.id;
+            const LSD = localStorage.getItem('User');
+            const localStorageData = JSON.parse(LSD);
+            const AuthToken = localStorageData.data.token;
+            const ApiPath = Apis.GetMessages; // 'http://localhost:8005/api/chat/get_messages'
+            const Data = {
+                chatId: ID
+            }
+            const response = await axios.get(`${ApiPath}?chatId=${ID}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AuthToken}`
+                }
+            });
+            if (response.status === 200) {
+                setUserChat(response.data.data);
+                console.log("Chat history is:", response.data)
+            } else {
+                console.error('Error fetching chat data:', response);
+            }
+        }
+    }
 
 
 
@@ -129,7 +157,7 @@ const Page = () => {
         if (NewProject) {
             // setChatHistory(JSON.parse(storedHistory));
             const projectChatId = JSON.parse(NewProject);
-            console.log('New project from local storage is :', projectChatId.data.chat.id);
+            console.log('New project id from local storage is :', projectChatId.data.chat.id);
             setChatId(projectChatId.data.chat.id);
             showProjDet(true);
         } else {
@@ -284,11 +312,23 @@ const Page = () => {
 
     const handleSubmit = async (e) => {
         setMessage('');
+        if (previewURL) {
+            localStorage.setItem('Image', JSON.stringify(previewURL));
+        }
+        const FileSelected = localStorage.getItem('Image')
+        if (FileSelected) {
+            // setImage()
+            const LocalImg = JSON.parse(FileSelected);
+            setImage(LocalImg);
+            // console.log('Localimage is', LocalImg);
+        }
         // setSelectedFile(null);
         const LSD = localStorage.getItem('User');
         const localStorageData = JSON.parse(LSD);
         // console.log('Data from localstorage is :', localStorageData.data.user.message);
         // const AuthToken = localStorageData.data.token;
+
+        setSelectedFile(null);
 
         if (localStorageData) {
             const prevMsg = localStorageData.data.user.message;
@@ -602,14 +642,15 @@ const Page = () => {
             setPUpdateLoader(false);
         }
 
-
     };
 
     useEffect(() => {
         const L = localStorage.getItem('NewProject');
-        const D = JSON.parse(L);
-        setProjectDetails(D.data);
-        console.log('Data recieved is', D);
+        if (L) {
+            const D = JSON.parse(L);
+            setProjectDetails(D.data);
+            console.log('Data recieved is', D);
+        }
     }, []);
 
     const style = {
@@ -1106,12 +1147,12 @@ const Page = () => {
                     </Modal>
                 </div>
 
-                {
+                {/* {
                     openSetting &&
                     <div style={{ height: '100vh' }}>
                         Settings screen
                     </div>
-                }
+                } */}
 
                 {
                     openEditProject && (
@@ -1135,7 +1176,7 @@ const Page = () => {
                     openProjects &&
                     <div className='flex flex-row justify-center'>
                         <div className='w-11/12 flex justify-center '
-                            style={{ height: '100vh', padding: 15, backgroundColor: '#ffffff10' }}>
+                            style={{ height: '95vh', padding: 15, backgroundColor: '#ffffff10' }}>
                             <div className='w-11/12'>
                                 <div className='w-full flex justify-center'>
                                     {/* replace with the component */}
@@ -1194,14 +1235,20 @@ const Page = () => {
                                                                 chat.role === "user" ? (
                                                                     <div>
                                                                         <div className='flex flex-col w-full justify-end items-end gap-2'>
-                                                                            <div>
+                                                                            {/* <div>
                                                                                 {
-                                                                                    previewURL ?
+                                                                                    localImg ?
                                                                                         <div>
-                                                                                            <img src={previewURL} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                                                                            <img src={localImg} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
                                                                                         </div> : ""
                                                                                 }
-                                                                            </div>
+                                                                            </div> */}
+                                                                            {
+                                                                                chat.imageThumb ?
+                                                                                    <div>
+                                                                                        <img src={chat.imageThumb} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                                                                    </div> : ""
+                                                                            }
                                                                             <div className='px-2 py-2'
                                                                                 style={{
                                                                                     color: 'white', textAlign: 'end', width: 'fit-content',
@@ -1248,8 +1295,10 @@ const Page = () => {
                                             <div className='text-white w-full items-start px-4 py-2'>
                                                 {selectedFile ?
                                                     <div style={{ width: "fit-content" }}>
-                                                        <div className='flex flex-row justify-end w-full' style={{ marginBottom: -25, paddingRight: 5, zIndex: 1, position: 'relative' }}>
-                                                            <div className='flex items-center justify-center' style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
+                                                        <div className='flex flex-row justify-end w-full'
+                                                            style={{ position: "absolute", top: 9, marginLeft: 5, left: 0 }}>
+                                                            <div className='flex items-center justify-center'
+                                                                style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
                                                                 <button onClick={() => setSelectedFile(null)}>
                                                                     <img src='/assets/cross2.png' alt='cross'
                                                                         style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}

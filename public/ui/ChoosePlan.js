@@ -133,7 +133,7 @@ const ChoosePlan = () => {
             id: 1,
             title: 'Task Runner',
             description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-            amount: '19.99'
+            amount: '49.99'
         },
     ])
 

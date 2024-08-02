@@ -11,12 +11,39 @@ import AnimatedForm from "@/public/assets/animation/animation";
 const Page = () => {
 
     const router = useRouter('');
+
     const [appIdea, setAppIdea] = useState('');
     const [showError, setShowError] = useState(false);
 
     const handleClose = () => {
         setShowError(false);
     }
+
+    // useEffect(() => {
+    //     const handleBeforeUnload = () => {
+    //         localStorage.removeItem('ChatScreen');
+    //     };
+
+    //     window.addEventListener('beforeunload', handleBeforeUnload);
+
+    //     return () => {
+    //         window.removeEventListener('beforeunload', handleBeforeUnload);
+    //     };
+    // }, []);
+
+    useEffect(() => {
+        const Data = localStorage.getItem('AppScreen');
+        if (Data) {
+            const LocalData = localStorage.getItem('User');
+            const UserData = JSON.parse(LocalData)
+            if (UserData) {
+                router.push('/chat')
+            }
+        } else {
+            // const LD = JSON.parse(Data)
+            // console.log('Data present', LD);
+        }
+    }, []);
 
     return (
         <div className="flex justify-center" style={{ color: 'white', height: "50vh" }}>

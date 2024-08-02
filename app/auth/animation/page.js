@@ -32,7 +32,7 @@ const AnimatedForm = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: 'auto', overflow: 'hidden' }}>
       <AnimatePresence initial={false} custom={direction}>
         {currentIndex === 0 && (
           <motion.div

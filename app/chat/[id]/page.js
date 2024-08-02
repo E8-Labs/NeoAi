@@ -287,35 +287,35 @@ const Page = () => {
   };
 
   //test code
-    //code for animation loader
-    useEffect(() => {
-      let interval;
-      if (loading) {
-        interval = setInterval(() => {
-          setActive((prev) => (prev === 2 ? 0 : prev + 1));
-        }, 300);
+  //code for animation loader
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        setActive((prev) => (prev === 2 ? 0 : prev + 1));
+      }, 300);
+    } else {
+      setActive(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  useEffect(() => {
+    controls.forEach((control, index) => {
+      if (index === active) {
+        control.start({
+          opacity: 1,
+          scale: 0.8
+        });
       } else {
-        setActive(0);
+        control.start({
+          opacity: 0.2,
+          scale: 0.5
+        });
       }
-  
-      return () => clearInterval(interval);
-    }, [loading]);
-  
-    useEffect(() => {
-      controls.forEach((control, index) => {
-        if (index === active) {
-          control.start({
-            opacity: 1,
-            scale: 0.8
-          });
-        } else {
-          control.start({
-            opacity: 0.2,
-            scale: 0.5
-          });
-        }
-      });
-    }, [active, controls]);
+    });
+  }, [active, controls]);
 
 
   const handleSubmit = async () => {
@@ -640,7 +640,7 @@ const Page = () => {
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
         <div className='mb-2 px-4 flex flex-row justify-between items-center'>
-          <div className='flex flex-row items-center gap-12 mt-8' style={{ width: "fit-content" }}>
+          <div className='flex flex-row items-center gap-12 mt-4' style={{ width: "fit-content" }}>
             <div className='flex flex-row gap-2 items-center text-white'>
 
               {/* {projectData ?
@@ -679,7 +679,7 @@ const Page = () => {
         </div>
       </div>
       <div className='w-full flex justify-center'>
-        <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "85vh" }}>
+        <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "86vh" }}>
 
           <div className='w-full flex flex-col items-center' style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div className='w-full' style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
@@ -728,8 +728,19 @@ const Page = () => {
               <div className='w-full flex flex-col items-center'>
                 <div className='text-white w-full items-start px-4 py-2'>
                   {selectedFile ?
-                    <img src={previewURL} alt='Inputimg' className='rounded-md'
-                      style={{ height: '50px', width: '50px', resize: 'cover', objectFit: 'cover' }} /> : ''
+                    <div style={{ width: "fit-content" }}>
+                      <div className='' style={{ position: "absolute", top: 9, marginLeft: 5  }}> {/*marginBottom: -22, paddingRight: 5, zIndex: 1, position: 'relative'*/}
+                        <div className='flex items-center justify-center' style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
+                          <button onClick={() => setSelectedFile(null)}>
+                            <img src='/assets/cross2.png' alt='cross'
+                              style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                      <img src={previewURL} alt='Inputimg' className='rounded-md'
+                        style={{ height: '77px', width: '107px', resize: 'cover', objectFit: 'cover' }} />
+                    </div> : ''
                   }
                 </div>
                 <input

@@ -8,6 +8,8 @@ export default function Home() {
 
   useEffect(() => {
     // router.push('/onboarding');
+    const Data = "AppScreen";
+    localStorage.setItem("AppScreen", JSON.stringify(Data));
     router.push('/onboarding');
   }, [])
 

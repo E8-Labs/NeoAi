@@ -8,7 +8,7 @@ import GetProjects from './GetProjects';
 import axios from 'axios';
 
 const Chatsidenav = () => {
-    const Router = useRouter();
+    const router = useRouter();
     const pathName = usePathname();
 
     const [myProjectsLoader, setMyprojectsLoader] = useState(false);
@@ -48,6 +48,16 @@ const Chatsidenav = () => {
             href: '/chat/plans'
         }
     ]
+
+    //test code
+
+    const handleCreateNewProject = () => {
+        localStorage.removeItem('AppScreen');
+        const FromScreen = "CahtScreen";
+        localStorage.setItem('ChatScreen', JSON.stringify(FromScreen));
+        router.push('/onboarding');
+    }
+
     //code for image picker1
     const handleFileSelect = (file) => {
 
@@ -189,7 +199,7 @@ const Chatsidenav = () => {
     //code for loging out the user
     const handleLogout = () => {
         localStorage.removeItem('User');
-        Router.push('/onboarding');
+        router.push('/onboarding');
     }
 
     const dashboardPath = "/chat";
@@ -248,11 +258,7 @@ const Chatsidenav = () => {
                         backgroundColor: '#4011FA', height: '50px', fontWeight: '500', fontSize: 15, fontFamily: 'inter',
                         gap: 8
                     }}
-                    onClick={() => {
-                        // setUserChat([]);
-                        // setActiveChat(null);
-                        Router.push("/onboarding")
-                    }}>
+                    onClick={handleCreateNewProject}>
                     <img src='/assets/addIcon.png' alt='addIcon' style={{ height: '16px', width: '16px' }} />
                     <p style={{ textTransform: 'none', fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
                         New Project
