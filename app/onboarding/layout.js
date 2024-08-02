@@ -27,7 +27,7 @@ const backgroundImage = {
     backgroundSize: "cover",
     backgroundPosition: 'center',
     width: '100%',
-    height: 'auto'
+    height: '10vh'
 }
 
 export default function RootLayout({ children }) {
@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
 
             </head>
             <body className={inter.className} style={backgroundImage}>
-                <div style={{ marginTop: 30, }}>
+                <div style={{ marginTop: 10, }}>
                     <div className="w-screen flex flex-row items-center justify-between px-12">
                         <button>
                             <img src="/assets/logo.png" style={{ height: '37px', width: '36px', resize: 'cover' }} />

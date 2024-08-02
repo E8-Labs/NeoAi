@@ -19,9 +19,9 @@ const Page = () => {
     }
 
     return (
-        <div className="flex justify-center" style={{ color: 'white' }}>
+        <div className="flex justify-center" style={{ color: 'white', height: "50vh" }}>
             <div className="w-11/12">
-                <div className="flex justify-between mt-16">
+                <div className="flex justify-between mt-8">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector2.png" alt="vector2" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                 </div>
@@ -44,7 +44,8 @@ const Page = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-between mt-16">
+                <div className="flex justify-between">
+                    {/* <div>hi</div> */}
                     <img src="/assets/Vector3.png" alt="vector3" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector4.png" alt="vector4" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                 </div>

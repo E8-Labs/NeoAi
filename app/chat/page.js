@@ -303,17 +303,13 @@ const Page = () => {
 
         if (Test) {
             if (Data.data.user.plan === null) {
-                if (Data.data.user.message > 1) {
+                if (Data.data.user.message > 12) {
                     setSubscribePlanPopup(true);
                 }
             } else {
                 setSubscribePlanPopup(false);
             }
         }
-
-
-
-
 
         e.preventDefault();
         setLoading(true);
@@ -588,7 +584,7 @@ const Page = () => {
                 console.log('Data updated', PData);
                 const D = localStorage.getItem('NewProject');
                 const LocalD = JSON.parse(D);
-                if(LocalD){
+                if (LocalD) {
                     const updatedProjName = PData.projectName;
                     LocalD.data.projectName = updatedProjName;
                     localStorage.setItem('NewProject', JSON.stringify(LocalD))
@@ -866,14 +862,16 @@ const Page = () => {
                                 <div className='w-full mb-2'>
                                     {
                                         projDet ?
-                                            <div className='flex flex-row items-center gap-12 mt-8'>
+                                            <div className='flex flex-row items-center gap-12 mt-4'>
                                                 <div className='flex flex-row gap-2 items-center'>
                                                     {/*
                                                         SelectedLogo ?
                                                             <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
                                                             <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
                                     */}
-                                                    <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+                                                    <img src='/assets/applogo.png' alt='Applogo'
+                                                        style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                                                    />
                                                     <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
                                                         {updatedData ?
                                                             <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
@@ -1249,8 +1247,19 @@ const Page = () => {
                                         <div className='w-full flex flex-col items-center'>
                                             <div className='text-white w-full items-start px-4 py-2'>
                                                 {selectedFile ?
-                                                    <img src={previewURL} alt='Inputimg' className='rounded-md'
-                                                        style={{ height: '50px', width: '50px', resize: 'cover', objectFit: 'cover' }} /> : ''
+                                                    <div style={{ width: "fit-content" }}>
+                                                        <div className='flex flex-row justify-end w-full' style={{ marginBottom: -25, paddingRight: 5, zIndex: 1, position: 'relative' }}>
+                                                            <div className='flex items-center justify-center' style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
+                                                                <button onClick={() => setSelectedFile(null)}>
+                                                                    <img src='/assets/cross2.png' alt='cross'
+                                                                        style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <img src={previewURL} alt='Inputimg' className='rounded-md'
+                                                            style={{ height: '77px', width: '107px', resize: 'cover', objectFit: 'cover' }} />
+                                                    </div> : ''
                                                 }
                                             </div>
                                             <input

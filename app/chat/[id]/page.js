@@ -124,9 +124,9 @@ const Page = () => {
         const event = new CustomEvent('apiSuccess', { detail: 'Api call was successfull' });
         document.dispatchEvent(event);
         setOpen(false);
-        if(PData){
+        if (PData) {
           setAppName(PData.projectName)
-        }else if(projectData) {
+        } else if (projectData) {
           setAppName(projectData.projectName)
         }
         // window.location.reload();
@@ -286,6 +286,37 @@ const Page = () => {
     backgroundColor: '#0F0C2D'
   };
 
+  //test code
+    //code for animation loader
+    useEffect(() => {
+      let interval;
+      if (loading) {
+        interval = setInterval(() => {
+          setActive((prev) => (prev === 2 ? 0 : prev + 1));
+        }, 300);
+      } else {
+        setActive(0);
+      }
+  
+      return () => clearInterval(interval);
+    }, [loading]);
+  
+    useEffect(() => {
+      controls.forEach((control, index) => {
+        if (index === active) {
+          control.start({
+            opacity: 1,
+            scale: 0.8
+          });
+        } else {
+          control.start({
+            opacity: 0.2,
+            scale: 0.5
+          });
+        }
+      });
+    }, [active, controls]);
+
 
   const handleSubmit = async () => {
     // console.log('test working');
@@ -308,7 +339,7 @@ const Page = () => {
 
     if (Test) {
       if (Data.data.user.plan === null) {
-        if (Data.data.user.message > 1) {
+        if (Data.data.user.message > 12) {
           setSubscribePlanPopup(true)
         }
       } else {
@@ -320,106 +351,69 @@ const Page = () => {
     // getProfile();
 
     const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
-        const updatedChat = [...chat, newChat];
-        setChat(updatedChat);
-        setLoading(true);
+    const updatedChat = [...chat, newChat];
+    setChat(updatedChat);
+    setLoading(true);
 
-        setTimeout(async () => {
-          if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTo({
-              top: chatContainerRef.current.scrollHeight,
-              behavior: 'smooth'
-            });
-          };
+    setTimeout(async () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
 
-          const urlToFile = async (url, filename, mimeType) => {
-            const res = await axios.get(url, { responseType: 'blob' });
-            const blob = res.data;
-            return new File([blob], filename, { type: mimeType });
-          };
+      const urlToFile = async (url, filename, mimeType) => {
+        const res = await axios.get(url, { responseType: 'blob' });
+        const blob = res.data;
+        return new File([blob], filename, { type: mimeType });
+      };
 
-          const formData = new FormData();
-          formData.append('chatId', id);
-          formData.append('content', userChatMsg);
+      const formData = new FormData();
+      formData.append('chatId', id);
+      formData.append('content', userChatMsg);
 
-          // Convert the image URL to a File object and append it to the form data
-          if (previewURL) {
-            console.log('Image sending in');
-            const file = await urlToFile(previewURL, 'image.png', 'image/png');
-            formData.append('media', file);
+      // Convert the image URL to a File object and append it to the form data
+      if (previewURL) {
+        console.log('Image sending in');
+        const file = await urlToFile(previewURL, 'image.png', 'image/png');
+        formData.append('media', file);
+      }
+
+      console.log("Data sending in api is :", formData);
+
+      try {
+        const response = await axios.post(Apis.SendMessage, formData, {
+          headers: {
+            'Authorization': 'Bearer ' + AuthToken,
+            'Content-Type': 'multipart/form-data',
           }
+        });
 
-          console.log("Data sending in api is :", formData);
+        if (response.status === 200) {
+          const Result = response.data.data;
+          console.log('Response of API is', Result);
 
-          try {
-            const response = await axios.post(Apis.SendMessage, formData, {
-              headers: {
-                'Authorization': 'Bearer ' + AuthToken,
-                'Content-Type': 'multipart/form-data',
-              }
-            });
-
-            if (response.status === 200) {
-              const Result = response.data.data;
-              console.log('Response of API is', Result);
-
-              // Update the chat state by removing the last message and appending the response messages
-              setChat((prevChat) => {
-                // Remove the last message (user's message)
-                const updatedItems = prevChat.slice(0, -1);
-                // Append the response messages
-                return [...updatedItems, ...Result];
-              });
-            } else {
-              console.log('Response is not ok:', response);
-            }
-          } catch (error) {
-            console.error('Error calling API:', error);
-            return "Sorry, I can't respond right now.";
-          } finally {
-            setLoading(false);
-          }
-        }, 1000);
+          // Update the chat state by removing the last message and appending the response messages
+          setChat((prevChat) => {
+            // Remove the last message (user's message)
+            const updatedItems = prevChat.slice(0, -1);
+            // Append the response messages
+            return [...updatedItems, ...Result];
+          });
+        } else {
+          console.log('Response is not ok:', response);
+        }
+      } catch (error) {
+        console.error('Error calling API:', error);
+        return "Sorry, I can't respond right now.";
+      } finally {
+        setLoading(false);
+      }
+    }, 1000);
 
 
   };
-
-  //code for getprofile
-  // const getProfile = async () => {
-  //   try {
-  //     const L = localStorage.getItem('User');
-  //     const LocalData = JSON.parse(L);
-  //     const AuthToken = LocalData.data.token;
-  //     const ApiPath = Apis.GetProfile;
-  //     const response = await axios.get(ApiPath, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer ' + AuthToken
-  //       }
-  //     });
-  //     if (response.status === 20) {
-  //       const Result = response.data.data.messages;
-  //       console.log('Response is', response.data.data);
-  //       const PlanStatus = LocalData.data.user.plan;
-  //       setGetProfileData(Result);
-  //       // if(PlanStatus === null){
-  //       //   if(Result > 2){
-  //       //     setSubscribePlanPopup(true);
-  //       //   }else{
-  //       //     setSubscribePlanPopup(false);
-  //       //   }
-  //       // }else{
-  //       //   setSubscribePlanPopup(false);
-  //       // }
-  //     }
-  //   } catch (error) {
-  //     console.error('error occured is', error);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getProfile()
-  // }, [handleSubmit])
 
   //code for code separation
 
@@ -640,9 +634,6 @@ const Page = () => {
     setOpenSideNav(false);
   }
 
-
-
-  //code for animation loader
 
 
   return (

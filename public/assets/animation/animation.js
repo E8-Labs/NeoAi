@@ -47,6 +47,14 @@ const AnimatedForm = () => {
   const [showSaveWorkError, setShowSaveWorkError] = useState(false);
   const [founderContinueLoader, setFounderContinueLoader] = useState(false);
 
+  //login directly
+  useEffect(() => {
+    const Data = localStorage.getItem('User');
+    if(Data){
+      router.push('/chat')
+    }
+  }, []);
+
   //code for animation continue
   const handleContinue = () => {
     setDirection(1);
