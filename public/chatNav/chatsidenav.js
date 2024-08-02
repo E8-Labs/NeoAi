@@ -110,9 +110,11 @@ const Chatsidenav = () => {
 
             if (response.status === 200) {
                 const Result = response.data.data;
+                LocalData.data.user = Result
                 console.log('Profile data updated', Result);
                 setProfileData(Result);
-                localStorage.setItem('profileData', JSON.stringify(Result));
+
+                localStorage.setItem('User', JSON.stringify(LocalData));
             } else {
                 console.log('Profile not updated');
             }
@@ -237,6 +239,10 @@ const Chatsidenav = () => {
             setFormattedEmail(formatEmail(email));
             setSeparateLetters(reduceemail(email));
         };
+
+        if(B.data.user.name){
+            setUserName(B.data.user.name)
+        }
     }, []);
 
 
