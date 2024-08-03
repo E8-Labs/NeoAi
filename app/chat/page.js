@@ -945,128 +945,6 @@ const Page = () => {
                     </div>
                 </div>
 
-                {
-                    openPlan &&
-                    <div className='flex justify-center w-full' style={{ height: '100vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        <ChoosePlan />
-                    </div>
-                }
-
-                {
-                    openTeam &&
-                    <div className='w-full flex justify-center' style={{ height: '100vh' }}>
-                        <div className='w-11/12 mt-8 flex gap-6'>
-                            {
-                                teamProfiles ?
-                                    <Grid container spacing={2} style={{ height: 'fit-content', display: 'flex', alignItems: 'flex-start' }}>
-                                        {teamProfiles.map((item) => (
-                                            <Grid key={item.id} item xs={12} sm={6} md={4} lg={4} xl={3} style={{ height: 'fit-content' }}>
-                                                <div className='w-full gap-8 p-4 flex flex-row'
-                                                    style={{ backgroundColor: '#ffffff20', borderRadius: 2, height: 'fit-content', width: '100%', maxWidth: '335px' }}>
-                                                    <div>
-                                                        <img src='/assets/profile1.png' alt='TM_Profile' style={{ height: '50px', width: '50px', objectFit: 'cover' }} />
-                                                    </div>
-                                                    <div>
-                                                        <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
-                                                            {item.name}
-                                                        </div>
-                                                        <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
-                                                            {item.role}
-                                                        </div>
-                                                        <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
-                                                            Email:
-                                                            <span style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
-                                                                {item.toUserEmail}
-                                                            </span>
-                                                        </div>
-                                                        {item.status === 'accepted' ?
-                                                            <div className='flex items-center justify-center mt-3'
-                                                                style={{
-                                                                    height: '35px', width: '96px', borderRadius: 1,
-                                                                    backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                }}>
-                                                                Accepted
-                                                            </div> :
-                                                            <div>
-                                                                {
-                                                                    showAcceptBtn ?
-                                                                        <div className='flex flex-row justify-between w-full'>
-                                                                            <Button className='flex items-center justify-center mt-3'
-                                                                                style={{
-                                                                                    height: '35px', width: '96px', borderRadius: 5,
-                                                                                    backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                                }}>
-                                                                                Accept
-                                                                            </Button>
-                                                                            <Button className='flex items-center justify-center mt-3'
-                                                                                style={{
-                                                                                    height: '35px', width: '96px', borderRadius: 1,
-                                                                                    backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                                }}>
-                                                                                Decline
-                                                                            </Button>
-                                                                        </div> :
-                                                                        <div>
-                                                                            {item.status === 'pending' && (
-                                                                                <div className='flex items-center justify-center mt-3'
-                                                                                    style={{
-                                                                                        height: '35px', width: '96px', borderRadius: 1,
-                                                                                        backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                                    }}>
-                                                                                    Pending
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                }
-                                                            </div>
-                                                        }
-
-                                                    </div>
-                                                </div>
-                                            </Grid>
-                                        ))}
-                                        <Grid item xs={12} sm={6} md={4} lg={4} xl={3} style={{ height: 'fit-content' }}>
-                                            <div className='w-full p-4 flex flex-col justify-center items-center'
-                                                style={{
-                                                    backgroundColor: '#ffffff20', borderRadius: 2, height: '137px',
-                                                    border: '1px dashed #ffffff60', width: '100%', maxWidth: '335px'
-                                                }}>
-                                                <div className='flex flex-row justify-center gap-2'>
-                                                    <button
-                                                        sx={{ textTransform: 'none' }}
-                                                        onClick={handleOpenAddTeam}
-                                                        className='flex items-center justify-center'
-                                                        style={{ height: '30px', width: '30px', backgroundColor: '#2548FD', borderRadius: '50%' }}>
-                                                        <img src='/assets/addIcon.png' alt='Add' style={{ height: '10px', width: '10px', objectFit: 'cover' }} />
-                                                    </button>
-                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginTop: 8 }}>
-                                                        New Team Member
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Grid>
-                                    </Grid> :
-                                    <div className='text-white flex items-center justify-center w-full'>
-                                        <div className='lg:w-3/12 w-4/12 flex flex-col items-center p-4'>
-                                            <div style={{ width: '100%', height: '276px', backgroundColor: '#ffffff13' }} />
-                                            <div className='text-center mt-4'
-                                                style={{ fontWeight: '500', fontSize: 20, fontFamily: 'inter' }}>
-                                                Looks like you have no active team members
-                                            </div>
-                                            <Button className='rounded mt-6' sx={{ textTransform: 'none' }}
-                                                style={{
-                                                    backgroundColor: '#4011FA', fontWeight: '500', fontSize: 15, fontFamily: 'inter', color: 'white',
-                                                    height: '47px', width: '170px'
-                                                }}>
-                                                Create Invite
-                                            </Button>
-                                        </div>
-                                    </div>
-                            }
-                        </div>
-                    </div>
-                }
-
                 {/* Modal for sharing and editing project */}
                 <div>
                     <Modal
@@ -1175,7 +1053,7 @@ const Page = () => {
                 {
                     openProjects &&
                     <div className='flex flex-row justify-center'>
-                        <div className='w-11/12 flex justify-center '
+                        <div className='w-11/12 flex justify-center'
                             style={{ height: '95vh', padding: 15, backgroundColor: '#ffffff10' }}>
                             <div className='w-11/12'>
                                 <div className='w-full flex justify-center'>

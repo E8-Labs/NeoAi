@@ -93,18 +93,27 @@ const Page = () => {
         const LSD = localStorage.getItem('User');
         const localStorageData = JSON.parse(LSD);
         // console.log('Data2 from localstorage for match email is :', localStorageData);
-        const toUser2 = localStorageData.data.user.id;
+        // const toUser2 = localStorageData.data.user.id;
+        const toUserEmail1 = localStorageData.data.user.email;
+        console.log('Email for test is', toUserEmail1);
         // console.log('email to match is:', toUser2);
         // const toUserId = teamProfiles.toUser.id;
         // console.log('Id getting is:', teamProfiles[0].toUser.id);
-        teamProfiles.forEach(element => {
-            if (element.toUser.id == toUser2) {
-                console.log('Id of user and ined user matches');
+
+        if(teamProfiles.status === "pending"){
+            if(toUserEmail1 === teamProfiles.toUserEmail){
                 setShowAcceptBtn(true);
-            } else {
-                console.log('id donot match');
             }
-        });
+        }
+
+        // teamProfiles.forEach(element => {
+        //     if (element.toUser.id == toUser2) {
+        //         console.log('Id of user and ined user matches');
+        //         setShowAcceptBtn(true);
+        //     } else {
+        //         console.log('id donot match');
+        //     }
+        // });
     }, [])
 
     const getTeam = async () => {
