@@ -19,18 +19,6 @@ const Page = () => {
         setShowError(false);
     }
 
-    // useEffect(() => {
-    //     const handleBeforeUnload = () => {
-    //         localStorage.removeItem('ChatScreen');
-    //     };
-
-    //     window.addEventListener('beforeunload', handleBeforeUnload);
-
-    //     return () => {
-    //         window.removeEventListener('beforeunload', handleBeforeUnload);
-    //     };
-    // }, []);
-
     useEffect(() => {
         const Data = localStorage.getItem('AppScreen');
         if (Data) {

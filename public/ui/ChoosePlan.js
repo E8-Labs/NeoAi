@@ -18,8 +18,8 @@ const ChoosePlan = () => {
     const [CVV, setCVV] = useState('');
     const [loader, setLoader] = useState(false);
     const [error, setError] = useState(false);
-    const [monthlyPlanId, setMonthlyPlanId] = useState("");
-    const [yearlyPlanId, setYearlyPlanId] = useState("");
+    const [monthlyPlanId, setMonthlyPlanId] = useState(null);
+    const [yearlyPlanId, setYearlyPlanId] = useState(null);
     const [getCardsLoader, setGetCardsLoader] = useState(false);
     const [makePaymentLoader, setMakePaymentLoader] = useState(false);
     const [sendApiData, setsendApiData] = useState("");
@@ -71,19 +71,51 @@ const ChoosePlan = () => {
     const radioInActive = '/assets/Radio.png';
     const radioActive = '/assets/activeRadio.png';
 
+    //cards array
+
+    const [monthlyPlans, setMonthlyPlans] = useState([
+        {
+            id: 1,
+            title: 'Task Runner',
+            description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
+            amount: '49.99'
+        },
+    ])
+
+    const [yearlyPlans, setYearlyPlans] = useState([
+        {
+            id: 2,
+            title: 'Task Runner for year',
+            description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
+            amount: '179.99'
+        },
+    ]);
+
+
     const handlePlanSel = (itemId) => {
         setSelCard(itemId === selCard ? null : itemId);
     };
 
     const handleMonthlyPlanClick = (itemId) => {
+        setYearlyPlanId(null);
+        setYearlyPkgPlan(null);
         setMonthlyPkgPlan(itemId === MonthlyPkgPlan ? null : itemId);
         setMonthlyPlanId(itemId === MonthlyPkgPlan ? null : itemId);
     };
 
     const handleYearlyPlanClick = (itemId) => {
+        setMonthlyPlanId(null);
+        setMonthlyPkgPlan(null);
         setYearlyPkgPlan(itemId === YearlyPkgPlan ? null : itemId);
         setYearlyPlanId(itemId === YearlyPkgPlan ? null : itemId);
     };
+
+    useEffect(() => {
+        console.log("Yearly plan id", yearlyPlanId);
+    }, [handleYearlyPlanClick])
+    useEffect(() => {
+        console.log("Monthly plan id", monthlyPlanId);
+    }, [handleMonthlyPlanClick])
 
     const monthlyPlanClick = () => {
         setYearlyPlan(false);
@@ -126,25 +158,7 @@ const ChoosePlan = () => {
         }
     ]
 
-    //cards array
 
-    const [monthlyPlans, setMonthlyPlans] = useState([
-        {
-            id: 1,
-            title: 'Task Runner',
-            description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-            amount: '49.99'
-        },
-    ])
-
-    const [yearlyPlans, setYearlyPlans] = useState([
-        {
-            id: 2,
-            title: 'Task Runner for year',
-            description: 'Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus',
-            amount: '179.99'
-        },
-    ])
 
 
     const style = {
@@ -313,15 +327,15 @@ const ChoosePlan = () => {
                                         <div key={item.id} className='w-full flex flex-row mt-4 mb-6 justify-between' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
                                             <div className='flex flex-row gap-2'>
                                                 <div>
-                                                    {
+                                                    {/* {
                                                         monthlyPlanId ?
                                                             <button disabled>
                                                                 <img src={YearlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
-                                                            </button> :
-                                                            <button onClick={() => handleYearlyPlanClick(item.id)}>
-                                                                <img src={YearlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
-                                                            </button>
-                                                    }
+                                                            </button> : */}
+                                                    <button onClick={() => handleYearlyPlanClick(item.id)}>
+                                                        <img src={YearlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
+                                                    </button>
+                                                    {/* } */}
                                                 </div>
                                                 <div style={{ width: '80%' }}>
                                                     <div style={{ fontSize: 15, fontWeight: '400', fontFamily: 'inter' }}>
@@ -366,15 +380,15 @@ const ChoosePlan = () => {
                                             <div key={item.id} className='w-full flex flex-row justify-between mt-4' style={{ backgroundColor: '#ffffff15', padding: '20px' }}>
                                                 <div className='flex flex-row gap-2'>
                                                     <div>
-                                                        {
+                                                        {/* {
                                                             yearlyPlanId ?
                                                                 <button disabled>
                                                                     <img src={MonthlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
-                                                                </button> :
-                                                                <button onClick={() => handleMonthlyPlanClick(item.id)}>
-                                                                    <img src={MonthlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
-                                                                </button>
-                                                        }
+                                                                </button> : */}
+                                                        <button onClick={() => handleMonthlyPlanClick(item.id)}>
+                                                            <img src={MonthlyPkgPlan === item.id ? radioActive : radioInActive} alt='radio' style={{ height: '26px', width: '26px', resize: 'cover', objectFit: 'contain' }} />
+                                                        </button>
+                                                        {/* } */}
                                                     </div>
                                                     <div style={{ width: '80%' }}>
                                                         <div style={{ fontSize: 15, fontWeight: '400', fontFamily: 'inter' }}>
@@ -504,37 +518,39 @@ const ChoosePlan = () => {
                 </div>
             </div>
             <div className='text-white w-full'>
-                <div className='w-full' style={{ height: '1px', backgroundColor: '#ffffff60', marginTop: 100 }}></div>
+                <div className='w-full' style={{ height: '1px', backgroundColor: '#ffffff60' }}></div>
             </div>
             <div className='w-11/12 flex flex-col mt-8'>
                 <div style={{ fontWeight: '500', fontSize: 20, fontFamily: 'inter' }}>
                     Payment History
                 </div>
-                {
-                    paymentHistory.map((item) => (
-                        <div key={item.id} className='mt-4' style={{ width: '33%' }}>
-                            <div className='flex flex-row justify-between'>
-                                <div style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter' }}>
-                                    {item.inv}
-                                </div>
-                                <div className='flex flex-row gap-12'
-                                    style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter' }}>
-                                    <div>
-                                        {item.AED}
+                <div>
+                    {
+                        paymentHistory.map((item) => (
+                            <div key={item.id} className='mt-4' style={{ width: '33%' }}>
+                                <div className='flex flex-row justify-between'>
+                                    <div style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter' }}>
+                                        {item.inv}
                                     </div>
-                                    <button>
-                                        <u style={{ color: '#2548FD' }}>
-                                            {item.pdf}
-                                        </u>
-                                    </button>
+                                    <div className='flex flex-row gap-12'
+                                        style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter' }}>
+                                        <div>
+                                            {item.AED}
+                                        </div>
+                                        <button>
+                                            <u style={{ color: '#2548FD' }}>
+                                                {item.pdf}
+                                            </u>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style={{ fontWeight: '500', fontSize: 10, fontFamily: 'inter' }}>
+                                    {item.date}
                                 </div>
                             </div>
-                            <div style={{ fontWeight: '500', fontSize: 10, fontFamily: 'inter' }}>
-                                {item.date}
-                            </div>
-                        </div>
-                    ))
-                }
+                        ))
+                    }
+                </div>
             </div>
             {/*Modals*/}
             <Modal

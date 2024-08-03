@@ -343,7 +343,7 @@ const Page = () => {
 
         if (Test) {
             if (Data.data.user.plan === null) {
-                if (Data.data.user.message > 12) {
+                if (Data.data.user.message > 5) {
                     setSubscribePlanPopup(true);
                 }
             } else {

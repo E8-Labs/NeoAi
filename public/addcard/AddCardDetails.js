@@ -114,8 +114,8 @@ const AddCardDetails = ({ handleClose }) => {
                         color: 'white', fontSize: '22px', border: '1px solid blue', borderRadius: '4px'
                     }} />
             </div>
-            <div className='flex flex-row gap-2 w-full'>
-                <div className='mt-2 w-6/12'>
+            <div className='flex flex-row gap-2 w-full mt-4'>
+                <div className='w-6/12'>
                     <CardExpiryElement
                         options={elementOptions}
                         style={{
@@ -123,7 +123,7 @@ const AddCardDetails = ({ handleClose }) => {
                             color: 'white', fontSize: '22px', border: '1px solid blue', borderRadius: '4px'
                         }} />
                 </div>
-                <div className='mt-2 w-6/12'>
+                <div className='w-6/12'>
                     <CardCvcElement
                         options={elementOptions}
                         style={{
