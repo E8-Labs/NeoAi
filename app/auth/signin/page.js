@@ -17,6 +17,7 @@ const Page = () => {
     const [showSignInError, setSignInError] = useState(false);
     const [loader, setLoader] = useState(false);
     const [PasswordError, setPasswordError] = useState(false);
+    const [height, setHeight] = useState('100vh');
 
     const handleSignup = () => {
         router.push('/auth/login')
@@ -26,12 +27,29 @@ const Page = () => {
         setShowPassword(!showPassword);
     };
 
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (window.innerWidth < 768) {
+                setHeight('auto');
+            } else {
+                setHeight('100vh');
+            }
+        };
+
+        window.addEventListener('resize', updateHeight);
+        updateHeight(); // Initial check
+
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
+
     const backgroundImage = {
         backgroundImage: 'url("../background.png")',
         backgroundSize: "cover",
         backgroundPosition: 'center',
         width: '100%',
-        height: '100vh'
+        height: height,
+        minHeight: '50vh',
     }
 
     const handleClose = () => {
@@ -60,7 +78,7 @@ const Page = () => {
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
                         } else if (ApiResponse.message === "User registered") {
                             // setShowError(true);
-                        }else if (ApiResponse.message === "Invalid password") {
+                        } else if (ApiResponse.message === "Invalid password") {
                             // console.log('User not registered');
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
                             setPasswordError(true);
@@ -88,7 +106,7 @@ const Page = () => {
 
     return (
         <div className="flex justify-center text-white" style={backgroundImage}>
-            <div className="w-11/12">
+            <div className="w-11/12" style={{ height: "100%", overflowY: "hidden" }}>
                 <div className="flex justify-between mt-16">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector2.png" alt="vector2" style={{ height: '23px', width: '20px', resize: 'cover' }} />
@@ -131,10 +149,10 @@ const Page = () => {
                                         }}
                                         placeholder="Password" />
                                     <button onClick={handleTogglePassword}>
-                                        {showPassword ? 
-                                        <img src="/assets/showPass.png" alt="showpassword" style={{ height: '17px', width: '17px', resize: 'cover', objectFit: 'cover' }} />
-                                        :
-                                        <img src="/assets/hidePass.png" alt="showpassword" style={{ height: '20px', width: '20px', resize: 'cover', objectFit: 'cover' }} />}
+                                        {showPassword ?
+                                            <img src="/assets/showPass.png" alt="showpassword" style={{ height: '17px', width: '17px', resize: 'cover', objectFit: 'cover' }} />
+                                            :
+                                            <img src="/assets/hidePass.png" alt="showpassword" style={{ height: '20px', width: '20px', resize: 'cover', objectFit: 'cover' }} />}
                                     </button>
                                 </div>
                                 <div className="flex flex-col gap-y-20">

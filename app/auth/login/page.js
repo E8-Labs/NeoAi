@@ -16,6 +16,7 @@ const Page = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loginLoader, setLoginLoader] = useState(false);
     const [inviteId, setInviteId] = useState('');
+    const [height, setHeight] = useState('100vh');
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,12 +30,28 @@ const Page = () => {
         setShowPassword(!showPassword);
     };
 
+    useEffect(() => {
+        const updateHeight = () => {
+            if (window.innerWidth < 768) {
+                setHeight('auto');
+            } else {
+                setHeight('100vh');
+            }
+        };
+
+        window.addEventListener('resize', updateHeight);
+        updateHeight(); // Initial check
+
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
+
     const backgroundImage = {
         backgroundImage: 'url("../background.png")',
         backgroundSize: "cover",
         backgroundPosition: 'center',
         width: '100%',
-        height: 'auto'
+        height: height,
+        minHeight: '50vh',
     }
 
     const handleClose = () => {
@@ -95,7 +112,7 @@ const Page = () => {
 
     return (
         <div className="flex justify-center text-white" style={backgroundImage}>
-            <div className="w-11/12">
+            <div className="w-11/12" style={{ height: "100%", overflowY: "hidden" }}>
                 <div className="flex justify-between mt-16">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />
                     <img src="/assets/Vector2.png" alt="vector2" style={{ height: '23px', width: '20px', resize: 'cover' }} />

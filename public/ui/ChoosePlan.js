@@ -275,17 +275,17 @@ const ChoosePlan = () => {
             console.log('response of local is', response);
             if (response.data.user.plan === null) {
                 console.log('plan is null');
+            } else if (typeof response.data.user.plan.subscriptionType === undefined) {
+                console.log('length is undefiend');
             } else {
-                if (typeof response.data.user.plan.subscriptionType === undefined ) {
-                    if (response.data.user.plan.subscriptionType === "monthly") {
-                        console.log('Test 1 clear');
-                        setYearlyPlanCheck(false);
-                        setCurrentPlanCheck(true);
-                    } else {
-                        console.log('Test 2 clear');
-                        setCurrentPlanCheck(false);
-                        setYearlyPlanCheck(true);
-                    }
+                if (response.data.user.plan.subscriptionType === "monthly") {
+                    console.log('Test 1 clear');
+                    setYearlyPlanCheck(false);
+                    setCurrentPlanCheck(true);
+                } else {
+                    console.log('Test 2 clear');
+                    setCurrentPlanCheck(false);
+                    setYearlyPlanCheck(true);
                 }
             }
         }
