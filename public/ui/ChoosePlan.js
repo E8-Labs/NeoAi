@@ -27,12 +27,14 @@ const ChoosePlan = () => {
     const [yearlyPlanCheck, setYearlyPlanCheck] = useState(false);
     const [updatedResponse, setUpdatedResponse] = useState('');
     const [bankCards, setBankCards] = useState([]);
+    const [addCardResult, setAddCardResult] = useState(false);
 
     const openAddCardModal = () => {
         setAddCard(true);
     }
 
     const handleClose = () => {
+        setAddCardResult(true);
         setAddCard(false);
         getCards();
     };
@@ -186,7 +188,7 @@ const ChoosePlan = () => {
         const LocalData = localStorage.getItem('User');
         const D = JSON.parse(LocalData);
         const AuthToken = D.data.token;
-        // console.log("Authtoken for get cards is :", AuthToken);
+        console.log("Authtoken for get cards is :", AuthToken);
         try {
             setGetCardsLoader(true)
             const response = await axios.get(ApiPath, {
@@ -199,10 +201,12 @@ const ChoosePlan = () => {
                 console.log("Response for gat cards api is :", response.data);
             }
             if (response.status === 200) {
-                const data = response.data;
-                if (data === null) {
+                console.log('Response for testing', response.data.data);
+                console.log('Test data', response.data.data);
+                if (response.data.data === null) {
                     console.log('Cards response is null');
                 } else {
+                    console.log('Data not null');
                     setBankCards(response.data.data);
                 }
             }

@@ -14,7 +14,7 @@ const Page = () => {
         setOpenSideNav(false);
     }
     return (
-        <div style={{ height: '100vh', color: 'white' }}>
+        <div style={{ height: '100vh', color: 'white', backgroundColor: "#050221" }}>
             <div className='px-4 mt-6 flex w-full text-white flex-row justify-between'>
                 <div>
                     Settings

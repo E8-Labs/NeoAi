@@ -100,8 +100,8 @@ const Page = () => {
         // const toUserId = teamProfiles.toUser.id;
         // console.log('Id getting is:', teamProfiles[0].toUser.id);
 
-        if(teamProfiles.status === "pending"){
-            if(toUserEmail1 === teamProfiles.toUserEmail){
+        if (teamProfiles.status === "pending") {
+            if (toUserEmail1 === teamProfiles.toUserEmail) {
                 setShowAcceptBtn(true);
             }
         }
@@ -157,6 +157,38 @@ const Page = () => {
         setOpenSideNav(false);
     }
 
+    const handleAcceptRequest = async () => {
+        try {
+            const inviteStatus = "accepted" //rejected
+            const LSD = localStorage.getItem('User');
+            const localStorageData = JSON.parse(LSD);
+            // console.log('Data2 from localstorage for add team is :', localStorageData);
+            const AuthToken = localStorageData.data.token;
+            const ApiPath = "";
+            const InviteResponse = {
+                inviteId: "email",
+                status: inviteStatus
+            }
+            const response = await axios.post(ApiPath, InviteResponse, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + AuthToken
+                }
+            });
+
+            if (response.status === 200) {
+                console.log('Invite accepted');
+            } else {
+                console.log('Couldnot accept invite');
+            }
+        } catch (error) {
+            console.error('Error occured in accept invite api is', error);
+        } finally {
+            console.log('Done');
+        }
+
+    }
+
     return (
         <div className='w-full flex flex-col items-center' style={{ height: '100vh', backgroundColor: "#050221" }}>
 
@@ -208,7 +240,7 @@ const Page = () => {
                                                             {
                                                                 showAcceptBtn ?
                                                                     <div className='flex flex-row justify-between w-full'>
-                                                                        <Button className='flex items-center justify-center mt-3'
+                                                                        <Button className='flex items-center justify-center mt-3' onClick={handleAcceptRequest}
                                                                             style={{
                                                                                 height: '35px', width: '96px', borderRadius: 5,
                                                                                 backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12

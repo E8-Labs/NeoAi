@@ -18,6 +18,9 @@ const AddCardDetails = ({ handleClose }) => {
     const [addDateErr, setAddDateErr] = useState(false);
     const [cvcErr, setCvcErr] = useState(false);
     const [credentialsErr, setCredentialsErr] = useState(false);
+    const [addCardSuccess, setAddCardSuccess] = useState(false);
+    const [addCardFailure, setAddCardFailure] = useState(false);
+    const [addCardDetails, setAddCardDetails] = useState(null);
 
     const elementOptions = {
         style: {
@@ -43,6 +46,7 @@ const AddCardDetails = ({ handleClose }) => {
 
     const handleAddCard = async (e) => {
         // Check if the event object is provided and prevent the default behavior
+        setAddCardLoader(true);
         if (e && e.preventDefault) {
             e.preventDefault();
         }
@@ -66,7 +70,6 @@ const AddCardDetails = ({ handleClose }) => {
                     theme: "dark"
                 });
             } else if (tok.token.id) {
-                setAddCardLoader(true);
                 console.log("Token generating for card number :", tok.token.id)
                 const tokenId = tok.token.id;
                 let api = process.env.NEXT_PUBLIC_REACT_APP_ENVIRONMENT === "Development2" ? "https://bf59-119-156-82-235.ngrok-free.app" : "https://plurawlapp.com/plurawl";
@@ -89,7 +92,15 @@ const AddCardDetails = ({ handleClose }) => {
                         console.log("Response of add card api is", response);
                     }
                     if (response.status === 200) {
-                        handleClose4(e);
+                        setAddCardDetails(response.data.message);
+                        if (response.data.message === "Card not added") {
+                            setAddCardFailure(true);
+                        } else {
+                            setAddCardSuccess(true);
+                        }
+                        setTimeout(() => {
+                            handleClose4(e);
+                        }, 700)
                     }
                 } catch (error) {
                     console.error("Error occured in adding user card api is :", error);
@@ -170,6 +181,58 @@ const AddCardDetails = ({ handleClose }) => {
                         }} severity="error"
                         sx={{ width: 'auto', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
                         Enter all Credientials.
+                    </Alert>
+                </Snackbar>
+            </div>
+            <div>
+                <Snackbar
+                    open={addCardFailure}
+                    // autoHideDuration={3000}
+                    onClose={() => {
+                        setAddCardFailure(false)
+                    }}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                    }}
+                    TransitionComponent={Slide}
+                    TransitionProps={{
+                        direction: 'left'
+                    }}
+                >
+                    <Alert
+                        onClose={() => {
+                            setAddCardFailure(false)
+                        }} severity="error"
+                        sx={{ width: 'auto', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                        {/* {addCardDetails} */}
+                        Card not added
+                    </Alert>
+                </Snackbar>
+            </div>
+            <div>
+                <Snackbar
+                    open={addCardSuccess}
+                    // autoHideDuration={3000}
+                    onClose={() => {
+                        setAddCardSuccess(false)
+                    }}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                    }}
+                    TransitionComponent={Slide}
+                    TransitionProps={{
+                        direction: 'left'
+                    }}
+                >
+                    <Alert
+                        onClose={() => {
+                            setAddCardSuccess(false)
+                        }} severity="success"
+                        sx={{ width: 'auto', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                        {/* {addCardDetails} */}
+                        Card added successfully
                     </Alert>
                 </Snackbar>
             </div>
