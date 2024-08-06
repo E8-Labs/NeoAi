@@ -16,6 +16,9 @@ const Page = () => {
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("");
     const [openSideNav, setOpenSideNav] = useState(false);
+    const [acceptLoader, setAcceptLoader] = useState(false);
+    const [declineLoader, setDeclineLoader] = useState(false);
+
     const handleOpenAddTeam = () => setOpenAddTeam(true);
 
     const handleCloseModal = () => {
@@ -89,33 +92,6 @@ const Page = () => {
         }
     }
 
-    useEffect(() => {
-        const LSD = localStorage.getItem('User');
-        const localStorageData = JSON.parse(LSD);
-        // console.log('Data2 from localstorage for match email is :', localStorageData);
-        // const toUser2 = localStorageData.data.user.id;
-        const toUserEmail1 = localStorageData.data.user.email;
-        console.log('Email for test is', toUserEmail1);
-        // console.log('email to match is:', toUser2);
-        // const toUserId = teamProfiles.toUser.id;
-        // console.log('Id getting is:', teamProfiles[0].toUser.id);
-
-        if (teamProfiles.status === "pending") {
-            if (toUserEmail1 === teamProfiles.toUserEmail) {
-                setShowAcceptBtn(true);
-            }
-        }
-
-        // teamProfiles.forEach(element => {
-        //     if (element.toUser.id == toUser2) {
-        //         console.log('Id of user and ined user matches');
-        //         setShowAcceptBtn(true);
-        //     } else {
-        //         console.log('id donot match');
-        //     }
-        // });
-    }, [])
-
     const getTeam = async () => {
         try {
             //Auth token from local storage add team loader
@@ -157,16 +133,50 @@ const Page = () => {
         setOpenSideNav(false);
     }
 
-    const handleAcceptRequest = async () => {
+    useEffect(() => {
+        const LSD = localStorage.getItem('User');
+        const localStorageData = JSON.parse(LSD);
+        const toUserEmail1 = localStorageData.data.user.email;
+        console.log('Email for test is', toUserEmail1);
+
+        let showAcceptButton = false;
+
+        teamProfiles.forEach(element => {
+            if (element.status === "pending") {
+                console.log('Working test 1');
+                if (element.toUser === null) {
+                    console.log('null');
+                } else {
+                    console.log('Working test 2');
+                    if (element.toUser.email === toUserEmail1) {
+                        console.log('Id of user and ined user matches');
+                        showAcceptButton = true;
+                    } else {
+                        console.log('email does not match');
+                    }
+                }
+            } else {
+                console.log('not working');
+            }
+        });
+
+        setShowAcceptBtn(showAcceptButton);
+    }, [teamProfiles]);
+
+
+    const handleAcceptRequest = async (inviteid) => {
+        setAcceptLoader(true);
+        console.log('invite id is', inviteid);
+
         try {
             const inviteStatus = "accepted" //rejected
             const LSD = localStorage.getItem('User');
             const localStorageData = JSON.parse(LSD);
             // console.log('Data2 from localstorage for add team is :', localStorageData);
             const AuthToken = localStorageData.data.token;
-            const ApiPath = "";
+            const ApiPath = Apis.AcceptInvitation;
             const InviteResponse = {
-                inviteId: "email",
+                inviteId: inviteid,
                 status: inviteStatus
             }
             const response = await axios.post(ApiPath, InviteResponse, {
@@ -176,7 +186,11 @@ const Page = () => {
                 }
             });
 
+            if (response) {
+                console.log('Response of accept invite is', response);
+            }
             if (response.status === 200) {
+                window.location.reload();
                 console.log('Invite accepted');
             } else {
                 console.log('Couldnot accept invite');
@@ -184,7 +198,48 @@ const Page = () => {
         } catch (error) {
             console.error('Error occured in accept invite api is', error);
         } finally {
-            console.log('Done');
+            // console.log('Done');
+            setAcceptLoader(false);
+        }
+
+    }
+
+    const handleDeclineRequest = async (inviteid) => {
+        setDeclineLoader(true);
+        console.log('invite id is', inviteid);
+
+        try {
+            const inviteStatus = "rejected" //rejected
+            const LSD = localStorage.getItem('User');
+            const localStorageData = JSON.parse(LSD);
+            // console.log('Data2 from localstorage for add team is :', localStorageData);
+            const AuthToken = localStorageData.data.token;
+            const ApiPath = Apis.AcceptInvitation;
+            const InviteResponse = {
+                inviteId: inviteid,
+                status: inviteStatus
+            }
+            const response = await axios.post(ApiPath, InviteResponse, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + AuthToken
+                }
+            });
+
+            if (response) {
+                console.log('Response of accept invite is', response);
+            }
+            if (response.status === 200) {
+                window.location.reload();
+                console.log('Invite declined');
+            } else {
+                console.log('Couldnot accept invite');
+            }
+        } catch (error) {
+            console.error('Error occured in accept invite api is', error);
+        } finally {
+            // console.log('Done');
+            setDeclineLoader(false);
         }
 
     }
@@ -222,13 +277,38 @@ const Page = () => {
                                                     <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
                                                         {item.role}
                                                     </div>
-                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
-                                                        Email:
-                                                        <span style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
-                                                            {item.toUserEmail}
-                                                        </span>
+                                                    <div className='flex flex-row'>
+                                                        <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
+                                                            Email:
+                                                        </div>
+                                                        <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
+                                                            {
+                                                                item.toUser === null ?
+                                                                    <div>
+                                                                        {
+                                                                            item.toUserEmail === null ?
+                                                                                <div>
+                                                                                </div> :
+                                                                                <div
+                                                                                    style={{
+                                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                                        color: '#ffffff', marginLeft: 3
+                                                                                    }}>
+                                                                                    {item.toUserEmail}
+                                                                                </div>
+                                                                        }
+                                                                    </div> :
+                                                                    <div
+                                                                        style={{
+                                                                            fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                            color: '#ffffff', marginLeft: 3
+                                                                        }}>
+                                                                        {item.toUser.email}
+                                                                    </div>
+                                                            }
+                                                        </div>
                                                     </div>
-                                                    {item.status === 'accepted' ?
+                                                    {/* {item.status === 'accepted' ?
                                                         <div className='flex items-center justify-center mt-3'
                                                             style={{
                                                                 height: '35px', width: '96px', borderRadius: 1,
@@ -236,39 +316,72 @@ const Page = () => {
                                                             }}>
                                                             Accepted
                                                         </div> :
-                                                        <div>
-                                                            {
-                                                                showAcceptBtn ?
-                                                                    <div className='flex flex-row justify-between w-full'>
-                                                                        <Button className='flex items-center justify-center mt-3' onClick={handleAcceptRequest}
-                                                                            style={{
-                                                                                height: '35px', width: '96px', borderRadius: 5,
-                                                                                backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                            }}>
-                                                                            Accept
-                                                                        </Button>
-                                                                        <Button className='flex items-center justify-center mt-3'
-                                                                            style={{
-                                                                                height: '35px', width: '96px', borderRadius: 1,
-                                                                                backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                            }}>
-                                                                            Decline
-                                                                        </Button>
-                                                                    </div> :
-                                                                    <div>
-                                                                        {item.status === 'pending' && (
+                                                        
+                                                    } */}
+
+                                                    <div>
+                                                        {
+                                                            showAcceptBtn ?
+                                                                <div className='flex flex-row justify-between w-full gap-2'>
+                                                                    <Button className='flex items-center justify-center mt-3'
+                                                                        onClick={() => handleAcceptRequest(item.id)}
+                                                                        style={{
+                                                                            height: '35px', width: '96px', borderRadius: 5,
+                                                                            backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                        }}>
+                                                                        {
+                                                                            acceptLoader ?
+                                                                                <CircularProgress size={20} />
+                                                                                : "Accept"
+                                                                        }
+                                                                    </Button>
+                                                                    <Button className='flex items-center justify-center mt-3'
+                                                                        onClick={() => handleDeclineRequest(item.id)}
+                                                                        style={{
+                                                                            height: '35px', width: '96px', borderRadius: 1,
+                                                                            backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                        }}>
+                                                                        {
+                                                                            declineLoader ?
+                                                                                <CircularProgress size={20} /> :
+                                                                                "Decline"
+                                                                        }
+                                                                    </Button>
+                                                                </div> :
+                                                                <div>
+                                                                    {
+                                                                        item.status === 'accepted' && (
                                                                             <div className='flex items-center justify-center mt-3'
                                                                                 style={{
                                                                                     height: '35px', width: '96px', borderRadius: 1,
-                                                                                    backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                                    backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
                                                                                 }}>
-                                                                                Pending
+                                                                                Accepted
                                                                             </div>
-                                                                        )}
-                                                                    </div>
-                                                            }
-                                                        </div>
-                                                    }
+                                                                        )
+                                                                    }
+                                                                    {item.status === 'pending' && (
+                                                                        <div className='flex items-center justify-center mt-3'
+                                                                            style={{
+                                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                                backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                            }}>
+                                                                            Pending
+                                                                        </div>
+                                                                    )
+                                                                    }
+                                                                    {item.status === 'rejected' && (
+                                                                        <div className='flex items-center justify-center mt-3'
+                                                                            style={{
+                                                                                height: '35px', width: '96px', borderRadius: 1,
+                                                                                backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                            }}>
+                                                                            Rejected
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                        }
+                                                    </div>
 
                                                 </div>
                                             </div>

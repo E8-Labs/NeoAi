@@ -67,7 +67,7 @@ const Page = () => {
         data.inviteId = inviteId
     }
 
-    console.log("Data sending in  login api is:", data);
+    // console.log("Data sending in  login api is:", data);
 
     const handleContinueClick = async () => {
         if (email.length !== 0) {
@@ -85,13 +85,8 @@ const Page = () => {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
-                        if (ApiResponse.message === "User logged in") {
-                            router.push('/onboarding');
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
-                        } else if (ApiResponse.message === "User registered") {
-                            // console.log('User not registered');
-                            setShowError(true);
-                        }
+                            router.push('/chat');
                     }
                 } else if (!response.ok) {
                     console.log('Error in signing in is :', response)

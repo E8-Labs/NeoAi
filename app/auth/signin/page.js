@@ -73,18 +73,14 @@ const Page = () => {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
-                        if (ApiResponse.message === "User logged in") {
-                            router.push('/chat');
-                            localStorage.setItem('User', JSON.stringify(ApiResponse));
-                        } else if (ApiResponse.message === "User registered") {
-                            // setShowError(true);
-                        } else if (ApiResponse.message === "Invalid password") {
+                        if (ApiResponse.message === "Invalid password") {
                             // console.log('User not registered');
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
                             setPasswordError(true);
-                            router.push('/chat');
+                            // router.push('/chat');
                         } else {
-                            console.log('Status is :', ApiResponse.status);
+                            localStorage.setItem('User', JSON.stringify(ApiResponse));
+                            router.push('/chat');
                         }
                     } else {
                         console.log('status is', ApiResponse.status);

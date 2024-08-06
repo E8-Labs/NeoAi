@@ -8,6 +8,7 @@ const GetProjects = () => {
 
     const [myProjects, setMyProjects] = useState([]);
     const [focusedLink, setFocusedLink] = useState(null);
+    const [noProject, setNoProject] = useState(false);
 
     const getProjects = async () => {
         try {
@@ -32,6 +33,12 @@ const GetProjects = () => {
             if (response.status === 200) {
                 console.log('Response of api on navbar screen is is', response.data);
                 setMyProjects(response.data.data)
+                if (response.data.data.length === 0) {
+                    setNoProject(true)
+                }
+                if (response.data.data === null) {
+                    setNoProject(true)
+                }
             } else if (!response.status === 200) {
                 console.log('Response is not ok due to:', response);
             }
@@ -75,7 +82,7 @@ const GetProjects = () => {
 
     return (
         <div>
-            <div style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className='text-white' style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {myProjects ?
                     <div>
                         {
@@ -107,6 +114,12 @@ const GetProjects = () => {
                     <div>
                         No Projects
                     </div>}
+                {
+                    noProject &&
+                    <div className='mt-4' style={{ fontWeight: "500", fontSize: 12, fontFamily: "inter" }}>
+                        No Project
+                    </div>
+                }
             </div>
         </div>
     )

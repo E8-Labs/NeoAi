@@ -14,7 +14,8 @@ const Apis = {
     SubscribePlan: `${BasePath}api/user/subscribe`,
     UpdateProject: `${BasePath}api/chat/update_project`,
     UpdateProfile: `${BasePath}api/user/update_profile`,
-    GetProfile: `${BasePath}api/user/get_profile`
+    GetProfile: `${BasePath}api/user/get_profile`,
+    AcceptInvitation: `${BasePath}api/user/handle_invitation`
 }
 
 export default Apis;

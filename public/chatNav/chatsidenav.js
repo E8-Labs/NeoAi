@@ -312,7 +312,7 @@ const Chatsidenav = () => {
                                                 style={{
                                                     fontWeight: '500', fontSize: 12, fontFamily: 'inter',
                                                     color: pathName === link.href ? '#ffffff' : '#ffffff60', backgroundColor: pathName === link.href ? '#ffffff60' : '',
-                                                    padding: pathName === link.href ? 4 : "", borderRadius: 5
+                                                    padding: pathName === link.href ? 4 : "", borderRadius: 2
                                                 }}> {/* 2548FD40 */}
                                                 {link.name}
                                             </Link>
