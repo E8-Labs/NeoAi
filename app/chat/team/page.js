@@ -18,6 +18,7 @@ const Page = () => {
     const [openSideNav, setOpenSideNav] = useState(false);
     const [acceptLoader, setAcceptLoader] = useState(false);
     const [declineLoader, setDeclineLoader] = useState(false);
+    const [showFromUserData, setShowFromUserData] = useState(false);
 
     const handleOpenAddTeam = () => setOpenAddTeam(true);
 
@@ -74,6 +75,10 @@ const Page = () => {
                     console.log('Response of add team member is :', response);
                 }
                 if (response.status === 200) {
+                    const newMember = response.data.data;
+
+                    // Update the teamProfiles state with the new member
+                    setTeamProfiles((prevProfiles) => [...prevProfiles, newMember])
                     setOpenAddTeam
                     setName('');
                     setEmail('');
@@ -142,10 +147,33 @@ const Page = () => {
         let showAcceptButton = false;
 
         teamProfiles.forEach(element => {
+
+            if (element.toUser === null) {
+                if (element.toUserEmail === toUserEmail1) {
+                    console.log('Ys true');
+
+                    setShowFromUserData(true)
+                }
+            } else {
+                if (element.toUserEmail === toUserEmail1) {
+                    setShowFromUserData(true)
+                }
+            }
+
+
+
             if (element.status === "pending") {
                 console.log('Working test 1');
                 if (element.toUser === null) {
-                    console.log('null');
+                    console.log('Working test', element.toUserEmail);
+                    // console.log('Working test 2');
+                    if (element.toUserEmail === toUserEmail1) {
+                        // setShowFromUserData(true);
+                        console.log('Id of user and ined user matches');
+                        showAcceptButton = true;
+                    } else {
+                        console.log('email does not match');
+                    }
                 } else {
                     console.log('Working test 2');
                     if (element.toUser.email === toUserEmail1) {
@@ -271,8 +299,16 @@ const Page = () => {
                                                     <img src='/assets/profile1.png' alt='TM_Profile' style={{ height: '50px', width: '50px', objectFit: 'cover' }} />
                                                 </div>
                                                 <div>
-                                                    <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
-                                                        {item.name}
+                                                    <div>
+                                                        {
+                                                            showFromUserData ?
+                                                                <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
+                                                                    {item.fromUser.email}
+                                                                </div> :
+                                                                <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
+                                                                    {item.name}
+                                                                </div>
+                                                        }
                                                     </div>
                                                     <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
                                                         {item.role}
@@ -289,12 +325,33 @@ const Page = () => {
                                                                             item.toUserEmail === null ?
                                                                                 <div>
                                                                                 </div> :
-                                                                                <div
-                                                                                    style={{
-                                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
-                                                                                        color: '#ffffff', marginLeft: 3
-                                                                                    }}>
-                                                                                    {item.toUserEmail}
+                                                                                <div>
+                                                                                    <div>
+                                                                                        {
+                                                                                            showFromUserData ?
+                                                                                                <div
+                                                                                                    style={{
+                                                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                                                        color: '#ffffff', marginLeft: 3
+                                                                                                    }}>
+                                                                                                    {item.fromUser.email}
+                                                                                                </div> :
+                                                                                                <div
+                                                                                                    style={{
+                                                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                                                        color: '#ffffff', marginLeft: 3
+                                                                                                    }}>
+                                                                                                    {item.toUserEmail === null ?
+                                                                                                        <div>
+                                                                                                            {item.toUser.email}
+                                                                                                        </div> :
+                                                                                                        <div>
+                                                                                                            {item.toUserEmail}
+                                                                                                        </div>
+                                                                                                    }
+                                                                                                </div>
+                                                                                        }
+                                                                                    </div>
                                                                                 </div>
                                                                         }
                                                                     </div> :
@@ -308,7 +365,7 @@ const Page = () => {
                                                             }
                                                         </div>
                                                     </div>
-                                                    {/* {item.status === 'accepted' ?
+                                                    {item.status === 'accepted' ?
                                                         <div className='flex items-center justify-center mt-3'
                                                             style={{
                                                                 height: '35px', width: '96px', borderRadius: 1,
@@ -316,72 +373,63 @@ const Page = () => {
                                                             }}>
                                                             Accepted
                                                         </div> :
-                                                        
-                                                    } */}
-
-                                                    <div>
-                                                        {
-                                                            showAcceptBtn ?
-                                                                <div className='flex flex-row justify-between w-full gap-2'>
-                                                                    <Button className='flex items-center justify-center mt-3'
-                                                                        onClick={() => handleAcceptRequest(item.id)}
-                                                                        style={{
-                                                                            height: '35px', width: '96px', borderRadius: 5,
-                                                                            backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                        }}>
-                                                                        {
-                                                                            acceptLoader ?
-                                                                                <CircularProgress size={20} />
-                                                                                : "Accept"
-                                                                        }
-                                                                    </Button>
-                                                                    <Button className='flex items-center justify-center mt-3'
-                                                                        onClick={() => handleDeclineRequest(item.id)}
-                                                                        style={{
-                                                                            height: '35px', width: '96px', borderRadius: 1,
-                                                                            backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                        }}>
-                                                                        {
-                                                                            declineLoader ?
-                                                                                <CircularProgress size={20} /> :
-                                                                                "Decline"
-                                                                        }
-                                                                    </Button>
+                                                        <div>
+                                                            {item.status === 'rejected' ?
+                                                                <div className='flex items-center justify-center mt-3'
+                                                                    style={{
+                                                                        height: '35px', width: '96px', borderRadius: 1,
+                                                                        backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                    }}>
+                                                                    Rejected
                                                                 </div> :
                                                                 <div>
                                                                     {
-                                                                        item.status === 'accepted' && (
-                                                                            <div className='flex items-center justify-center mt-3'
-                                                                                style={{
-                                                                                    height: '35px', width: '96px', borderRadius: 1,
-                                                                                    backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                                }}>
-                                                                                Accepted
+                                                                        showAcceptBtn ?
+                                                                            <div className='flex flex-row justify-between w-full gap-2'>
+                                                                                <Button className='flex items-center justify-center mt-3'
+                                                                                    onClick={() => handleAcceptRequest(item.id)}
+                                                                                    style={{
+                                                                                        height: '35px', width: '96px', borderRadius: 5,
+                                                                                        backgroundColor: '#00EE7C07', color: '#00EE7C', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                                    }}>
+                                                                                    {
+                                                                                        acceptLoader ?
+                                                                                            <CircularProgress size={20} />
+                                                                                            : "Accept"
+                                                                                    }
+                                                                                </Button>
+                                                                                <Button className='flex items-center justify-center mt-3'
+                                                                                    onClick={() => handleDeclineRequest(item.id)}
+                                                                                    style={{
+                                                                                        height: '35px', width: '96px', borderRadius: 1,
+                                                                                        backgroundColor: '#D4474050', color: '#D44740', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                                    }}>
+                                                                                    {
+                                                                                        declineLoader ?
+                                                                                            <CircularProgress size={20} /> :
+                                                                                            "Decline"
+                                                                                    }
+                                                                                </Button>
+                                                                            </div> :
+                                                                            <div>
+                                                                                {item.status === 'pending' && (
+                                                                                    <div className='flex items-center justify-center mt-3'
+                                                                                        style={{
+                                                                                            height: '35px', width: '96px', borderRadius: 1,
+                                                                                            backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
+                                                                                        }}>
+                                                                                        Pending
+                                                                                    </div>
+                                                                                )
+                                                                                }
                                                                             </div>
-                                                                        )
                                                                     }
-                                                                    {item.status === 'pending' && (
-                                                                        <div className='flex items-center justify-center mt-3'
-                                                                            style={{
-                                                                                height: '35px', width: '96px', borderRadius: 1,
-                                                                                backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                            }}>
-                                                                            Pending
-                                                                        </div>
-                                                                    )
-                                                                    }
-                                                                    {item.status === 'rejected' && (
-                                                                        <div className='flex items-center justify-center mt-3'
-                                                                            style={{
-                                                                                height: '35px', width: '96px', borderRadius: 1,
-                                                                                backgroundColor: '#FFB54707', color: '#FFB547', fontWeight: '500', fontFamily: 'inter', fontSize: 12
-                                                                            }}>
-                                                                            Rejected
-                                                                        </div>
-                                                                    )}
                                                                 </div>
-                                                        }
-                                                    </div>
+                                                            }
+                                                        </div>
+                                                    }
+
+
 
                                                 </div>
                                             </div>
