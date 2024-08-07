@@ -46,6 +46,7 @@ const AnimatedForm = () => {
   const [saveWorkLoader, setSaveWorkLoader] = useState(false);
   const [showSaveWorkError, setShowSaveWorkError] = useState(false);
   const [founderContinueLoader, setFounderContinueLoader] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   //login directly
   // useEffect(() => {
@@ -245,6 +246,9 @@ const AnimatedForm = () => {
     }
   }
 
+  const togglePassword = () => {
+    setShowPassword(!showPassword)
+  }
 
 
 
@@ -284,9 +288,9 @@ const AnimatedForm = () => {
                     placeholder="Type here" />
                 </div>
                 <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-                <div className='mt-2' style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
+                <div className='mt-6' style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
                   By submitting, I consent to Hebbia's communications and acknowledge
-                  my data will be handled per their Privacy Policy.
+                  my data will be handled per their Privacy Policy *
                 </div>
                 <div>
                   {
@@ -423,7 +427,7 @@ const AnimatedForm = () => {
                       outline: 'none', border: 'none', backgroundColor: '#00000000',
                       fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
                     }}
-                    placeholder="Type here" />
+                    placeholder="App name" />
                 </div>
                 <div className="flex flex-col gap-y-24">
                   <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
@@ -639,16 +643,27 @@ const AnimatedForm = () => {
                       placeholder="Email Address" />
                     <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
                   </div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="mt-12 w-11/12"
-                    style={{
-                      outline: 'none', border: 'none', backgroundColor: '#00000000',
-                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
-                    }}
-                    placeholder="Password" />
+                  <div className='flex flex-row gap-4 items-end'>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="mt-12 w-11/12"
+                      style={{
+                        outline: 'none', border: 'none', backgroundColor: '#00000000',
+                        fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                      }}
+                      placeholder="Password" />
+                    <div>
+                      <button onClick={togglePassword} className='text-white'>
+                        {
+                          showPassword ?
+                            <img src='/assets/hidePass.png' alt='show' style={{ height: '30px', width: '30px', resize: 'cover', objectFit: '' }} /> :
+                            <img src='/assets/showPass.png' alt='show' style={{ height: '27px', width: '27px', resize: 'cover', objectFit: '' }} />
+                        }
+                      </button>
+                    </div>
+                  </div>
                   <div className="flex flex-col gap-y-20">
                     <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
                     <div className="mt-6 flex flex-row gap-8">

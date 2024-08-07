@@ -11,6 +11,7 @@ import { Box, Button, CircularProgress, Drawer, Modal } from '@mui/material';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Notifications from '@/public/assets/notifications/Notifications';
 import { motion, useAnimation } from 'framer-motion';
+import Image from 'next/image';
 
 const Page = () => {
   const fileInputRef = useRef(null);
@@ -40,6 +41,7 @@ const Page = () => {
   const controls = [useAnimation(), useAnimation(), useAnimation()];
   const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
   const [getProfileData, setGetProfileData] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
 
 
   const handleOpenEditproject = () => setOpen(true);
@@ -47,6 +49,52 @@ const Page = () => {
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
 
+
+  useEffect(() => {
+    getProfileResponse()
+  }, []);
+
+  const getProfileResponse = async () => {
+    const ApiPath = Apis.GetProfile;
+    const LD = localStorage.getItem('User');
+    const LocalData = JSON.parse(LD);
+    const AuthToken = LocalData.data.token;
+    const response = await axios.get(ApiPath, {
+      headers: {
+        'Authorization': 'Bearer ' + AuthToken,
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    try {
+      if (response.status === 200) {
+        console.log('Profiledata', response.data.data);
+        if (response.data.data.profileImage) {
+          setGetProfileData(response.data.data)
+        }
+        else if (response.data.data.name) {
+          const reduceName = (name) => {
+            if (name.length) {
+              return name.slice(0, 1).toUpperCase()
+            }
+          }
+          const userName = response.data.data.name;
+          setUserEmail(reduceName(userName));
+        }
+        else {
+          const reduceemail = (email) => {
+            if (email.length) {
+              return email.slice(0, 1).toUpperCase()
+            }
+          }
+          const userEmail = response.data.data.email;
+          setUserEmail(reduceemail(userEmail));
+        }
+      }
+    } catch (error) {
+      console.log('Error occured in profile api', error);
+
+    }
+  }
 
   const handleCopyLink = () => {
     const currentUrl = window.location.href;
@@ -108,6 +156,8 @@ const Page = () => {
         const file = await urlToFile(SelectedLogo, 'image.png', 'image/png');
         formData.append('media', file);
       }
+      console.log('Data for update project', formData);
+
       const response = await axios.post(ApiPath, formData, {
         headers: {
           'Authorization': 'Bearer ' + AuthToken,
@@ -179,85 +229,6 @@ const Page = () => {
     }
   }, [projectData]);
 
-
-
-  //code for calling send msg api
-  // const handleSubmit = async () => {
-  //   const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
-  //   const updatedChat = [...chat, newChat];
-  //   setChat(updatedChat)
-  //   setTimeout(async()=> {
-  //     setUserChatMessage("");
-  //     if (chatContainerRef.current) {
-  //       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  //     };
-  //     const LSD = localStorage.getItem('User');
-  //     const localStorageData = JSON.parse(LSD);
-  //     console.log('Data from localstorage is :', localStorageData);
-  //     const AuthToken = localStorageData.data.token;
-
-  //     const urlToFile = async (url, filename, mimeType) => {
-  //       const res = await axios.get(url, { responseType: 'blob' });
-  //       const blob = res.data;
-  //       return new File([blob], filename, { type: mimeType });
-  //     };
-
-  //     const formData = new FormData();
-  //     formData.append('chatId', id);
-  //     formData.append('content', userChatMsg);
-
-  //     // Convert the image URL to a File object and append it to the form data
-  //     if (previewURL) {
-  //       console.log('Imagr sending in');
-  //       const file = await urlToFile(previewURL, 'image.png', 'image/png');
-  //       formData.append('media', file);
-  //     }
-
-  //     console.log("Data sending in api is :", formData);
-
-  //     try {
-  //       const response = await axios.post(Apis.SendMessage, formData, {
-  //         headers: {
-  //           'Authorization': 'Bearer ' + AuthToken,
-  //           'Content-Type': 'multipart/form-data',
-  //         }
-  //       });
-  //       if (response.status === 200) {
-  //         const Result = response.data.data;
-  //         console.log('response of api is', Result);
-  //         // const updatedItems = chat;
-  //         // console.log("Previous chat is ", chat)
-  //         // updatedItems.pop(); // Remove the last item
-  //         // console.log("Previous chat after pop ", updatedItems)
-  //         // let newArray = [...updatedItems, ...Result] // Add the new object
-  //         // console.log(" chat after append ", newArray)
-  //         // setChat(newArray)
-
-  //         // setChat((prevChat) => [...prevChat, ...Result]);
-  //         setChat((prevChat) => {
-  //           const updatedItems = prevChat;
-  //           console.log("Previous chat is ", prevChat)
-  //           updatedItems.pop(); // Remove the last item
-  //           console.log("Previous chat after pop ", updatedItems)
-  //          let newArray = [...updatedItems, ...Result] // Add the new object
-  //          console.log(" chat after append ", newArray)
-  //           return newArray;
-  //         });
-  //       } else {
-  //         console.log('Response is not ok :', response);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error calling OpenAI API:', error);
-  //       return "Sorry, I can't respond right now.";
-  //     }
-  //     return () => {
-
-  //     }
-  //   }, 2000)
-
-
-  // }
-
   const style = {
     position: 'absolute',
     top: '50%',
@@ -286,7 +257,6 @@ const Page = () => {
     backgroundColor: '#0F0C2D'
   };
 
-  //test code
   //code for animation loader
   useEffect(() => {
     let interval;
@@ -340,7 +310,7 @@ const Page = () => {
     if (Test) {
       if (Data.data.user.plan === null) {
         if (Data.data.user.message > 5) {
-          setSubscribePlanPopup(true)
+          // setSubscribePlanPopup(true)
         }
       } else {
         setSubscribePlanPopup(false);
@@ -488,6 +458,13 @@ const Page = () => {
     }
   };
 
+  const handleCopy = async (index, value) => {
+    await navigator.clipboard.writeText(value);
+    setCopied(index);
+    setTimeout(() => {
+      setCopied(null);
+    }, 2000);
+  };
 
   const ShowMessageTextBubble = (textContent) => {
     const textLines = textContent.trim().split('\n').filter(line => line.trim() !== '');
@@ -503,35 +480,29 @@ const Page = () => {
     // setTestLoader(true);
 
     return (
-      <div className='flex mt-8 mb-8' style={{ width: "80%" }}>
-        {/* <div>
-      <img src='/assets/logo.png' alt='bot'
-        style={{ height: '30px', width: '30px', resize: 'cover', objectFit: 'cover' }} />
-    </div> */}
-        <div className='px-2 py-2'
+      <div className='flex flex-row mt-8 mb-8' style={{ width: "80%" }}>
+        <div className='py-4 pl-1' style={{ backgroundColor: 'transparent' }}>
+          <img src='/assets/logo.png' alt='bot' className=''
+            style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+        </div>
+        <div className='flex  flex-col px-1 py-2 ms-2'
           style={{
-            borderTopLeftRadius: 25, backgroundColor: '#ffffff00', borderTopRightRadius: 25,
-            borderBottomRightRadius: 25, width: '55vw'
+            borderTopLeftRadius: 25, backgroundColor: 'transparent', borderTopRightRadius: 25,
+            borderBottomRightRadius: 25, width: '90%'
           }}>
           {separatedContent.map((part, index) => (
-            <div key={index}>
+            <div style={{ backdropColor: 'yellow' }} key={index}>
               {part.type === 'code' ? (
                 // <pre><code>{part.value}</code></pre>
-                <div className='w-ful' style={{
+                <div className='' style={{
                   backgroundColor: "#ffffff40", paddingLeft: 1, paddingRight: 1, paddingBottom: 1, borderTop: 15,
                   flexDirection: 'column',
 
                 }}>
                   <div className='w-full flex items-end justify-end' style={{ backgroundColor: 'white' }}>
-                    <button style={{ paddingRight: 2 }} onClick={async () => {
-                      await navigator.clipboard.writeText(part.value);
-                      setCopied(true);
-                      setTimeout(() => {
-                        setCopied(false);
-                      }, 2000);
-                    }}>
+                    <button style={{ paddingRight: 2 }} onClick={() => handleCopy(index, part.value)}>
                       {
-                        copied ?
+                        copied === index ?
                           <div>
                             Copied
                           </div> :
@@ -552,14 +523,6 @@ const Page = () => {
                   {
                     ShowMessageTextBubble(part.value)
                   }
-                  {/* <p
-                style={{
-                  color: 'white', padding: 7,
-                  borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
-                }}>
-                {part.value}
-              </p> */}
-                  {/* </div> */}
                 </div>
               )}
             </div>
@@ -636,6 +599,9 @@ const Page = () => {
 
 
 
+
+
+
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
@@ -647,7 +613,36 @@ const Page = () => {
                 <img src={projectData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
                 <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
               } */}
-              <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+              {/* <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} /> */}
+              {/* <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
+                {
+                  updatedData ?
+                    <div>
+                      <img src={updatedData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+                    </div> :
+                    <div>
+                      {
+                        projectData ?
+                          <img src={projectData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} /> :
+                          <img src='/assets/applogo.png' alt='logo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
+                      }
+                    </div>
+                }
+              </div> */}
+              <div>
+                <img
+                  src={
+                    updatedData
+                      ? updatedData.projectImage
+                      : projectData && projectData.projectImage
+                        ? projectData.projectImage
+                        : '/assets/applogo.png'
+                  }
+                  alt='Applogo'
+                  style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                />
+              </div>
+
               <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
                 {
                   updatedData ?
@@ -679,7 +674,7 @@ const Page = () => {
         </div>
       </div>
       <div className='w-full flex justify-center'>
-        <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "86vh" }}>
+        <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "92vh" }}>
 
           <div className='w-full flex flex-col items-center' style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div className='w-full' style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
@@ -687,7 +682,7 @@ const Page = () => {
                 <div key={index}>
                   {
                     message.senderType === 'user' ?
-                      <div className='flex justify-end w-full pe-4'>
+                      <div className='flex justify-end w-full pe-4 mt-8 gap-2'>
                         <div className='px-2 py-2'
                           style={{
                             color: 'white', textAlign: 'end', width: 'fit-content',
@@ -696,9 +691,22 @@ const Page = () => {
                           }}>
                           {message.content}
                         </div>
+                        {
+                          getProfileData ?
+                            <div>
+                              <img src={getProfileData.profile_image} style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                            </div> :
+                            <div className='flex items-center justify-center'
+                              style={{
+                                height: '40px', width: '40px', borderRadius: "50%",
+                                backgroundColor: "#4011FA", color: "white", fontWeight: "500", fontSize: 20
+                              }}>
+                              {userEmail}
+                            </div>
+                        }
                       </div> :
                       (
-                        <div style={{ maxWidth: "60%" }}>
+                        <div style={{ maxWidth: "80%" }}>
                           {getResponseView(message.content)}
                         </div>
                       )
@@ -706,8 +714,8 @@ const Page = () => {
                 </div>
               ))}
 
-              {/*
-                loading &&
+
+              {loading &&
                 <div className='flex flex-row ms-2'>
                   {controls.map((control, index) => (
                     <motion.div
@@ -718,8 +726,8 @@ const Page = () => {
                       style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
                     />
                   ))}
-                </div>
-                */}
+                </div>}
+
 
             </div>
 
@@ -729,7 +737,7 @@ const Page = () => {
                 <div className='text-white w-full items-start px-4 py-2'>
                   {selectedFile ?
                     <div style={{ width: "fit-content" }}>
-                      <div className='' style={{ position: "absolute", top: 9, marginLeft: 5  }}> {/*marginBottom: -22, paddingRight: 5, zIndex: 1, position: 'relative'*/}
+                      <div className='' style={{ position: "absolute", top: 9, marginLeft: 5 }}> {/*marginBottom: -22, paddingRight: 5, zIndex: 1, position: 'relative'*/}
                         <div className='flex items-center justify-center' style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
                           <button onClick={() => setSelectedFile(null)}>
                             <img src='/assets/cross2.png' alt='cross'

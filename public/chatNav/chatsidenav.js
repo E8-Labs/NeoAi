@@ -20,6 +20,7 @@ const Chatsidenav = () => {
     const [openSupport, setOpenSupport] = useState(false);
     const [openRef, setOpenRefer] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
+    const [openFeedback, setOpenFeedback] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [SelectedLogo, setSelectedLogo] = useState(null);
     const [openAddTeam, setOpenAddTeam] = useState(false);
@@ -29,7 +30,10 @@ const Chatsidenav = () => {
     const [userProfiledata, setUserProfiledata] = useState("");
     const [userName, setUserName] = useState("");
     const [getProfileData, setProfileData] = useState(null);
-
+    const [showProfileImg, setShowProfileImg] = useState(false);
+    const [showProfileName, setShowProfileName] = useState(false);
+    const [formattedEmail, setFormattedEmail] = useState('');
+    const [separateLetters, setSeparateLetters] = useState('');
 
     const links1 = [
         {
@@ -73,6 +77,34 @@ const Chatsidenav = () => {
         fileInputRef.current.click();
     };
 
+    const getUserProfile = async () => {
+        const ApiPath = Apis.GetProfile;
+        const Ls = localStorage.getItem('User');
+        const LocalData = JSON.parse(Ls);
+        const AuthToken = LocalData.data.token;
+        const response = await axios.get(ApiPath, {
+            headers: {
+                'Authorization': 'Bearer ' + AuthToken,
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+        if (response.status === 200) {
+            console.log('Response of getprofile', response.data.data);
+            setProfileData(response.data.data)
+
+            if (response.data.data.name) {
+                setShowProfileName(true);
+            }
+            if (response.data.data.profileImage) {
+                setShowProfileImg(true)
+            }
+        }
+    }
+
+    useEffect(() => {
+        getUserProfile()
+    }, [])
+
     //code for update profile api
     const handleSaveChanges = async () => {
 
@@ -113,6 +145,8 @@ const Chatsidenav = () => {
                 LocalData.data.user = Result
                 console.log('Profile data updated', Result);
                 setProfileData(Result);
+                setShowProfileImg(true);
+                setShowProfileName(true);
 
                 localStorage.setItem('User', JSON.stringify(LocalData));
             } else {
@@ -174,12 +208,13 @@ const Chatsidenav = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: 500,
         // height: 450,
         bgcolor: 'background.paper',
         // border: '2px solid #000',
         boxShadow: 24,
-        p: 3,
+        px: 4,
+        py: 3,
         borderRadius: 2,
         backgroundColor: '#0F0C2D'
     };
@@ -215,8 +250,6 @@ const Chatsidenav = () => {
     //     return email.slice(0, 10) + "...";
     // }
 
-    const [formattedEmail, setFormattedEmail] = useState('');
-    const [separateLetters, setSeparateLetters] = useState('');
     useEffect(() => {
         const formatEmail = (email) => {
             if (email.length <= 15) {
@@ -240,7 +273,7 @@ const Chatsidenav = () => {
             setSeparateLetters(reduceemail(email));
         };
 
-        if(B.data.user.name){
+        if (B.data.user.name) {
             setUserName(B.data.user.name)
         }
     }, []);
@@ -341,6 +374,7 @@ const Chatsidenav = () => {
                     </div>
                     <div className='flex mt-3'>
                         <button sx={{ textTransform: 'none' }}
+                            onClick={() => setOpenFeedback(true)}
                             style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
                             Feedback
                         </button>
@@ -348,10 +382,10 @@ const Chatsidenav = () => {
                     <div className='flex flex-row mt-3 gap-3 items-center w-2/12'>
                         <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center w-10/12 justify-between'>
                             <div className='flex flex-row gap-2 items-center'>
-                                {selectedImage ?
+                                {showProfileImg ?
                                     <img
                                         className=''
-                                        src={selectedImage} alt='Profile'
+                                        src={getProfileData.profile_image} alt='Profile'
                                         style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
                                     <div className='flex items-center justify-center'
                                         style={{
@@ -368,7 +402,7 @@ const Chatsidenav = () => {
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                     {
-                                        getProfileData ?
+                                        showProfileName ?
                                             <div style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                                 {getProfileData.name}
                                             </div> :
@@ -530,6 +564,90 @@ const Chatsidenav = () => {
                                                 </Button>
                                         }
                                     </div>
+                                </div>
+                            </Box>
+                        </Modal>
+                    </div>
+                    <div>
+                        <Modal
+                            open={openFeedback}
+                            onClose={() => setOpenFeedback(false)}
+                        >
+                            <Box sx={addTeamStyle}>
+                                <div className='text-white w-full'>
+                                    <div className='flex flex-row justify-end w-full'>
+                                        <button onClick={() => setOpenFeedback(false)}>
+                                            <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
+                                        </button>
+                                    </div>
+                                    <div style={{ fontWeight: '500', fontFamily: "inter", fontSize: 24 }}>
+                                        Feedback Form
+                                    </div>
+                                    <div style={{ fontWeight: '400', fontFamily: "inter", fontSize: 12, color: "#ffffff60" }}>
+                                        Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus quis ipsum scelerisque inte
+                                    </div>
+                                    <input
+                                        style={{ width: "100%", marginTop: 10, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder='App Version Number (shown on TestFlight)'
+                                    />
+                                    <input
+                                        style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder="What's your name?"
+                                    />
+                                    <input
+                                        style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder="Which type of user were you? *"
+                                    />
+                                    <input
+                                        style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder="What was the bug or issue? *"
+                                    />
+                                    <input
+                                        style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder="In a few words, what is your feedback about?"
+                                    />
+                                    <input
+                                        style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
+                                        placeholder="Tell us more about your feedback here  (optional)"
+                                    />
+
+                                    <div className='flex flex-row gap-2 items-center justify-center' style={{ height: "98px", border: '1px dashed grey', marginTop: 25 }}>
+                                        <div style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
+                                            Drop your files here to
+                                        </div>
+                                        <button style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
+                                            <u>
+                                                Upload
+                                            </u>
+                                        </button>
+                                    </div>
+
+                                    <textarea
+                                        rows={4}
+                                        style={{
+                                            width: '100%', borderBottom: "1px solid grey", resize: 'none', backgroundColor: "#ffffff00",
+                                            fontWeight: "400", fontSize: 13, fontFamily: "inter", marginTop: 20, outline: "none"
+                                        }}
+                                        placeholder="What's your complain"
+                                    />
+
+                                    <Button sx={{
+                                        textTransform: "none", backgroundColor: "#2548FD",
+                                        fontWeight: "400", fontFamily: "inter",
+                                        fontSize: 12, color: "white", marginTop: 2
+                                    }}>
+                                        Submit
+                                    </Button>
+
+                                    <div className='flex flex-row' style={{ fontWeight: "400", fontFamily: "inter", fontSize: 12, marginTop: 17 }}>
+                                        <div>
+                                            Need one on one help?
+                                        </div>
+                                        <button style={{ marginLeft: '3px', color: "#2548FD" }}>
+                                            Get dev support
+                                        </button>
+                                    </div>
+
                                 </div>
                             </Box>
                         </Modal>

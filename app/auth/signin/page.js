@@ -146,9 +146,9 @@ const Page = () => {
                                         placeholder="Password" />
                                     <button onClick={handleTogglePassword}>
                                         {showPassword ?
-                                            <img src="/assets/showPass.png" alt="showpassword" style={{ height: '17px', width: '17px', resize: 'cover', objectFit: 'cover' }} />
+                                            <img src="/assets/showPass.png" alt="showpassword" style={{ height: '17px', width: '17px', resize: 'cover', objectFit: '' }} />
                                             :
-                                            <img src="/assets/hidePass.png" alt="showpassword" style={{ height: '20px', width: '20px', resize: 'cover', objectFit: 'cover' }} />}
+                                            <img src="/assets/hidePass.png" alt="showpassword" style={{ height: '20px', width: '20px', resize: 'cover', objectFit: '' }} />}
                                     </button>
                                 </div>
                                 <div className="flex flex-col gap-y-20">

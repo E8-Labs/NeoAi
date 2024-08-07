@@ -89,8 +89,8 @@ const GetProjects = () => {
                             myProjects.map((item) => (
                                 <div key={item.id} className='w-full flex flex-row items-center mt-6'
                                     style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
-                                    <Link sx={{ textDecoration: 'none' }}
-                                        className='w-9/12 text-white items-start p-3'
+                                    <Link sx={{ textDecoration: 'none', fontWeight: "500", fontSize: 14, fontFamily: "inter" }}
+                                        className='w-full text-white items-start p-3'
                                         href={`/chat/${item.chat.id}`}>
                                         {/* <button className='w-full text-start text-white'> */}
                                         <Box
@@ -102,11 +102,6 @@ const GetProjects = () => {
                                         </Box>
                                         {/* </button> */}
                                     </Link>
-                                    <div className='w-3/12 p-3 flex justify-end'>
-                                        <button>
-                                            <img src='/assets/edit.png' alt='edit' style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover' }} />
-                                        </button>
-                                    </div>
                                 </div>
                             ))
                         }

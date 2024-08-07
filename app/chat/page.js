@@ -82,6 +82,7 @@ const Page = () => {
     const [SelectedLogo, setSelectedLogo] = useState(null);
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFileShow, setSelectedFileShow] = useState(false);
     const [previewURL, setPreviewURL] = useState(null);
     const [chatId, setChatId] = useState(null);
     const [myProjects, setMyProjects] = useState([]);
@@ -108,7 +109,8 @@ const Page = () => {
     const [projDet, showProjDet] = useState(false);
     const [updatedData, setUpdatedData] = useState(null);
     const [localImg, setImage] = useState(null);
-
+    const [getProfileData, setGetProfileData] = useState(null);
+    const [userEmail, setUserEmail] = useState(null);
 
 
     useEffect(() => {
@@ -312,6 +314,7 @@ const Page = () => {
 
     const handleSubmit = async (e) => {
         setMessage('');
+        setSelectedFileShow(false);
         if (previewURL) {
             localStorage.setItem('Image', JSON.stringify(previewURL));
         }
@@ -322,13 +325,11 @@ const Page = () => {
             setImage(LocalImg);
             // console.log('Localimage is', LocalImg);
         }
-        // setSelectedFile(null);
         const LSD = localStorage.getItem('User');
         const localStorageData = JSON.parse(LSD);
         // console.log('Data from localstorage is :', localStorageData.data.user.message);
         // const AuthToken = localStorageData.data.token;
 
-        setSelectedFile(null);
 
         if (localStorageData) {
             const prevMsg = localStorageData.data.user.message;
@@ -344,7 +345,7 @@ const Page = () => {
         if (Test) {
             if (Data.data.user.plan === null) {
                 if (Data.data.user.message > 5) {
-                    setSubscribePlanPopup(true);
+                    // setSubscribePlanPopup(true);
                 }
             } else {
                 setSubscribePlanPopup(false);
@@ -407,19 +408,29 @@ const Page = () => {
         setUserChat(chatHistory[index]);
     };
 
+    const handleCopy = async (index, value) => {
+        await navigator.clipboard.writeText(value);
+        setCopied(index);
+        setTimeout(() => {
+            setCopied(null);
+        }, 2000);
+    };
+
     function getResponseView(text) {
         let separatedContent = separateTextAndCode(text)
 
         return (
-            <div className='flex mt-8 mb-8' style={{ width: "80%" }}>
-                {/* <div>
-          <img src='/assets/logo.png' alt='bot'
-            style={{ height: '30px', width: '30px', resize: 'cover', objectFit: 'cover' }} />
-        </div> */}
+            <div className='flex flex-row mt-8 mb-8' style={{ width: "80%" }}>
+
+                <div className='py-4 pl-1' style={{ backgroundColor: 'transparent' }}>
+                    <img src='/assets/logo.png' alt='bot' className=''
+                        style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                </div>
+
                 <div className='px-2 py-2'
                     style={{
                         borderTopLeftRadius: 25, backgroundColor: '#ffffff00', borderTopRightRadius: 25,
-                        borderBottomRightRadius: 25,
+                        borderBottomRightRadius: 25, width: "90%"
                     }}>
                     {separatedContent.map((part, index) => (
                         <div key={index}>
@@ -431,19 +442,13 @@ const Page = () => {
 
                                 }}>
                                     <div className='w-full flex items-end justify-end' style={{ backgroundColor: 'grey' }}>
-                                        <button style={{ paddingRight: 2 }} onClick={async () => {
-                                            await navigator.clipboard.writeText(part.value);
-                                            setCopied(true);
-                                            setTimeout(() => {
-                                                setCopied(false);
-                                            }, 2000);
-                                        }}>
+                                        <button style={{ paddingRight: 2 }} onClick={() => handleCopy(index, part.value)}>
                                             {
-                                                copied ?
+                                                copied === index ?
                                                     <div>
                                                         Copied
                                                     </div> :
-                                                    <div className='flex flex-row gap-2 items-center'>
+                                                    <div className='flex flex-row  items-center'>
                                                         <img src='/assets/copied.png' alt='copy' style={{ height: '30px', width: '30px', resize: 'cover', objectFit: 'cover' }} />
                                                         <p>Copy</p>
                                                     </div>
@@ -459,14 +464,6 @@ const Page = () => {
                                     {
                                         ShowMessageTextBubble(part.value)
                                     }
-                                    {/* <p
-                    style={{
-                      color: 'white', padding: 7,
-                      borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20
-                    }}>
-                    {part.value}
-                  </p> */}
-                                    {/* </div> */}
                                 </div>
                             )}
                         </div>
@@ -801,6 +798,7 @@ const Page = () => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         setSelectedFile(file);
+        setSelectedFileShow(true);
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -820,43 +818,6 @@ const Page = () => {
     const [openEditProject, setOpenEditProject] = useState(false);
     const handleEditProject = async (item) => {
         setOpenEditProject(true);
-        // console.log('Project id is', item);
-        // setSelectedProjectId(item);
-        // try {
-        //   setGetMessagesLoader(true);
-        //   const ApiPath = Apis.GetMessages;
-        //   const LSD = localStorage.getItem('User');
-        //   const localStorageData = JSON.parse(LSD);
-        //   console.log('Data2 from localstorage for edit project is :', localStorageData);
-        //   const AuthToken = localStorageData.data.token;
-        //   console.log('Auth token is', AuthToken);
-
-        //   const response = await axios.get(ApiPath + `?chatId=${item}`,
-        //     {
-        //       headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ' + AuthToken
-        //       }
-        //       // body: JSON.stringify({ chatId: item })
-        //     }
-        //   );
-        //   if (response) {
-        //     console.log('Response is :', response);
-        //   }
-        //   if (response.status === 200) {
-        //     let data = response.data;
-        //     console.log("Data is ", data)
-        //     let messages = data.data
-        //     setUserChat(messages)
-        //     console.log("Chat is ", messages)
-        //   } else {
-        //     console.log('Response is not ok :', response);
-        //   }
-        // } catch (error) {
-        //   console.error('Error occured in api is :', error);
-        // } finally {
-        //   setGetMessagesLoader(false);
-        // }
     }
 
     //code for animation loader
@@ -890,6 +851,45 @@ const Page = () => {
         });
     }, [active, controls]);
 
+    const getProfileResponse = async () => {
+        const ApiPath = Apis.GetProfile;
+        const LD = localStorage.getItem('User');
+        const LocalData = JSON.parse(LD);
+        const AuthToken = LocalData.data.token;
+        const response = await axios.get(ApiPath, {
+            headers: {
+                'Authorization': 'Bearer ' + AuthToken,
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+        if (response.status === 200) {
+            console.log('Profiledata', response.data.data);
+            if (response.data.data.profileImage) {
+                setGetProfileData(response.data.data)
+            } else if (response.data.data.name) {
+                const reduceName = (name) => {
+                    if (name.length) {
+                        return name.slice(0, 1).toUpperCase()
+                    }
+                }
+                const userName = response.data.data.name;
+                setUserEmail(reduceName(userName));
+            } else {
+                const reduceemail = (email) => {
+                    if (email.length) {
+                        return email.slice(0, 1).toUpperCase()
+                    }
+                }
+                const userEmail = response.data.data.email;
+                setUserEmail(reduceemail(userEmail));
+            }
+        }
+    }
+
+    useEffect(() => {
+        getProfileResponse()
+    }, [])
+
     return (
         <div className='text-white' style={{ display: 'flex', backgroundColor: '#050221' }}>
 
@@ -910,7 +910,18 @@ const Page = () => {
                                                             <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
                                                             <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
                                     */}
-                                                    <img src='/assets/applogo.png' alt='Applogo'
+                                                    {/* <img src='/assets/applogo.png' alt='Applogo'
+                                                        style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                                                    /> */}
+                                                    <img
+                                                        src={
+                                                            updatedData
+                                                                ? updatedData.projectImage
+                                                                : projectDetails && projectDetails.projectImage
+                                                                    ? projectDetails.projectImage
+                                                                    : '/assets/applogo.png'
+                                                        }
+                                                        alt='Applogo'
                                                         style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
                                                     />
                                                     <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
@@ -1112,7 +1123,7 @@ const Page = () => {
                                                             {
                                                                 chat.role === "user" ? (
                                                                     <div>
-                                                                        <div className='flex flex-col w-full justify-end items-end gap-2'>
+                                                                        <div className='flex flex-col w-full justify-end items-end mt-8'>
                                                                             {/* <div>
                                                                                 {
                                                                                     localImg ?
@@ -1127,13 +1138,31 @@ const Page = () => {
                                                                                         <img src={chat.imageThumb} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
                                                                                     </div> : ""
                                                                             }
-                                                                            <div className='px-2 py-2'
-                                                                                style={{
-                                                                                    color: 'white', textAlign: 'end', width: 'fit-content',
-                                                                                    maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
-                                                                                    borderBottomLeftRadius: 20
-                                                                                }}>
-                                                                                {chat.content}
+                                                                            <div className='flex flex-row gap-2'>
+                                                                                <div className='px-2 py-2 flex flex-row gap-2'
+                                                                                    style={{
+                                                                                        color: 'white', textAlign: 'end', width: 'fit-content',
+                                                                                        maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
+                                                                                        borderBottomLeftRadius: 20
+                                                                                    }}>
+                                                                                    {chat.content}
+                                                                                </div>
+                                                                                <div>
+                                                                                    {
+                                                                                        getProfileData ?
+                                                                                            <div>
+                                                                                                <img src={getProfileData.profile_image} style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                                                                                            </div> :
+                                                                                            <div className='flex items-center justify-center'
+                                                                                                style={{
+                                                                                                    height: '40px', width: '40px', borderRadius: "50%",
+                                                                                                    backgroundColor: "#4011FA", color: "white", fontWeight: "500",
+                                                                                                    fontSize: 20
+                                                                                                }}>
+                                                                                                {userEmail}
+                                                                                            </div>
+                                                                                    }
+                                                                                </div>
                                                                             </div>
 
                                                                         </div>
@@ -1171,9 +1200,9 @@ const Page = () => {
                                         style={{ position: 'absolute', bottom: 0, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
                                         <div className='w-full flex flex-col items-center'>
                                             <div className='text-white w-full items-start px-4 py-2'>
-                                                {selectedFile ?
+                                                {selectedFileShow ?
                                                     <div style={{ width: "fit-content" }}>
-                                                        <div className='flex flex-row justify-end w-full'
+                                                        <div className='flex flex-row justify-start ps-6 w-full'
                                                             style={{ position: "absolute", top: 9, marginLeft: 5, left: 0 }}>
                                                             <div className='flex items-center justify-center'
                                                                 style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>

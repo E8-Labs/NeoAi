@@ -163,7 +163,7 @@ const Page = () => {
 
 
             if (element.status === "pending") {
-                console.log('Working test 1');
+                // console.log('Working test 1');
                 if (element.toUser === null) {
                     console.log('Working test', element.toUserEmail);
                     // console.log('Working test 2');
@@ -175,7 +175,7 @@ const Page = () => {
                         console.log('email does not match');
                     }
                 } else {
-                    console.log('Working test 2');
+                    // console.log('Working test 2');
                     if (element.toUser.email === toUserEmail1) {
                         console.log('Id of user and ined user matches');
                         showAcceptButton = true;
@@ -290,7 +290,11 @@ const Page = () => {
                     <div className='w-11/12 mt-8 flex gap-6'>
                         {
                             teamProfiles ?
-                                <Grid container spacing={2} style={{ height: 'fit-content', display: 'flex', alignItems: 'flex-start' }}>
+                                <Grid container spacing={2}
+                                    style={{
+                                        maxHeight: '85vh', display: 'flex', alignItems: 'flex-start', overflow: "auto",
+                                        scrollbarWidth: 'none', msOverflowStyle: 'none',
+                                    }}>
                                     {teamProfiles.map((item) => (
                                         <Grid key={item.id} item xs={12} sm={6} md={4} lg={4} xl={3} style={{ height: 'fit-content' }}>
                                             <div className='w-full gap-8 p-4 flex flex-row'
@@ -310,7 +314,7 @@ const Page = () => {
                                                                 </div>
                                                         }
                                                     </div>
-                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
+                                                    <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
                                                         {item.role}
                                                     </div>
                                                     <div className='flex flex-row'>
@@ -492,7 +496,7 @@ const Page = () => {
                                 </button>
                             </div>
                             <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: '#ffffff' }}>
-                                Add Team Member
+                                Invite Member
                             </div>
                             <TextField id="standard-basic" label="Name" variant="standard"
                                 placeholder="Enter Name"
@@ -523,7 +527,7 @@ const Page = () => {
                                     '& .MuiFormLabel-root.Mui-focused': {
                                         color: '#ffffff', // Change the label color when focused
                                     },
-                                    marginTop: 1
+                                    marginTop: 2
                                 }}
                             />
                             <TextField id="standard-basic" label="Role" variant="standard"
@@ -573,10 +577,10 @@ const Page = () => {
                                         fontFamily: 'inter'
                                     },
                                     '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff ', // Change the underline color here
+                                        borderBottomColor: '#ffffff60', // Change the underline color here
                                     },
                                     '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color on hover here
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
                                     },
                                     '& .MuiInput-underline:after': {
                                         borderBottomColor: '#ffffff', // Change the underline color on hover here
@@ -590,12 +594,44 @@ const Page = () => {
                                     marginTop: 2
                                 }}
                             />
+                            {/* <TextField id="standard-basic" label="Assign Project" variant="standard"
+                                placeholder="Assign Project"
+                                // value={email}
+                                // onChange={(e) => {
+                                //     setEmail(e.target.value);
+                                // }}
+                                sx={{
+                                    width: '100%', // Change the width here
+                                    '& .MuiInputBase-root': {
+                                        color: 'white', // Change the text color here
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60', // Change the underline color here
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60', // Change the label color here
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff', // Change the label color when focused
+                                    },
+                                    marginTop: 2
+                                }}
+                            /> */}
                             <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
                                 style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                 {
                                     addTeamLoader ?
                                         <CircularProgress size={30} /> :
-                                        "Add"
+                                        "Submit"
                                 }
                             </Button>
                         </div>
