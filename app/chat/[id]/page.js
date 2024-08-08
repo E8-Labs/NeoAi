@@ -57,6 +57,7 @@ const Page = () => {
   const [rows, setRows] = useState(1);
 
   const [scrollHeight, setScrollHeight] = useState(0)
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true)
   const previousScrollHeight = usePrevious(scrollHeight);
 
 
@@ -352,6 +353,7 @@ const Page = () => {
 
   const handleSubmit = async () => {
     // //console.log('test working');
+    setShouldScrollToBottom(false)
     setUserChatMessage("");
     setSelectedFileShow(false);
     const LSD = localStorage.getItem('User');
@@ -657,11 +659,12 @@ const Page = () => {
     // console.log("Scroll height changed", scrollHeight)
     console.log("Scroll height changed", scrollHeight);
     console.log("Previous scroll height", previousScrollHeight);
+    console.log("Should scroll to bottom ", shouldScrollToBottom)
     chatContainerRef.current.scrollTo({
-      top: previousScrollHeight,
+      top: shouldScrollToBottom ? scrollHeight : previousScrollHeight,
       behavior: 'smooth'
     });
-
+    
   }, [scrollHeight])
 
   useEffect(() => {
