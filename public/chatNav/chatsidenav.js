@@ -53,7 +53,16 @@ const Chatsidenav = () => {
         }
     ]
 
-    //test code
+    const handleProjectClick = (e) => {
+        e.preventDefault();
+        router.push('/chat')
+        localStorage.removeItem('projectDetails');
+    }
+
+    const handleSideBtnsClick = (e, link) => {
+        e.preventDefault();
+        router.push(link);
+    }
 
     const handleCreateNewProject = () => {
         localStorage.removeItem('AppScreen');
@@ -310,7 +319,7 @@ const Chatsidenav = () => {
                             fontWeight: '500',
                             fontSize: 12, fontFamily: 'inter', backgroundColor: pathName === dashboardPath ? "#ffffff70" : ""
                         }}>
-                        <Link href={dashboardPath} sx={{ textDecoration: 'none' }}
+                        <Link href={dashboardPath} sx={{ textDecoration: 'none' }} onClick={handleProjectClick}
                             style={{
                                 color: pathName === dashboardPath ? '#ffffff' : '#ffffff60', fontWeight: '500',
                                 fontSize: 12, fontFamily: 'inter'
@@ -341,7 +350,8 @@ const Chatsidenav = () => {
                                         <div key={link.id} className='mt-4'>
                                             <Link className='text-white' sx={{ textDecoration: 'none' }}
                                                 key={link.name}
-                                                href={link.href}
+                                                // href={link.href}
+                                                onClick={(e) => handleSideBtnsClick(e, link.href)}
                                                 style={{
                                                     fontWeight: '500', fontSize: 12, fontFamily: 'inter',
                                                     color: pathName === link.href ? '#ffffff' : '#ffffff60', backgroundColor: pathName === link.href ? '#ffffff60' : '',
@@ -382,7 +392,7 @@ const Chatsidenav = () => {
                     <div className='flex flex-row mt-3 gap-3 items-center w-2/12'>
                         <button onClick={handleOpenProfile} className='flex flex-row mt-3 gap-3 items-center w-10/12 justify-between'>
                             <div className='flex flex-row gap-2 items-center'>
-                                {showProfileImg ?
+                                {getProfileData && getProfileData.profile_image ?
                                     <img
                                         className=''
                                         src={getProfileData.profile_image} alt='Profile'
@@ -402,7 +412,7 @@ const Chatsidenav = () => {
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                     {
-                                        showProfileName ?
+                                        getProfileData && getProfileData.name ?
                                             <div style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
                                                 {getProfileData.name}
                                             </div> :

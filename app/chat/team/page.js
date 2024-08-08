@@ -20,6 +20,7 @@ const Page = () => {
     const [declineLoader, setDeclineLoader] = useState(false);
     const [showFromUserData, setShowFromUserData] = useState(false);
 
+    const [loggedInUser, setLoggedInUser] = useState(null)
     const handleOpenAddTeam = () => setOpenAddTeam(true);
 
     const handleCloseModal = () => {
@@ -142,54 +143,28 @@ const Page = () => {
         const LSD = localStorage.getItem('User');
         const localStorageData = JSON.parse(LSD);
         const toUserEmail1 = localStorageData.data.user.email;
+        setLoggedInUser(localStorageData.data.user)
         console.log('Email for test is', toUserEmail1);
 
-        let showAcceptButton = false;
+        // let showAcceptButton = false;
 
-        teamProfiles.forEach(element => {
+        // teamProfiles.forEach(element => {
 
-            if (element.toUser === null) {
-                if (element.toUserEmail === toUserEmail1) {
-                    console.log('Ys true');
+        //     if (element.status === "pending") {
+        //         // console.log('Working test 1');
+        //         if(element.fromUser.email === toUserEmail1){
+        //             setShowAcceptBtn(false);
+        //             setShowFromUserData(true);
+        //         }else {
+        //             setShowFromUserData(false);
+        //             setShowAcceptBtn(true);
+        //         }
+        //     } 
 
-                    setShowFromUserData(true)
-                }
-            } else {
-                if (element.toUserEmail === toUserEmail1) {
-                    setShowFromUserData(true)
-                }
-            }
+        // });
 
-
-
-            if (element.status === "pending") {
-                // console.log('Working test 1');
-                if (element.toUser === null) {
-                    console.log('Working test', element.toUserEmail);
-                    // console.log('Working test 2');
-                    if (element.toUserEmail === toUserEmail1) {
-                        // setShowFromUserData(true);
-                        console.log('Id of user and ined user matches');
-                        showAcceptButton = true;
-                    } else {
-                        console.log('email does not match');
-                    }
-                } else {
-                    // console.log('Working test 2');
-                    if (element.toUser.email === toUserEmail1) {
-                        console.log('Id of user and ined user matches');
-                        showAcceptButton = true;
-                    } else {
-                        console.log('email does not match');
-                    }
-                }
-            } else {
-                console.log('not working');
-            }
-        });
-
-        setShowAcceptBtn(showAcceptButton);
-    }, [teamProfiles]);
+        // setShowAcceptBtn(showAcceptButton);
+    }, []);
 
 
     const handleAcceptRequest = async (inviteid) => {
@@ -305,7 +280,7 @@ const Page = () => {
                                                 <div>
                                                     <div>
                                                         {
-                                                            showFromUserData ?
+                                                            item.fromUser.email != loggedInUser.email ?
                                                                 <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
                                                                     {item.fromUser.email}
                                                                 </div> :
@@ -321,7 +296,32 @@ const Page = () => {
                                                         <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff60' }}>
                                                             Email:
                                                         </div>
-                                                        <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
+                                                        <div>
+                                                            {
+                                                                item.fromUser.email != loggedInUser.email ?
+                                                                    <div style={{
+                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                        color: '#ffffff', marginLeft: 3
+                                                                    }}>
+                                                                        {item.fromUser.email}
+                                                                    </div> :
+                                                                    <div
+                                                                        style={{
+                                                                            fontSize: 12, fontWeight: '500', fontFamily: 'inter',
+                                                                            color: '#ffffff', marginLeft: 3
+                                                                        }}>
+                                                                        {item.toUserEmail === null ?
+                                                                            <div>
+                                                                                {item.toUser.email}
+                                                                            </div> :
+                                                                            <div>
+                                                                                {item.toUserEmail}
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                        {/* <div style={{ fontSize: 12, fontWeight: '500', fontFamily: 'inter', color: '#ffffff', marginLeft: 3 }}>
                                                             {
                                                                 item.toUser === null ?
                                                                     <div>
@@ -340,20 +340,7 @@ const Page = () => {
                                                                                                     }}>
                                                                                                     {item.fromUser.email}
                                                                                                 </div> :
-                                                                                                <div
-                                                                                                    style={{
-                                                                                                        fontSize: 12, fontWeight: '500', fontFamily: 'inter',
-                                                                                                        color: '#ffffff', marginLeft: 3
-                                                                                                    }}>
-                                                                                                    {item.toUserEmail === null ?
-                                                                                                        <div>
-                                                                                                            {item.toUser.email}
-                                                                                                        </div> :
-                                                                                                        <div>
-                                                                                                            {item.toUserEmail}
-                                                                                                        </div>
-                                                                                                    }
-                                                                                                </div>
+                                                                                                
                                                                                         }
                                                                                     </div>
                                                                                 </div>
@@ -367,7 +354,7 @@ const Page = () => {
                                                                         {item.toUser.email}
                                                                     </div>
                                                             }
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                     {item.status === 'accepted' ?
                                                         <div className='flex items-center justify-center mt-3'
@@ -388,7 +375,7 @@ const Page = () => {
                                                                 </div> :
                                                                 <div>
                                                                     {
-                                                                        showAcceptBtn ?
+                                                                        item.fromUser.email != loggedInUser.email ?
                                                                             <div className='flex flex-row justify-between w-full gap-2'>
                                                                                 <Button className='flex items-center justify-center mt-3'
                                                                                     onClick={() => handleAcceptRequest(item.id)}

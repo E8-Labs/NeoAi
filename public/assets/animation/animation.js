@@ -84,7 +84,10 @@ const AnimatedForm = () => {
   }
 
   const handleSaveEmail = () => {
-    setUserEmail(founders[0].founderEmail)
+    if (founders.length > 0) {
+      setUserEmail(founders[0].founderEmail)
+    }
+
     console.log("function working");
   }
 

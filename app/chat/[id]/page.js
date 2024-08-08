@@ -24,6 +24,7 @@ const Page = () => {
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileShow, setSelectedFileShow] = useState(false);
   const [previewURL, setPreviewURL] = useState(null);
   const [userChatMsg, setUserChatMessage] = useState("");
   const chatContainerRef = useRef(null);
@@ -42,6 +43,7 @@ const Page = () => {
   const [subscribePlanPopup, setSubscribePlanPopup] = useState(false);
   const [getProfileData, setGetProfileData] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
+  const [rows, setRows] = useState(1);
 
 
   const handleOpenEditproject = () => setOpen(true);
@@ -49,6 +51,51 @@ const Page = () => {
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
 
+
+  const handleInputChange = (e) => {
+    const textareaLineHeight = 24; // Adjust this value to match the line-height of your textarea
+    const maxRows = 5;
+    const previousRows = e.target.rows;
+    e.target.rows = 1; // Reset number of rows in textarea 
+
+    const currentRows = Math.min(Math.floor(e.target.scrollHeight / textareaLineHeight), maxRows);
+
+    if (currentRows === previousRows) {
+      e.target.rows = currentRows;
+    }
+
+    setUserChatMessage(e.target.value);
+    setRows(currentRows);
+  };
+
+  // const handleKeyDownInputMsg = (e) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     // Handle the message submit action here, like sending the message
+  //     // console.log('Message submitted:', userChatMsg);
+  //     setRows(1);
+  //   } 
+  //   else
+  //     if (e.key === 'Enter') {
+  //       setUserChatMessage('');
+  //       handleSubmit();
+  //       setRows(1);
+  //     }
+  // };
+
+  const handleKeyDownInputMsg = (e) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        setRows(1)
+        // Allow the default behavior for Shift+Enter (adding a new line)
+        return;
+      } else {
+        e.preventDefault();
+        handleSubmit();
+        setRows(1)
+      }
+    }
+  };
 
   useEffect(() => {
     getProfileResponse()
@@ -119,6 +166,7 @@ const Page = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    setSelectedFileShow(true);
     setSelectedFile(file);
 
     const reader = new FileReader();
@@ -291,6 +339,7 @@ const Page = () => {
   const handleSubmit = async () => {
     // console.log('test working');
     setUserChatMessage("");
+    setSelectedFileShow(false);
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
     console.log('Data from localstorage is :', localStorageData.data.user.message);
@@ -339,6 +388,8 @@ const Page = () => {
         return new File([blob], filename, { type: mimeType });
       };
 
+      // console.log('User chat msg is', userChatMsg);
+      
       const formData = new FormData();
       formData.append('chatId', id);
       formData.append('content', userChatMsg);
@@ -387,26 +438,30 @@ const Page = () => {
 
   //code for code separation
 
-  const separateTextAndCode = (input) => {
-    const regex = /(```.*?```)/gs;
-    const parts = input.split(regex);
+  // const separateTextAndCode = (input) => {
+  //   const regex = /(```.*?```)/gs;
+  //   const parts = input.split(regex);
 
-    return parts.map(part => {
-      if (part.startsWith('```') && part.endsWith('```')) {
-        return {
-          type: 'code',
-          value: part.slice(3, -3).trim(),
-        };
-      } else {
-        return {
-          type: 'string',
-          value: part.trim(),
-        };
-      }
-    });
-  };
+  //   return parts.map(part => {
+  //     if (part.startsWith('```') && part.endsWith('```')) {
+  //       return {
+  //         type: 'code',
+  //         value: part.slice(3, -3).trim(),
+  //       };
+  //     } else {
+  //       return {
+  //         type: 'string',
+  //         value: part.trim(),
+  //       };
+  //     }
+  //   });
+  // };
+
   const determineTextType = (text) => {
-    if (/^###\s/.test(text)) {
+    if (/^####\s/.test(text)) {
+      return 'heading4';
+    }
+    else if (/^###\s/.test(text)) {
       return 'heading3';
     } else if (/^##\s/.test(text)) {
       return 'heading2';
@@ -416,10 +471,43 @@ const Page = () => {
       return 'bullet';
     } else if (/^\d+\.\s/.test(text)) {
       return 'numbered';
-    } else if (/^•\s/.test(text)) {
+    } else if (/•\s/.test(text)) {
       return 'dot';
+    } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
+      return 'image';
     } else {
       return 'simpleText';
+    }
+  };
+
+  const RenderText = ({ text }) => {
+    const textType = determineTextType(text);
+    console.log(`Text ${text} is of ${textType}`)
+    switch (textType) {
+      case 'heading1':
+        return <h1>{text.replace(/^#\s/, '')}</h1>;
+      case 'heading2':
+        return <h2>{text.replace(/^##\s/, '')}</h2>;
+      case 'heading3':
+        return <h3>{text.replace(/^###\s/, '')}</h3>;
+      case 'heading4':
+        return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
+      case 'bullet':
+        return <li>{text.replace(/^-/, '')}</li>;
+      case 'numbered':
+        return <li>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
+      case 'dot':
+        return <li>{text.replace(/^•\s/, '')}</li>;
+      case 'image':
+        const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
+        return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
+      case 'simpleText':
+        // Check for bold text patterns
+        return <p>{formatInlineText(text)}</p>;
+      case 'code':
+        return <pre><code>{text}</code></pre>;
+      default:
+        return <p>{text}</p>;
     }
   };
 
@@ -436,27 +524,186 @@ const Page = () => {
     });
   };
 
-  const RenderText = ({ text }) => {
-    // return <p className={styles.simpleText}>{text}</p>;
-    const textType = determineTextType(text);
+  const separateTextAndCode = (input) => {
+    const regex = /(```.*?```)/gs;
+    const parts = input.split(regex);
 
-    switch (textType) {
-      case 'heading1':
-        return <h1 className={styles.heading1}>{formatInlineText(text.replace(/^#\s/, ''))}</h1>;
-      case 'heading2':
-        return <h2 className={styles.heading2}>{formatInlineText(text.replace(/^##\s/, ''))}</h2>;
-      case 'heading3':
-        return <h3 className={styles.heading3}>{formatInlineText(text.replace(/^###\s/, ''))}</h3>;
-      case 'bullet':
-        return <li className={styles.bullet}>{formatInlineText(text.replace(/^-/, ''))}</li>;
-      case 'numbered':
-        return <li className={styles.numbered}>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
-      case 'dot':
-        return <li className={styles.dot}>{formatInlineText(text.replace(/^•\s/, ''))}</li>;
-      default:
-        return <p className={styles.simpleText}>{formatInlineText(text)}</p>;
-    }
+    return parts.map(part => {
+      if (part.startsWith('```') && part.endsWith('```')) {
+        let code = part.slice(3, -3).trim();
+
+        // Remove any file type name that might be after the opening triple backticks
+        const firstLine = code.split('\n')[0].trim();
+        if (['jsx', 'javascript', 'js', 'ts', 'tsx'].includes(firstLine)) {
+          code = code.split('\n').slice(1).join('\n').trim();
+        }
+
+        return {
+          type: 'code',
+          value: code,
+        };
+      } else {
+        return {
+          type: 'string',
+          value: part.trim(),
+        };
+      }
+    });
   };
+
+  // const formatInlineText = (text) => {
+  //   const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
+  //   return parts.map((part, index) => {
+  //     if (/^\*\*[^*]+\*\*$/.test(part)) {
+  //       return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
+  //     } else if (/^\*[^*]+\*$/.test(part)) {
+  //       return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
+  //     } else {
+  //       return part;
+  //     }
+  //   });
+  // };
+
+  // const determineTextType = (text) => {
+  //   if (/^###\s/.test(text)) {
+  //     return 'heading3';
+  //   } else if (/^##\s/.test(text)) {
+  //     return 'heading2';
+  //   } else if (/^#\s/.test(text)) {
+  //     return 'heading1';
+  //   } else if (/^-\s/.test(text)) {
+  //     return 'bullet';
+  //   } else if (/^\d+\.\s/.test(text)) {
+  //     return 'numbered';
+  //   } else if (/^•\s/.test(text)) {
+  //     return 'dot';
+  //   } else {
+  //     return 'simpleText';
+  //   }
+  // };
+
+  // const RenderText = ({ text }) => {
+  //   // return <p className={styles.simpleText}>{text}</p>;
+  //   const textType = determineTextType(text);
+
+  //   switch (textType) {
+  //     case 'heading1':
+  //       return <h1 className={styles.heading1}>{formatInlineText(text.replace(/^#\s/, ''))}</h1>;
+  //     case 'heading2':
+  //       return <h2 className={styles.heading2}>{formatInlineText(text.replace(/^##\s/, ''))}</h2>;
+  //     case 'heading3':
+  //       return <h3 className={styles.heading3}>{formatInlineText(text.replace(/^###\s/, ''))}</h3>;
+  //     case 'bullet':
+  //       return <li className={styles.bullet}>{formatInlineText(text.replace(/^-/, ''))}</li>;
+  //     case 'numbered':
+  //       return <li className={styles.numbered}>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
+  //     case 'dot':
+  //       return <li className={styles.dot}>{formatInlineText(text.replace(/^•\s/, ''))}</li>;
+  //     default:
+  //       return <p className={styles.simpleText}>{formatInlineText(text)}</p>;
+  //   }
+  // };
+
+  // const determineTextType = (text) => {
+  //   if (/^###\s/.test(text)) {
+  //     return 'heading3';
+  //   } else if (/^##\s/.test(text)) {
+  //     return 'heading2';
+  //   } else if (/^#\s/.test(text)) {
+  //     return 'heading1';
+  //   } else if (/^-\s/.test(text)) {
+  //     return 'bullet';
+  //   } else if (/^\d+\.\s/.test(text)) {
+  //     return 'numbered';
+  //   } else if (/•\s/.test(text)) {
+  //     return 'dot';
+  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
+  //     return 'image';
+  //   } else {
+  //     return 'simpleText';
+  //   }
+  // };
+
+  // const RenderText = ({ text }) => {
+  //   const textType = determineTextType(text);
+
+  //   switch (textType) {
+  //     case 'heading1':
+  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
+  //     case 'heading2':
+  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
+  //     case 'heading3':
+  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
+  //     case 'bullet':
+  //       return <li>{text.replace(/^-/, '')}</li>;
+  //     case 'numbered':
+  //       return <li>{text.replace(/^\d+\.\s/, '')}</li>;
+  //     case 'dot':
+  //       return <li>{text.replace(/^•\s/, '')}</li>;
+  //     case 'image':
+  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
+  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
+  //     case 'simpleText':
+  //       return <p>{text}</p>;
+  //     case 'code':
+  //       return <pre><code>{text}</code></pre>;
+  //     default:
+  //       return <p>{text}</p>;
+  //   }
+  // };
+
+  // const determineTextType = (text) => {
+  //   if (/^####\s/.test(text)) {
+  //     return 'heading4';
+  //   }
+  //   else if (/^###\s/.test(text)) {
+  //     return 'heading3';
+  //   } else if (/^##\s/.test(text)) {
+  //     return 'heading2';
+  //   } else if (/^#\s/.test(text)) {
+  //     return 'heading1';
+  //   } else if (/^-\s/.test(text)) {
+  //     return 'bullet';
+  //   } else if (/^\d+\.\s/.test(text)) {
+  //     return 'numbered';
+  //   } else if (/•\s/.test(text)) {
+  //     return 'dot';
+  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
+  //     return 'image';
+  //   } else {
+  //     return 'simpleText';
+  //   }
+  // };
+
+  // const RenderText = ({ text }) => {
+  //   const textType = determineTextType(text);
+
+  //   switch (textType) {
+  //     case 'heading1':
+  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
+  //     case 'heading2':
+  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
+  //     case 'heading3':
+  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
+  //     case 'heading4':
+  //       return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
+  //     case 'bullet':
+  //       return <li>{text.replace(/^-/, '')}</li>;
+  //     case 'numbered':
+  //       return <li>{text.replace(/^\d+\.\s/, '')}</li>;
+  //     case 'dot':
+  //       return <li>{text.replace(/^•\s/, '')}</li>;
+  //     case 'image':
+  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
+  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
+  //     case 'simpleText':
+  //       return <p>{text}</p>;
+  //     case 'code':
+  //       return <pre><code>{text}</code></pre>;
+  //     default:
+  //       return <p>{text}</p>;
+  //   }
+  // };
 
   const handleCopy = async (index, value) => {
     await navigator.clipboard.writeText(value);
@@ -677,33 +924,35 @@ const Page = () => {
         <div className='w-9/12' style={{ backgroundColor: '#ffffff10', height: "92vh" }}>
 
           <div className='w-full flex flex-col items-center' style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div className='w-full' style={{ overflow: 'auto', height: '75vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
+            <div className='w-full' style={{ overflow: 'auto', height: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none', }} ref={chatContainerRef}>
               {chat.map((message, index) => (
                 <div key={index}>
                   {
                     message.senderType === 'user' ?
                       <div className='flex justify-end w-full pe-4 mt-8 gap-2'>
-                        <div className='px-2 py-2'
-                          style={{
-                            color: 'white', textAlign: 'end', width: 'fit-content',
-                            maxWidth: '60%', borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
-                            borderBottomLeftRadius: 20
-                          }}>
-                          {message.content}
+                        <div className='flex flex-row justify-end w-full pe-4 mt-8 gap-2' style={{ width: "70%" }}>
+                          <div className='px-2 py-2'
+                            style={{
+                              color: 'white', textAlign: 'start',
+                              borderTopLeftRadius: 20, backgroundColor: '#ffffff20', borderTopRightRadius: 20,
+                              borderBottomLeftRadius: 20, maxWidth: "90%"
+                            }}>
+                            {message.content}
+                          </div>
+                          {
+                            getProfileData && getProfileData.profile_image ?
+                              <div>
+                                <img src={getProfileData.profile_image} style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                              </div> :
+                              <div className='flex items-center justify-center'
+                                style={{
+                                  height: '40px', width: '40px', borderRadius: "50%",
+                                  backgroundColor: "#4011FA", color: "white", fontWeight: "500", fontSize: 20
+                                }}>
+                                {userEmail}
+                              </div>
+                          }
                         </div>
-                        {
-                          getProfileData ?
-                            <div>
-                              <img src={getProfileData.profile_image} style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
-                            </div> :
-                            <div className='flex items-center justify-center'
-                              style={{
-                                height: '40px', width: '40px', borderRadius: "50%",
-                                backgroundColor: "#4011FA", color: "white", fontWeight: "500", fontSize: 20
-                              }}>
-                              {userEmail}
-                            </div>
-                        }
                       </div> :
                       (
                         <div style={{ maxWidth: "80%" }}>
@@ -734,12 +983,12 @@ const Page = () => {
             <div className='flex rounded-xl w-7/12 flex-row justify-between'
               style={{ position: 'absolute', bottom: 0, paddingLeft: 10, marginBottom: 30, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
               <div className='w-full flex flex-col items-center'>
-                <div className='text-white w-full items-start px-4 py-2'>
-                  {selectedFile ?
+                <div className='text-white w-full items-start px-4 py-1'>
+                  {selectedFileShow ?
                     <div style={{ width: "fit-content" }}>
                       <div className='' style={{ position: "absolute", top: 9, marginLeft: 5 }}> {/*marginBottom: -22, paddingRight: 5, zIndex: 1, position: 'relative'*/}
                         <div className='flex items-center justify-center' style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
-                          <button onClick={() => setSelectedFile(null)}>
+                          <button onClick={() => setSelectedFileShow(false)}>
                             <img src='/assets/cross2.png' alt='cross'
                               style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
                             />
@@ -758,26 +1007,35 @@ const Page = () => {
                   style={{ display: 'none' }}
                   onChange={handleFileChange}
                 />
-                <div className='flex flex-row gap-2 w-full pb-2'>
+                <div className='flex flex-row gap-2 w-full pb-2 items-end'>
                   <button>
-                    <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
+                    <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>
                   <button onClick={handleInputFileChange}>
-                    <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '20px', width: '20px', resize: 'cover' }} />
+                    <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>
-                  <input
-                    type='text'
+                  <textarea
+                    rows={rows}
                     placeholder='Message GPT'
                     value={userChatMsg}
-                    onChange={(e) => {
-                      // setMessage(e.target.value)
-                      setUserChatMessage(e.target.value);
-                    }}
-                    onKeyDown={handleKeyDown}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDownInputMsg}
                     className='rounded w-full'
                     style={{
-                      backgroundColor: 'transparent', fontWeight: '500', fontSize: 12, fontFamily: 'inter',
-                      color: 'white', paddingLeft: 10, outline: 'none', border: 'none'
+                      backgroundColor: 'transparent',
+                      fontWeight: '500',
+                      fontSize: 12,
+                      fontFamily: 'inter',
+                      color: 'white',
+                      paddingLeft: 10,
+                      paddingTop: 8,
+                      paddingBottom: 4,
+                      outline: 'none',
+                      border: 'none',
+                      resize: 'none',
+                      overflowY: rows >= 5 ? 'auto' : 'hidden',
+                      maxHeight: `${5 * 24}px`, // Limit the height to 5 rows
+                      scrollbarWidth: 'none', msOverflowStyle: 'none',
                     }}
                   />
                   <div

@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import Apis from '../Apis/Apis';
 import axios from 'axios';
-import { Box, Link } from '@mui/material';
-import { usePathname } from 'next/navigation';
+import { Box, CircularProgress, Link } from '@mui/material';
+import { usePathname, useRouter } from 'next/navigation';
 
 const GetProjects = () => {
 
     const [myProjects, setMyProjects] = useState([]);
     const [focusedLink, setFocusedLink] = useState(null);
     const [noProject, setNoProject] = useState(false);
+    const [loader, setLoader] = useState(false);
+    const [storedId, setStoredId] = useState(null);
 
     const getProjects = async () => {
         try {
-            // setMyProjectsLoader(true)
-            // const ApiPath = "http://localhost:8005/api/chat/get_projects";
+            setLoader(true);
             const P2 = Apis.GetProjects
             const LSD = localStorage.getItem('User');
             const localStorageData = JSON.parse(LSD);
@@ -45,7 +46,7 @@ const GetProjects = () => {
         } catch (error) {
             console.log('error occured is', error);
         } finally {
-            // setMyProjectsLoader(false)
+            setLoader(false)
         }
     };
 
@@ -67,48 +68,72 @@ const GetProjects = () => {
         };
     }, []);
 
+    const router = useRouter();
     const handleLinkClick = (item) => {
         console.log('ITem data sending is', item);
         localStorage.setItem('projectDetails', JSON.stringify(item));
+        router.push(`/chat/${item.chat.id}`);
     };
 
-    const handleFocusClick = (id) => {
-        setFocusedLink(id);
-    }
+    useEffect(() => {
 
-    const handleBlurClick = () => {
-        setFocusedLink(null);
-    }
+        const Data = localStorage.getItem('projectDetails');
+        if (Data) {
+            const LocalData = JSON.parse(Data);
+            const StoredId = LocalData.id;
+            setStoredId(StoredId)
+            console.log("Data of project", LocalData.id);
+        } else {
+            const LocalData = localStorage.getItem('NewProject');
+            if (LocalData) {
+                const Data = JSON.parse(LocalData);
+                console.log("Data of local", Data.data.id);
+                setStoredId(Data.data.id)
+            }
+        }
+
+    }, [handleLinkClick])
 
     return (
         <div>
             <div className='text-white' style={{ maxHeight: '40vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {myProjects ?
-                    <div>
-                        {
-                            myProjects.map((item) => (
-                                <div key={item.id} className='w-full flex flex-row items-center mt-6'
-                                    style={{ backgroundColor: '#ffffff20', borderRadius: 3 }}>
-                                    <Link sx={{ textDecoration: 'none', fontWeight: "500", fontSize: 14, fontFamily: "inter" }}
-                                        className='w-full text-white items-start p-3'
-                                        href={`/chat/${item.chat.id}`}>
-                                        {/* <button className='w-full text-start text-white'> */}
-                                        <Box
-                                            sx={{ textDecoration: 'none' }}
-                                            className='w-full text-white items-start'
-                                            onClick={() => handleLinkClick(item)}
-                                        >
-                                            {item.projectName ? item.projectName : "App Name"}
-                                        </Box>
-                                        {/* </button> */}
-                                    </Link>
-                                </div>
-                            ))
-                        }
-                    </div> :
-                    <div>
-                        No Projects
-                    </div>}
+                {
+                    loader ?
+                        <div className='ms-6'>
+                            <CircularProgress size={20} />
+                        </div> :
+                        <div>
+                            {myProjects ?
+                                <div>
+                                    {
+                                        myProjects.map((item) => (
+                                            <div key={item.id} className='w-full flex flex-row items-center mt-6'
+                                                style={{ backgroundColor: item.id === storedId ? '#ffffff20' : "transparent", borderRadius: 3 }}>
+                                                <Link
+                                                    sx={{ textDecoration: 'none', fontWeight: "500", fontSize: 14, fontFamily: "inter" }}
+                                                    className='w-full items-start p-3'
+                                                    href={`/chat/${item.chat.id}`}
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); // Prevent the default link behavior
+                                                        handleLinkClick(item); // Handle the click event manually
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{ textDecoration: 'none' }}
+                                                        className='w-full text-white items-start'
+                                                    >
+                                                        {item.projectName ? item.projectName : "App Name"}
+                                                    </Box>
+                                                </Link>
+                                            </div>
+                                        ))
+                                    }
+                                </div> :
+                                <div>
+                                    No Projects
+                                </div>}
+                        </div>
+                }
                 {
                     noProject &&
                     <div className='mt-4' style={{ fontWeight: "500", fontSize: 12, fontFamily: "inter" }}>

@@ -82,6 +82,8 @@ const Page = () => {
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
                             router.push('/chat');
                         }
+                    } else if (ApiResponse.message === "Invalid password") {
+                        setShowError(true);
                     } else {
                         console.log('status is', ApiResponse.status);
                     }
@@ -225,7 +227,7 @@ const Page = () => {
                         <Alert
                             onClose={handleClose} severity="error"
                             sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                            User already exists.
+                            Invalid Password.
                         </Alert>
                     </Snackbar>
                     <Snackbar
