@@ -13,6 +13,17 @@ import Notifications from '@/public/assets/notifications/Notifications';
 import { motion, useAnimation } from 'framer-motion';
 import Image from 'next/image';
 
+function usePrevious(value) {
+  const ref = useRef();
+  
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  
+  return ref.current;
+}
+
+
 const Page = () => {
   const fileInputRef = useRef(null);
   const { id, data } = useParams();
@@ -20,7 +31,7 @@ const Page = () => {
   // const id = 1
   // const data = router.query; // Access the dynamic route parameter
   const [projectData, setProjectData] = useState(null);
-  // console.log("Dta ", id)
+  // //console.log("Dta ", id)
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -44,6 +55,9 @@ const Page = () => {
   const [getProfileData, setGetProfileData] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [rows, setRows] = useState(1);
+
+  const [scrollHeight, setScrollHeight] = useState(0)
+  const previousScrollHeight = usePrevious(scrollHeight);
 
 
   const handleOpenEditproject = () => setOpen(true);
@@ -72,7 +86,7 @@ const Page = () => {
   //   if (e.key === 'Enter' && !e.shiftKey) {
   //     e.preventDefault();
   //     // Handle the message submit action here, like sending the message
-  //     // console.log('Message submitted:', userChatMsg);
+  //     // //console.log('Message submitted:', userChatMsg);
   //     setRows(1);
   //   } 
   //   else
@@ -114,7 +128,7 @@ const Page = () => {
     });
     try {
       if (response.status === 200) {
-        console.log('Profiledata', response.data.data);
+        //console.log('Profiledata', response.data.data);
         if (response.data.data.profileImage) {
           setGetProfileData(response.data.data)
         }
@@ -138,7 +152,7 @@ const Page = () => {
         }
       }
     } catch (error) {
-      console.log('Error occured in profile api', error);
+      //console.log('Error occured in profile api', error);
 
     }
   }
@@ -157,7 +171,7 @@ const Page = () => {
   const handleLogoSelect = (file) => {
     // Handle the selected file here (e.g., upload to server, display preview, etc.)
     setSelectedLogo(file.previewURL);
-    console.log('Selected logo file:', file);
+    //console.log('Selected logo file:', file);
   };
 
   const handleInputFileChange = () => {
@@ -172,7 +186,7 @@ const Page = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const previewURL = reader.result;
-      // console.log("Image url is :", previewURL);
+      // //console.log("Image url is :", previewURL);
       setPreviewURL(previewURL);
       // onFile({ file, previewURL }); // Callback to parent component
     };
@@ -200,11 +214,11 @@ const Page = () => {
         return new File([blob], filename, { type: mimeType });
       };
       if (SelectedLogo) {
-        console.log('Imagr sending in');
+        //console.log('Imagr sending in');
         const file = await urlToFile(SelectedLogo, 'image.png', 'image/png');
         formData.append('media', file);
       }
-      console.log('Data for update project', formData);
+      //console.log('Data for update project', formData);
 
       const response = await axios.post(ApiPath, formData, {
         headers: {
@@ -217,7 +231,7 @@ const Page = () => {
       if (response.status === 200) {
         const PData = response.data.data;
         setUpdatedData(PData);
-        console.log("UpdateProject Api Response is", PData);
+        //console.log("UpdateProject Api Response is", PData);
         localStorage.setItem('projectDetails', JSON.stringify(PData));
         const event = new CustomEvent('apiSuccess', { detail: 'Api call was successfull' });
         document.dispatchEvent(event);
@@ -230,7 +244,7 @@ const Page = () => {
         // window.location.reload();
       }
     } catch (error) {
-      console.log("Error occured in update project api :", error);
+      //console.log("Error occured in update project api :", error);
     } finally {
       setPUpdateLoader(false);
     }
@@ -242,7 +256,7 @@ const Page = () => {
   //   const LD = localStorage.getItem('projectDetails');
   //   const LocalData = await JSON.parse(LD);
   //   setProjectData(LocalData);
-  //   console.log('Project  name is', LocalData.projectName);
+  //   //console.log('Project  name is', LocalData.projectName);
   // }
 
   // useEffect(() => {
@@ -250,7 +264,7 @@ const Page = () => {
   // }, [])
 
   // useEffect(() => {
-  //   console.log('Data of project details is :', projectData);
+  //   //console.log('Data of project details is :', projectData);
   // }, [])
 
   const updatProj = () => {
@@ -264,16 +278,16 @@ const Page = () => {
   useEffect(() => {
     const storedData = localStorage.getItem('projectDetails');
     if (storedData) {
-      console.log("Data recieved from local of project details is", storedData);
+      //console.log("Data recieved from local of project details is", storedData);
       setProjectData(JSON.parse(storedData));
     }
   }, []);
 
   useEffect(() => {
     if (projectData !== null) {
-      console.log('Data is not null:', projectData);
+      //console.log('Data is not null:', projectData);
     } else {
-      console.log('data is not found');
+      //console.log('data is not found');
     }
   }, [projectData]);
 
@@ -337,12 +351,12 @@ const Page = () => {
 
 
   const handleSubmit = async () => {
-    // console.log('test working');
+    // //console.log('test working');
     setUserChatMessage("");
     setSelectedFileShow(false);
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
-    console.log('Data from localstorage is :', localStorageData.data.user.message);
+    //console.log('Data from localstorage is :', localStorageData.data.user.message);
     const AuthToken = localStorageData.data.token;
 
     if (localStorageData) {
@@ -354,7 +368,7 @@ const Page = () => {
 
     const Test = localStorage.getItem('User');
     const Data = JSON.parse(Test);
-    console.log('Test data', Data.data.user);
+    //console.log('Test data', Data.data.user);
 
     if (Test) {
       if (Data.data.user.plan === null) {
@@ -376,10 +390,11 @@ const Page = () => {
 
     setTimeout(async () => {
       if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
+        setScrollHeight(chatContainerRef.current.scrollHeight)
+        // chatContainerRef.current.scrollTo({
+        //   top: chatContainerRef.current.scrollHeight,
+        //   behavior: 'smooth'
+        // });
       };
 
       const urlToFile = async (url, filename, mimeType) => {
@@ -388,7 +403,7 @@ const Page = () => {
         return new File([blob], filename, { type: mimeType });
       };
 
-      // console.log('User chat msg is', userChatMsg);
+      // //console.log('User chat msg is', userChatMsg);
       
       const formData = new FormData();
       formData.append('chatId', id);
@@ -396,12 +411,12 @@ const Page = () => {
 
       // Convert the image URL to a File object and append it to the form data
       if (previewURL) {
-        console.log('Image sending in');
+        //console.log('Image sending in');
         const file = await urlToFile(previewURL, 'image.png', 'image/png');
         formData.append('media', file);
       }
 
-      console.log("Data sending in api is :", formData);
+      //console.log("Data sending in api is :", formData);
 
       try {
         const response = await axios.post(Apis.SendMessage, formData, {
@@ -413,7 +428,7 @@ const Page = () => {
 
         if (response.status === 200) {
           const Result = response.data.data;
-          console.log('Response of API is', Result);
+          //console.log('Response of API is', Result);
 
           // Update the chat state by removing the last message and appending the response messages
           setChat((prevChat) => {
@@ -423,7 +438,7 @@ const Page = () => {
             return [...updatedItems, ...Result];
           });
         } else {
-          console.log('Response is not ok:', response);
+          //console.log('Response is not ok:', response);
         }
       } catch (error) {
         console.error('Error calling API:', error);
@@ -436,26 +451,7 @@ const Page = () => {
 
   };
 
-  //code for code separation
 
-  // const separateTextAndCode = (input) => {
-  //   const regex = /(```.*?```)/gs;
-  //   const parts = input.split(regex);
-
-  //   return parts.map(part => {
-  //     if (part.startsWith('```') && part.endsWith('```')) {
-  //       return {
-  //         type: 'code',
-  //         value: part.slice(3, -3).trim(),
-  //       };
-  //     } else {
-  //       return {
-  //         type: 'string',
-  //         value: part.trim(),
-  //       };
-  //     }
-  //   });
-  // };
 
   const determineTextType = (text) => {
     if (/^####\s/.test(text)) {
@@ -482,7 +478,7 @@ const Page = () => {
 
   const RenderText = ({ text }) => {
     const textType = determineTextType(text);
-    console.log(`Text ${text} is of ${textType}`)
+    // //console.log(`Text ${text} is of ${textType}`)
     switch (textType) {
       case 'heading1':
         return <h1>{text.replace(/^#\s/, '')}</h1>;
@@ -492,18 +488,18 @@ const Page = () => {
         return <h3>{text.replace(/^###\s/, '')}</h3>;
       case 'heading4':
         return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
-      case 'bullet':
-        return <li>{text.replace(/^-/, '')}</li>;
-      case 'numbered':
-        return <li>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
-      case 'dot':
-        return <li>{text.replace(/^•\s/, '')}</li>;
+        case 'bullet':
+          return <li>{formatText(text.replace(/^-/, ''))}</li>;
+        case 'numbered':
+            return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
+        case 'dot':
+            return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
       case 'image':
         const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
         return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
       case 'simpleText':
         // Check for bold text patterns
-        return <p>{formatInlineText(text)}</p>;
+        return <p>{formatText(text)}</p>;
       case 'code':
         return <pre><code>{text}</code></pre>;
       default:
@@ -518,6 +514,28 @@ const Page = () => {
         return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
       } else if (/^\*[^*]+\*$/.test(part)) {
         return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
+      } else {
+        return part;
+      }
+    });
+  };
+
+
+  const formatText = (text) => {
+    const parts = text.split(/\*\*(.*?)\*\*/).map((part, index) =>
+      index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+    );
+  
+    return parts.map((part, index) => {
+      if (typeof part === 'string') {
+        const imageParts = part.split(/(!\[icon\]\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\))/g);
+        return imageParts.map((imagePart, imageIndex) => {
+          if (imagePart.startsWith('http')) {
+            return <img key={`img-${index}-${imageIndex}`} src={imagePart} alt="icon" style={{ width: '30vw', margin: '0 5px' }} />;
+          } else {
+            return imagePart;
+          }
+        });
       } else {
         return part;
       }
@@ -551,159 +569,7 @@ const Page = () => {
     });
   };
 
-  // const formatInlineText = (text) => {
-  //   const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
-  //   return parts.map((part, index) => {
-  //     if (/^\*\*[^*]+\*\*$/.test(part)) {
-  //       return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
-  //     } else if (/^\*[^*]+\*$/.test(part)) {
-  //       return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
-  //     } else {
-  //       return part;
-  //     }
-  //   });
-  // };
 
-  // const determineTextType = (text) => {
-  //   if (/^###\s/.test(text)) {
-  //     return 'heading3';
-  //   } else if (/^##\s/.test(text)) {
-  //     return 'heading2';
-  //   } else if (/^#\s/.test(text)) {
-  //     return 'heading1';
-  //   } else if (/^-\s/.test(text)) {
-  //     return 'bullet';
-  //   } else if (/^\d+\.\s/.test(text)) {
-  //     return 'numbered';
-  //   } else if (/^•\s/.test(text)) {
-  //     return 'dot';
-  //   } else {
-  //     return 'simpleText';
-  //   }
-  // };
-
-  // const RenderText = ({ text }) => {
-  //   // return <p className={styles.simpleText}>{text}</p>;
-  //   const textType = determineTextType(text);
-
-  //   switch (textType) {
-  //     case 'heading1':
-  //       return <h1 className={styles.heading1}>{formatInlineText(text.replace(/^#\s/, ''))}</h1>;
-  //     case 'heading2':
-  //       return <h2 className={styles.heading2}>{formatInlineText(text.replace(/^##\s/, ''))}</h2>;
-  //     case 'heading3':
-  //       return <h3 className={styles.heading3}>{formatInlineText(text.replace(/^###\s/, ''))}</h3>;
-  //     case 'bullet':
-  //       return <li className={styles.bullet}>{formatInlineText(text.replace(/^-/, ''))}</li>;
-  //     case 'numbered':
-  //       return <li className={styles.numbered}>{formatInlineText(text.replace(/^\d+\.\s/, ''))}</li>;
-  //     case 'dot':
-  //       return <li className={styles.dot}>{formatInlineText(text.replace(/^•\s/, ''))}</li>;
-  //     default:
-  //       return <p className={styles.simpleText}>{formatInlineText(text)}</p>;
-  //   }
-  // };
-
-  // const determineTextType = (text) => {
-  //   if (/^###\s/.test(text)) {
-  //     return 'heading3';
-  //   } else if (/^##\s/.test(text)) {
-  //     return 'heading2';
-  //   } else if (/^#\s/.test(text)) {
-  //     return 'heading1';
-  //   } else if (/^-\s/.test(text)) {
-  //     return 'bullet';
-  //   } else if (/^\d+\.\s/.test(text)) {
-  //     return 'numbered';
-  //   } else if (/•\s/.test(text)) {
-  //     return 'dot';
-  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
-  //     return 'image';
-  //   } else {
-  //     return 'simpleText';
-  //   }
-  // };
-
-  // const RenderText = ({ text }) => {
-  //   const textType = determineTextType(text);
-
-  //   switch (textType) {
-  //     case 'heading1':
-  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
-  //     case 'heading2':
-  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
-  //     case 'heading3':
-  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
-  //     case 'bullet':
-  //       return <li>{text.replace(/^-/, '')}</li>;
-  //     case 'numbered':
-  //       return <li>{text.replace(/^\d+\.\s/, '')}</li>;
-  //     case 'dot':
-  //       return <li>{text.replace(/^•\s/, '')}</li>;
-  //     case 'image':
-  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
-  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
-  //     case 'simpleText':
-  //       return <p>{text}</p>;
-  //     case 'code':
-  //       return <pre><code>{text}</code></pre>;
-  //     default:
-  //       return <p>{text}</p>;
-  //   }
-  // };
-
-  // const determineTextType = (text) => {
-  //   if (/^####\s/.test(text)) {
-  //     return 'heading4';
-  //   }
-  //   else if (/^###\s/.test(text)) {
-  //     return 'heading3';
-  //   } else if (/^##\s/.test(text)) {
-  //     return 'heading2';
-  //   } else if (/^#\s/.test(text)) {
-  //     return 'heading1';
-  //   } else if (/^-\s/.test(text)) {
-  //     return 'bullet';
-  //   } else if (/^\d+\.\s/.test(text)) {
-  //     return 'numbered';
-  //   } else if (/•\s/.test(text)) {
-  //     return 'dot';
-  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
-  //     return 'image';
-  //   } else {
-  //     return 'simpleText';
-  //   }
-  // };
-
-  // const RenderText = ({ text }) => {
-  //   const textType = determineTextType(text);
-
-  //   switch (textType) {
-  //     case 'heading1':
-  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
-  //     case 'heading2':
-  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
-  //     case 'heading3':
-  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
-  //     case 'heading4':
-  //       return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
-  //     case 'bullet':
-  //       return <li>{text.replace(/^-/, '')}</li>;
-  //     case 'numbered':
-  //       return <li>{text.replace(/^\d+\.\s/, '')}</li>;
-  //     case 'dot':
-  //       return <li>{text.replace(/^•\s/, '')}</li>;
-  //     case 'image':
-  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
-  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
-  //     case 'simpleText':
-  //       return <p>{text}</p>;
-  //     case 'code':
-  //       return <pre><code>{text}</code></pre>;
-  //     default:
-  //       return <p>{text}</p>;
-  //   }
-  // };
 
   const handleCopy = async (index, value) => {
     await navigator.clipboard.writeText(value);
@@ -787,12 +653,23 @@ const Page = () => {
     }
   }, [id]);
 
+  useEffect(()=>{
+    // console.log("Scroll height changed", scrollHeight)
+    console.log("Scroll height changed", scrollHeight);
+    console.log("Previous scroll height", previousScrollHeight);
+    chatContainerRef.current.scrollTo({
+      top: previousScrollHeight,
+      behavior: 'smooth'
+    });
+
+  }, [scrollHeight])
 
   useEffect(() => {
-    console.log("Chat data chanved ")
+    // console.log("Chat data chanved ")
     if (chatContainerRef.current) {
-      console.log("chatContainerRef is not null")
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setScrollHeight(chatContainerRef.current.scrollHeight)
+      // //console.log("chatContainerRef is not null")
+      // chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [chat])
 
@@ -813,7 +690,7 @@ const Page = () => {
 
       if (response.status === 200) {
         setChat(response.data.data);
-        console.log("Chat history is:", response.data)
+        //console.log("Chat history is:", response.data)
       } else {
         console.error('Error fetching chat data:', response);
       }
