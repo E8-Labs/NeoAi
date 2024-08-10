@@ -17,6 +17,7 @@ import Apis from '@/public/Apis/Apis';
 import { useRouter } from 'next/navigation';
 import styles from '../Home.module.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 SyntaxHighlighter.registerLanguage('javascript', js);
 
@@ -347,6 +348,7 @@ const Page = () => {
 
     const handleSubmit = async (e) => {
         setMessage('');
+        setSelectedFile(null);
         setSelectedFileShow(false);
         if (previewURL) {
             localStorage.setItem('Image', JSON.stringify(previewURL));
@@ -395,7 +397,7 @@ const Page = () => {
         };
 
 
-        const newChat = { role: 'user', content: message };
+        const newChat = { role: 'user', content: message, imageThumb: selectedFile };
         const updatedChat = [...userChat, newChat];
 
         if (activeChat !== null) {
@@ -607,7 +609,6 @@ const Page = () => {
     const handleOpenRefer = () => setOpenRefer(true);
     const handleOpenSupport = () => setOpenSupport(true);
     const handleOpenProfile = () => setOpenProfile(true);
-    const handleOpenAddTeam = () => setOpenAddTeam(true);
     const handleCloseShareProject = () => setOpenShareApp(false);
 
     const handleCloseEditProject = () => {
@@ -675,11 +676,19 @@ const Page = () => {
     };
 
     useEffect(() => {
-        const L = localStorage.getItem('NewProject');
-        if (L) {
-            const D = JSON.parse(L);
-            setProjectDetails(D.data);
-            console.log('Data recieved is', D);
+        const ProjectData = localStorage.getItem('projectDetails');
+        if (ProjectData) {
+            const ProjectDetails = JSON.parse(ProjectData);
+            console.log('Project123 Data is', ProjectDetails);
+            setProjectDetails(ProjectDetails)
+        }
+        else {
+            const L = localStorage.getItem('NewProject');
+            if (L) {
+                const D = JSON.parse(L);
+                setProjectDetails(D.data);
+                console.log('Data recieved is', D);
+            }
         }
     }, []);
 
@@ -937,14 +946,6 @@ const Page = () => {
                                         projDet ?
                                             <div className='flex flex-row items-center gap-12 mt-4'>
                                                 <div className='flex flex-row gap-2 items-center'>
-                                                    {/*
-                                                        SelectedLogo ?
-                                                            <img src={projectDetails.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
-                                                            <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-                                    */}
-                                                    {/* <img src='/assets/applogo.png' alt='Applogo'
-                                                        style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
-                                                    /> */}
                                                     <img
                                                         src={
                                                             updatedData
@@ -1068,31 +1069,6 @@ const Page = () => {
                     </Modal>
                 </div>
 
-                {/* {
-                    openSetting &&
-                    <div style={{ height: '100vh' }}>
-                        Settings screen
-                    </div>
-                } */}
-
-                {
-                    openEditProject && (
-                        <div className='flex flex-row justify-center'>
-                            <div className='w-11/12 flex justify-center '
-                                style={{ height: '100vh', padding: 15, backgroundColor: '#ffffff10' }}>
-                                <div className='w-11/12'>
-                                    <div className='w-full flex justify-center'>
-                                        {/* replace with the component */}
-                                        <div className='flex justify-center w-full'>
-                                            edit project here
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                }
-
                 {
                     openProjects &&
                     <div className='flex flex-row justify-center'>
@@ -1156,18 +1132,16 @@ const Page = () => {
                                                                 chat.role === "user" ? (
                                                                     <div>
                                                                         <div className='flex flex-col w-full justify-end items-end mt-8'>
-                                                                            {/* <div>
-                                                                                {
-                                                                                    localImg ?
-                                                                                        <div>
-                                                                                            <img src={localImg} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
-                                                                                        </div> : ""
-                                                                                }
-                                                                            </div> */}
                                                                             {
                                                                                 chat.imageThumb ?
                                                                                     <div>
-                                                                                        <img src={chat.imageThumb} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} />
+                                                                                        {/* <img src={chat.imageThumb} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} /> */}
+                                                                                        <Image
+                                                                                            src={chat.imageThumb}
+                                                                                            height={70}
+                                                                                            width={70}
+                                                                                            unoptimized
+                                                                                        />
                                                                                     </div> : ""
                                                                             }
                                                                             <div className='flex flex-row gap-2 justify-end' style={{ width: "60%" }}>
@@ -1328,131 +1302,6 @@ const Page = () => {
                 }
             </div>
 
-            {/* Code for adding team member */}
-
-            <div>
-                <Modal
-                    open={openAddTeam}
-                    onClose={handleCloseEditProject}
-                >
-                    <Box sx={addTeamStyle}>
-                        <div>
-                            <div className='w-full flex flex-row justify-end'>
-                                <button onClick={handleCloseEditProject}>
-                                    <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
-                                </button>
-                            </div>
-                            <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: '#ffffff' }}>
-                                Add Team Member
-                            </div>
-                            <TextField id="standard-basic" label="Name" variant="standard"
-                                placeholder="Enter Name"
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 1
-                                }}
-                            />
-                            <TextField id="standard-basic" label="Role" variant="standard"
-                                placeholder="Role"
-                                value={role}
-                                onChange={(e) => {
-                                    setRole(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <TextField id="standard-basic" label="Email" variant="standard"
-                                placeholder="Enter Email"
-                                value={email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff ', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
-                                style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
-                                {
-                                    addTeamLoader ?
-                                        <CircularProgress size={30} /> :
-                                        "Add"
-                                }
-                            </Button>
-                        </div>
-                    </Box>
-                </Modal>
-            </div>
 
             {/* Code for subscribe plan modal */}
 

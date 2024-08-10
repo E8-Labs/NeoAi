@@ -1,5 +1,6 @@
 // pages/chat/[id].js
 'use client'
+import imageCompression from 'browser-image-compression';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
@@ -15,11 +16,11 @@ import Image from 'next/image';
 
 function usePrevious(value) {
   const ref = useRef();
-  
+
   useEffect(() => {
     ref.current = value;
   }, [value]);
-  
+
   return ref.current;
 }
 
@@ -385,7 +386,7 @@ const Page = () => {
 
     // getProfile();
 
-    const newChat = { role: 'user', content: userChatMsg, senderType: 'user' };
+    const newChat = { role: 'user', content: userChatMsg, senderType: 'user', imageThumb: selectedFile };
     const updatedChat = [...chat, newChat];
     setChat(updatedChat);
     setLoading(true);
@@ -406,7 +407,7 @@ const Page = () => {
       };
 
       // //console.log('User chat msg is', userChatMsg);
-      
+
       const formData = new FormData();
       formData.append('chatId', id);
       formData.append('content', userChatMsg);
@@ -415,10 +416,52 @@ const Page = () => {
       if (previewURL) {
         //console.log('Image sending in');
         const file = await urlToFile(previewURL, 'image.png', 'image/png');
-        formData.append('media', file);
+        // formData.append('media', file);
+
+
+
+
+
+
+        if (file) {
+          try {
+            // Compress the image
+            const options = {
+              maxSizeMB: 1, // Target size in MB
+              maxWidthOrHeight: 1920, // Resize dimensions
+              useWebWorker: true,
+            };
+            const compressedFile = await imageCompression(file, options);
+
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+              const previewURL = reader.result;
+              setPreviewURL(previewURL);
+
+              if (previewURL) {
+                const fileConverted = await urlToFile(previewURL, 'image.png', 'image/png');
+                const formData = new FormData();
+                formData.append('media', fileConverted);
+
+                console.log("File sent in API", fileConverted);
+                // Make your API call here using formData
+              }
+            };
+
+            reader.readAsDataURL(compressedFile);
+          } catch (error) {
+            console.error('Error compressing the file:', error);
+          }
+        }
+
+
+
+
+
       }
 
-      //console.log("Data sending in api is :", formData);
+      // return
+
 
       try {
         const response = await axios.post(Apis.SendMessage, formData, {
@@ -490,12 +533,12 @@ const Page = () => {
         return <h3>{text.replace(/^###\s/, '')}</h3>;
       case 'heading4':
         return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
-        case 'bullet':
-          return <li>{formatText(text.replace(/^-/, ''))}</li>;
-        case 'numbered':
-            return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
-        case 'dot':
-            return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
+      case 'bullet':
+        return <li>{formatText(text.replace(/^-/, ''))}</li>;
+      case 'numbered':
+        return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
+      case 'dot':
+        return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
       case 'image':
         const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
         return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
@@ -527,7 +570,7 @@ const Page = () => {
     const parts = text.split(/\*\*(.*?)\*\*/).map((part, index) =>
       index % 2 === 1 ? <strong key={index}>{part}</strong> : part
     );
-  
+
     return parts.map((part, index) => {
       if (typeof part === 'string') {
         const imageParts = part.split(/(!\[icon\]\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\))/g);
@@ -655,7 +698,7 @@ const Page = () => {
     }
   }, [id]);
 
-  useEffect(()=>{
+  useEffect(() => {
     // console.log("Scroll height changed", scrollHeight)
     console.log("Scroll height changed", scrollHeight);
     console.log("Previous scroll height", previousScrollHeight);
@@ -664,7 +707,7 @@ const Page = () => {
       top: shouldScrollToBottom ? scrollHeight : previousScrollHeight,
       behavior: 'smooth'
     });
-    
+
   }, [scrollHeight])
 
   useEffect(() => {
@@ -809,8 +852,19 @@ const Page = () => {
                 <div key={index}>
                   {
                     message.senderType === 'user' ?
-                      <div className='flex justify-end w-full pe-4 mt-8 gap-2'>
-                        <div className='flex flex-row justify-end w-full pe-4 mt-8 gap-2' style={{ width: "70%" }}>
+                      <div className='flex flex-col items-end justify-end w-full pe-4 mt-8 gap-2'>
+                        {
+                          message.imageThumb ? (
+                            <Image
+                              src={message.imageThumb}
+                              height={70}
+                              width={70}
+                              unoptimized
+                            />
+                          ) : ""
+                        }
+
+                        <div className='flex flex-row justify-end w-full pe-4 gap-2' style={{ width: "70%" }}>
                           <div className='px-2 py-2'
                             style={{
                               color: 'white', textAlign: 'start',
@@ -847,13 +901,20 @@ const Page = () => {
               {loading &&
                 <div className='flex flex-row ms-2'>
                   {controls.map((control, index) => (
-                    <motion.div
-                      key={index}
-                      animate={control}
-                      initial={{ opacity: 0.2 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
-                    />
+                    <div>
+                      <div>
+                        
+                      </div>
+                      <div>
+                        <motion.div
+                          key={index}
+                          animate={control}
+                          initial={{ opacity: 0.2 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
+                        />
+                      </div>
+                    </div>
                   ))}
                 </div>}
 
