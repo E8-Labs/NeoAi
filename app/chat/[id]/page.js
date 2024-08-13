@@ -84,6 +84,25 @@ const Page = () => {
     setRows(currentRows);
   };
 
+  //code for showing subscribeplan popup
+  useEffect(() => {
+    const Test = localStorage.getItem('User');
+  
+    if (Test) {
+      const Data = JSON.parse(Test);
+      console.log('Test data', Data.data.user.message);
+  
+      if (Data.data.user.plan === null && Data.data.user.message === 3) {
+        console.log("test should work");
+        // setSubscribePlanPopup(true);
+      } else {
+        setSubscribePlanPopup(false);
+      }
+    } else {
+      console.log("no data");
+    }
+  }, []);
+
   // const handleKeyDownInputMsg = (e) => {
   //   if (e.key === 'Enter' && !e.shiftKey) {
   //     e.preventDefault();
@@ -375,12 +394,11 @@ const Page = () => {
 
     if (Test) {
       if (Data.data.user.plan === null) {
-        if (Data.data.user.message > 5) {
+        if (Data.data.user.message === 3 ) {
           // setSubscribePlanPopup(true)
         }
       } else {
         setSubscribePlanPopup(false);
-
       }
     }
 
@@ -736,7 +754,7 @@ const Page = () => {
 
       if (response.status === 200) {
         setChat(response.data.data);
-        //console.log("Chat history is:", response.data)
+        console.log("Chat history is:", response.data)
       } else {
         console.error('Error fetching chat data:', response);
       }
@@ -766,10 +784,6 @@ const Page = () => {
   const closeSideNav = () => {
     setOpenSideNav(false);
   }
-
-
-
-
 
 
   return (
@@ -901,10 +915,7 @@ const Page = () => {
               {loading &&
                 <div className='flex flex-row ms-2'>
                   {controls.map((control, index) => (
-                    <div>
-                      <div>
-                        
-                      </div>
+                    <div key={control.id}>
                       <div>
                         <motion.div
                           key={index}

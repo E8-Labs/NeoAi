@@ -1,22 +1,21 @@
 "use client"
 import { Box, Button, CircularProgress, Link, Modal } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ImagePicker from '@/public/ui/ImagePicker';
 import Apis from '../Apis/Apis';
 import GetProjects from './GetProjects';
 import axios from 'axios';
+import Image from 'next/image';
 
 const Chatsidenav = () => {
     const router = useRouter();
     const pathName = usePathname();
+    const fileInputRef = useRef(null);
 
-    const [myProjectsLoader, setMyprojectsLoader] = useState(false);
-    const [myProjects, setMyProjects] = useState([]);
-    const [openTeam, setOpenTeam] = useState(false);
-    const [openPlan, setOpenPlan] = useState(false);
-    const [openProjects, setOpenProjects] = useState(true);
-    const [openSetting, setOpenSetting] = useState(false);
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewURL, setPreviewURL] = useState(null);
     const [openSupport, setOpenSupport] = useState(false);
     const [openRef, setOpenRefer] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
@@ -24,7 +23,6 @@ const Chatsidenav = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [SelectedLogo, setSelectedLogo] = useState(null);
     const [openAddTeam, setOpenAddTeam] = useState(false);
-    const [loadTeamLoader, setLoadTeamLoader] = useState(false);
     const [open, setOpen] = useState(false);
     const [updateLoader, setUpdateLoader] = useState(false);
     const [userProfiledata, setUserProfiledata] = useState("");
@@ -73,10 +71,6 @@ const Chatsidenav = () => {
 
     //code for image picker1
     const handleFileSelect = (file) => {
-
-
-
-
         // Handle the selected file here (e.g., upload to server, display preview, etc.)
         console.log('Selected file:', file);
         setSelectedImage(file.previewURL);
@@ -193,8 +187,24 @@ const Chatsidenav = () => {
     const handleOpenAddTeam = () => setOpenAddTeam(true);
     const handleCloseShareProject = () => setOpenShareApp(false);
 
+    const handleImgSelect = () => {
+        fileInputRef.current.click();
+    }
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
 
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const previewURL = reader.result;
+            setPreviewURL(previewURL);
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
 
 
     const referStyle = {
@@ -218,14 +228,19 @@ const Chatsidenav = () => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 500,
-        // height: 450,
         bgcolor: 'background.paper',
         // border: '2px solid #000',
         boxShadow: 24,
         px: 4,
         py: 3,
         borderRadius: 2,
-        backgroundColor: '#0F0C2D'
+        backgroundColor: '#0F0C2D',
+        // height: "50vh",
+        maxHeight: 'calc(100vh - 20px)',
+        overflow: "auto",
+        // paddingTop: 
+        // marginTop: "5vh",
+        // marginBottom: "10vh"
     };
 
     const referStyle2 = {
@@ -348,7 +363,7 @@ const Chatsidenav = () => {
                                 links1.map((link) => {
                                     return (
                                         <div key={link.id} className='mt-4'>
-                                            <Link className='text-white' sx={{ textDecoration: 'none' }}
+                                            <Link className='text-white' sx={{ textDecoration: 'none', cursor: "pointer" }}
                                                 key={link.name}
                                                 // href={link.href}
                                                 onClick={(e) => handleSideBtnsClick(e, link.href)}
@@ -404,10 +419,6 @@ const Chatsidenav = () => {
                                         }}>
                                         {separateLetters}
                                     </div>
-                                    // <img
-                                    //     className=''
-                                    //     src='/assets/profile1.jpeg' alt='Profile'
-                                    //     style={{ height: '33px', width: '33px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} />
                                 }
                                 <div className=' text-start text-white'
                                     style={{ fontWeight: '500', fontSize: 12, fontFamily: 'inter' }}>
@@ -581,9 +592,8 @@ const Chatsidenav = () => {
                     <div>
                         <Modal
                             open={openFeedback}
-                            onClose={() => setOpenFeedback(false)}
-                        >
-                            <Box sx={addTeamStyle}>
+                            onClose={() => setOpenFeedback(false)}>
+                            <Box sx={addTeamStyle} className="md:mt-12">
                                 <div className='text-white w-full'>
                                     <div className='flex flex-row justify-end w-full'>
                                         <button onClick={() => setOpenFeedback(false)}>
@@ -621,16 +631,35 @@ const Chatsidenav = () => {
                                         placeholder="Tell us more about your feedback here  (optional)"
                                     />
 
-                                    <div className='flex flex-row gap-2 items-center justify-center' style={{ height: "98px", border: '1px dashed grey', marginTop: 25 }}>
-                                        <div style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
-                                            Drop your files here to
-                                        </div>
-                                        <button style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
-                                            <u>
-                                                Upload
-                                            </u>
-                                        </button>
-                                    </div>
+                                    {
+                                        previewURL ?
+                                            <div className='text-white w-full mt-6'>
+                                                <Image src={previewURL} alt='feedbackimg' height={10} width={1000} />
+                                                <button onClick={() => setPreviewURL(null)}>
+                                                    Close
+                                                </button>
+                                            </div> :
+                                            <div className='flex flex-row gap-2 items-center justify-center' style={{ height: "98px", border: '1px dashed grey', marginTop: 25 }}>
+                                                <div style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
+                                                    Drop your files here to
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        ref={fileInputRef}
+                                                        style={{ display: 'none' }}
+                                                        onChange={handleFileChange}
+                                                    />
+                                                    <button onClick={handleImgSelect}
+                                                        style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
+                                                        <u>
+                                                            Upload
+                                                        </u>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                    }
 
                                     <textarea
                                         rows={4}

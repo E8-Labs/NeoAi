@@ -508,32 +508,6 @@ const Page = () => {
         );
     }
 
-    //code for getProjects api
-
-
-
-    //code for opening my team and plans
-    const handleProjectClick = () => {
-        setOpenProjects(true);
-        setOpenPlan(false);
-        setOpenTeam(false);
-        setOpenSetting(false);
-    }
-
-    const handleSettingClick = () => {
-        setOpenSetting(true);
-        setOpenPlan(false);
-        setOpenProjects(false);
-        setOpenTeam(false);
-    }
-
-    const handlePlanClick = () => {
-        setOpenPlan(true);
-        setOpenProjects(false);
-        setOpenTeam(false);
-        setOpenSetting(false);
-    }
-
     const handleTeamClick = async () => {
         setOpenTeam(true);
         setOpenProjects(false);
@@ -606,9 +580,6 @@ const Page = () => {
 
     const handleOpenEditproject = () => setOpen(true);
     const handleOpenShareproject = () => setOpenShareApp(true);
-    const handleOpenRefer = () => setOpenRefer(true);
-    const handleOpenSupport = () => setOpenSupport(true);
-    const handleOpenProfile = () => setOpenProfile(true);
     const handleCloseShareProject = () => setOpenShareApp(false);
 
     const handleCloseEditProject = () => {
@@ -691,6 +662,26 @@ const Page = () => {
             }
         }
     }, []);
+
+
+    //code for show subscribe plan popup
+
+    useEffect(() => {
+        const Test = localStorage.getItem('User');
+        const Data = JSON.parse(Test);
+        console.log('Test data', Data.data.user);
+
+        if (Test) {
+            // console.log("test score", Data.data.user);
+            if (Data.data.user.plan === null) {
+                if (Data.data.user.message > 5) {
+                    // setSubscribePlanPopup(true);
+                }
+            } else {
+                setSubscribePlanPopup(false);
+            }
+        }
+    }, [])
 
     const style = {
         position: 'absolute',
