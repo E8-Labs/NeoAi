@@ -87,11 +87,11 @@ const Page = () => {
   //code for showing subscribeplan popup
   useEffect(() => {
     const Test = localStorage.getItem('User');
-  
+
     if (Test) {
       const Data = JSON.parse(Test);
       console.log('Test data', Data.data.user.message);
-  
+
       if (Data.data.user.plan === null && Data.data.user.message === 3) {
         console.log("test should work");
         // setSubscribePlanPopup(true);
@@ -199,22 +199,61 @@ const Page = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (event) => {
+  const urlToFile = async (url, filename, mimeType) => {
+    const res = await axios.get(url, { responseType: 'blob' });
+    const blob = res.data;
+    return new File([blob], filename, { type: mimeType });
+  };
+
+  const [sendImgMsg, setSendImg] = useState(null);
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     setSelectedFileShow(true);
     setSelectedFile(file);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const previewURL = reader.result;
-      // //console.log("Image url is :", previewURL);
-      setPreviewURL(previewURL);
-      // onFile({ file, previewURL }); // Callback to parent component
-    };
-
     if (file) {
-      reader.readAsDataURL(file);
+      try {
+        // Compress the image
+        const options = {
+          maxSizeMB: 1, // Target size in MB
+          maxWidthOrHeight: 1920, // Resize dimensions
+          useWebWorker: true,
+        };
+        const compressedFile = await imageCompression(file, options);
+
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const previewURL = reader.result;
+          setPreviewURL(previewURL);
+
+          if (previewURL) {
+            const fileConverted = await urlToFile(previewURL, 'image.png', 'image/png');
+            // const formData = new FormData();
+            // formData.append('media', fileConverted);
+
+            console.log("File converted is", fileConverted);
+            setSendImg(fileConverted);
+            // Make your API call here using formData
+          }
+        };
+
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing the file:', error);
+      }
     }
+
+    // const reader = new FileReader();
+    // reader.onloadend = () => {
+    //   const previewURL = reader.result;
+    //   // //console.log("Image url is :", previewURL);
+    //   setPreviewURL(previewURL);
+    //   // onFile({ file, previewURL }); // Callback to parent component
+    // };
+
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    // }
   };
 
 
@@ -229,11 +268,7 @@ const Page = () => {
       const formData = new FormData();
       formData.append("projectId", id);
       formData.append("projectName", appName);
-      const urlToFile = async (url, filename, mimeType) => {
-        const res = await axios.get(url, { responseType: 'blob' });
-        const blob = res.data;
-        return new File([blob], filename, { type: mimeType });
-      };
+      
       if (SelectedLogo) {
         //console.log('Imagr sending in');
         const file = await urlToFile(SelectedLogo, 'image.png', 'image/png');
@@ -394,7 +429,7 @@ const Page = () => {
 
     if (Test) {
       if (Data.data.user.plan === null) {
-        if (Data.data.user.message === 3 ) {
+        if (Data.data.user.message === 3) {
           // setSubscribePlanPopup(true)
         }
       } else {
@@ -418,65 +453,15 @@ const Page = () => {
         // });
       };
 
-      const urlToFile = async (url, filename, mimeType) => {
-        const res = await axios.get(url, { responseType: 'blob' });
-        const blob = res.data;
-        return new File([blob], filename, { type: mimeType });
-      };
-
       // //console.log('User chat msg is', userChatMsg);
 
       const formData = new FormData();
       formData.append('chatId', id);
       formData.append('content', userChatMsg);
+      formData.append('media', sendImgMsg)
 
       // Convert the image URL to a File object and append it to the form data
-      if (previewURL) {
-        //console.log('Image sending in');
-        const file = await urlToFile(previewURL, 'image.png', 'image/png');
-        // formData.append('media', file);
-
-
-
-
-
-
-        if (file) {
-          try {
-            // Compress the image
-            const options = {
-              maxSizeMB: 1, // Target size in MB
-              maxWidthOrHeight: 1920, // Resize dimensions
-              useWebWorker: true,
-            };
-            const compressedFile = await imageCompression(file, options);
-
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-              const previewURL = reader.result;
-              setPreviewURL(previewURL);
-
-              if (previewURL) {
-                const fileConverted = await urlToFile(previewURL, 'image.png', 'image/png');
-                const formData = new FormData();
-                formData.append('media', fileConverted);
-
-                console.log("File sent in API", fileConverted);
-                // Make your API call here using formData
-              }
-            };
-
-            reader.readAsDataURL(compressedFile);
-          } catch (error) {
-            console.error('Error compressing the file:', error);
-          }
-        }
-
-
-
-
-
-      }
+      
 
       // return
 
