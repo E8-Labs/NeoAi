@@ -471,7 +471,8 @@ const Page = () => {
           headers: {
             'Authorization': 'Bearer ' + AuthToken,
             'Content-Type': 'multipart/form-data',
-          }
+          },
+          timeout: 120000
         });
 
         if (response.status === 200) {
