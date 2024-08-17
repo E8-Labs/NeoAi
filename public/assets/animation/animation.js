@@ -539,18 +539,16 @@ const AnimatedForm = () => {
                           ))
                         }
                       </div>
-                      <div className='flex justify-center items-start'>
+                      <div className='flex justify-start items-start'>
                         {
                           founders.length > 0 && (
-                            <button onClick={handleAddFounder}>
-                              <div className="flex justify-center items-center px-4 py-2"
-                                style={{
-                                  backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
-                                  fontWeight: '500', fontFamily: "inter"
-                                }}>
-                                {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
-                                Add Founder
-                              </div>
+                            <button onClick={handleAddFounder} className="px-4 py-2"
+                              style={{
+                                backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
+                                fontWeight: '500', fontFamily: "inter"
+                              }}>
+                              {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
+                              Add Founder
                             </button>
                           )
                         }

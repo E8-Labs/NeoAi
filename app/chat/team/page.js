@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, CircularProgress, Drawer, Grid, Modal, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Drawer, FormControl, Grid, InputLabel, Menu, MenuItem, Modal, Select, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import Apis from '@/public/Apis/Apis';
 import axios from 'axios';
@@ -247,6 +247,12 @@ const Page = () => {
 
     }
 
+    const [assignProject, setAssignProject] = useState("")
+    const handleChange = (event) => {
+        setAssignProject(event.target.value);
+    };
+
+
     return (
         <div className='w-full flex flex-col items-center' style={{ height: '100vh', backgroundColor: "#050221" }}>
 
@@ -471,7 +477,7 @@ const Page = () => {
             {/* Code for adding team member */}
 
             <div>
-                <Modal
+                {/* <Modal
                     open={openAddTeam}
                     onClose={handleCloseModal}
                 >
@@ -581,12 +587,12 @@ const Page = () => {
                                     marginTop: 2
                                 }}
                             />
-                            {/* <TextField id="standard-basic" label="Assign Project" variant="standard"
+                            <TextField id="standard-basic" label="Assign Project" variant="standard"
                                 placeholder="Assign Project"
-                                // value={email}
-                                // onChange={(e) => {
-                                //     setEmail(e.target.value);
-                                // }}
+                                aria-controls={open ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onFocus={handleClick}
                                 sx={{
                                     width: '100%', // Change the width here
                                     '& .MuiInputBase-root': {
@@ -612,7 +618,7 @@ const Page = () => {
                                     },
                                     marginTop: 2
                                 }}
-                            /> */}
+                            />
                             <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
                                 style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                 {
@@ -622,9 +628,193 @@ const Page = () => {
                                 }
                             </Button>
                         </div>
+                        <div>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                    'aria-labelledby': 'basic-button',
+                                }}
+                            >
+                                <MenuItem onClick={() => setAnchorEl(null)}>Profile</MenuItem>
+                                <MenuItem onClick={handleClose}>My account</MenuItem>
+                                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                            </Menu>
+                        </div>
+                    </Box>
+                </Modal> */}
+
+                <Modal
+                    open={openAddTeam}
+                    onClose={handleCloseModal}
+                >
+                    <Box sx={addTeamStyle}>
+                        <div>
+                            <div className='w-full flex flex-row justify-end'>
+                                <button onClick={handleCloseModal}>
+                                    <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
+                                </button>
+                            </div>
+                            <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: '#ffffff' }}>
+                                Invite Member
+                            </div>
+                            <TextField id="standard-basic" label="Name" variant="standard"
+                                placeholder="Enter Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                sx={{
+                                    width: '100%',
+                                    '& .MuiInputBase-root': {
+                                        color: 'white',
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60',
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60',
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff',
+                                    },
+                                    marginTop: 2
+                                }}
+                            />
+                            <TextField id="standard-basic" label="Role" variant="standard"
+                                placeholder="Role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                sx={{
+                                    width: '100%',
+                                    '& .MuiInputBase-root': {
+                                        color: 'white',
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60',
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60',
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff',
+                                    },
+                                    marginTop: 2
+                                }}
+                            />
+                            <TextField id="standard-basic" label="Email" variant="standard"
+                                placeholder="Enter Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                sx={{
+                                    width: '100%',
+                                    '& .MuiInputBase-root': {
+                                        color: 'white',
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60',
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60',
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff',
+                                    },
+                                    marginTop: 2
+                                }}
+                            />
+                            {/* <TextField id="standard-basic" label="Assign Project" variant="standard"
+                                placeholder="Assign Project"
+                                aria-controls={open ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onFocus={handleClick}
+                                sx={{
+                                    width: '100%',
+                                    '& .MuiInputBase-root': {
+                                        color: 'white',
+                                        fontWeight: '400',
+                                        fontSize: 13,
+                                        fontFamily: 'inter'
+                                    },
+                                    '& .MuiInput-underline:before': {
+                                        borderBottomColor: '#ffffff60',
+                                    },
+                                    '& .MuiInput-underline:hover:before': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiInput-underline:after': {
+                                        borderBottomColor: '#ffffff',
+                                    },
+                                    '& .MuiFormLabel-root': {
+                                        color: '#ffffff60',
+                                    },
+                                    '& .MuiFormLabel-root.Mui-focused': {
+                                        color: '#ffffff',
+                                    },
+                                    marginTop: 2
+                                }}
+                            /> */}
+
+                            <div className='mt-4'>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Assign Project</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={assignProject}
+                                        label="Assign Project"
+                                        onChange={handleChange}>
+                                        <MenuItem value={10}>Ten</MenuItem>
+                                        <MenuItem value={20}>Twenty</MenuItem>
+                                        <MenuItem value={30}>Thirty</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+
+                            <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
+                                style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
+                                {
+                                    addTeamLoader ?
+                                        <CircularProgress size={30} /> :
+                                        "Submit"
+                                }
+                            </Button>
+
+                        </div>
                     </Box>
                 </Modal>
+
             </div>
+
+
 
             <div className='w-full'>
                 <Drawer open={openSideNav}

@@ -922,6 +922,18 @@ const Page = () => {
         getProfileResponse()
     }, [])
 
+    useEffect(() => {
+        console.log("Test code");
+        const NewProject = localStorage.getItem('NewProject');
+        if (NewProject) {
+            const projectChatId = JSON.parse(NewProject);
+            // console.log('New project id from local storage for get messages api is :', projectChatId.data.chat.id);
+            const ID = projectChatId.data.chat.id;
+            router.push(`/chat/${ID}`)
+        }
+    }, [])
+
+
     return (
         <div className='text-white' style={{ display: 'flex', backgroundColor: '#050221' }}>
 

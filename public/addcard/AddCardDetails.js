@@ -89,7 +89,7 @@ const AddCardDetails = ({ handleClose }) => {
                         }
                     });
                     if (response) {
-                        console.log("Response of add card api is", response);
+                        console.log("Response of add card api is", response.data);
                     }
                     if (response.status === 200) {
                         setAddCardDetails(response.data.message);

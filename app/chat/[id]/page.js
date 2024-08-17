@@ -37,6 +37,7 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileShow, setSelectedFileShow] = useState(false);
+  const [sendImgMsg, setSendImg] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [userChatMsg, setUserChatMessage] = useState("");
   const chatContainerRef = useRef(null);
@@ -205,7 +206,6 @@ const Page = () => {
     return new File([blob], filename, { type: mimeType });
   };
 
-  const [sendImgMsg, setSendImg] = useState(null);
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     setSelectedFileShow(true);
@@ -411,6 +411,7 @@ const Page = () => {
     setShouldScrollToBottom(false)
     setUserChatMessage("");
     setSelectedFileShow(false);
+    setSendImg(null);
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
     //console.log('Data from localstorage is :', localStorageData.data.user.message);
@@ -439,7 +440,9 @@ const Page = () => {
 
     // getProfile();
 
-    const newChat = { role: 'user', content: userChatMsg, senderType: 'user', imageThumb: selectedFile };
+    const newChat = { role: 'user', content: userChatMsg, senderType: 'user', imageThumb: sendImgMsg };
+    console.log("img sending is", newChat);
+    
     const updatedChat = [...chat, newChat];
     setChat(updatedChat);
     setLoading(true);

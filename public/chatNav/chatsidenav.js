@@ -334,14 +334,14 @@ const Chatsidenav = () => {
                             fontWeight: '500',
                             fontSize: 12, fontFamily: 'inter', backgroundColor: pathName === dashboardPath ? "#ffffff70" : ""
                         }}>
-                        <Link href={dashboardPath} sx={{ textDecoration: 'none' }} onClick={handleProjectClick}
+                        {/* <Link href={dashboardPath} sx={{ textDecoration: 'none' }} onClick={handleProjectClick}
                             style={{
                                 color: pathName === dashboardPath ? '#ffffff' : '#ffffff60', fontWeight: '500',
                                 fontSize: 12, fontFamily: 'inter'
                             }}
                             className='w-full'>
                             My Projects
-                        </Link>
+                        </Link> */}
                     </Button>
 
                     {/* user projects */}
