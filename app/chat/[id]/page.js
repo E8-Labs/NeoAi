@@ -8,7 +8,7 @@ import Apis from '@/public/Apis/Apis';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import styles from '../../Home.module.css';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { Box, Button, CircularProgress, Drawer, Modal } from '@mui/material';
+import { Box, Button, CircularProgress, Drawer, Menu, MenuItem, Modal } from '@mui/material';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Notifications from '@/public/assets/notifications/Notifications';
 import { motion, useAnimation } from 'framer-motion';
@@ -57,16 +57,43 @@ const Page = () => {
   const [getProfileData, setGetProfileData] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [rows, setRows] = useState(1);
+  const [teamMembers, setTeamMembers] = useState([]);
 
   const [scrollHeight, setScrollHeight] = useState(0)
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true)
   const previousScrollHeight = usePrevious(scrollHeight);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [assignProject, setAssignProject] = useState('');
 
 
   const handleOpenEditproject = () => setOpen(true);
   const handleCloseEditProject = () => setOpen(false);
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
+
+  const handleShareProjectToTeam = async () => {
+    console.log("Test working");
+    try {
+      const LocalData = localStorage.getItem('User');
+      const D = JSON.parse(LocalData);
+      const AuthToken = D.data.token;
+      const ApiPath = Apis.GetTeamMembers;
+      const response = await axios.get(ApiPath, {
+        headers: {
+          'Authorization': 'Bearer ' + AuthToken,
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      if (response.status === 200) {
+        console.log("Response of getproject api", response.data.data);
+        setTeamMembers(response.data.data);
+      } else {
+        console.log("Api err");
+      }
+    } catch (error) {
+      console.error("Error in getTeammembers api", error);
+    }
+  }
 
 
   const handleInputChange = (e) => {
@@ -127,7 +154,11 @@ const Page = () => {
         return;
       } else {
         e.preventDefault();
-        handleSubmit();
+        if (loading === true) {
+          console.log("Loading 1st chat");
+        } else {
+          handleSubmit();
+        }
         setRows(1)
       }
     }
@@ -268,7 +299,7 @@ const Page = () => {
       const formData = new FormData();
       formData.append("projectId", id);
       formData.append("projectName", appName);
-      
+
       if (SelectedLogo) {
         //console.log('Imagr sending in');
         const file = await urlToFile(SelectedLogo, 'image.png', 'image/png');
@@ -442,7 +473,7 @@ const Page = () => {
 
     const newChat = { role: 'user', content: userChatMsg, senderType: 'user', imageThumb: sendImgMsg };
     console.log("img sending is", newChat);
-    
+
     const updatedChat = [...chat, newChat];
     setChat(updatedChat);
     setLoading(true);
@@ -464,7 +495,7 @@ const Page = () => {
       formData.append('media', sendImgMsg)
 
       // Convert the image URL to a File object and append it to the form data
-      
+
 
       // return
 
@@ -775,6 +806,32 @@ const Page = () => {
   }
 
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleChange = (event) => {
+    handleClose(); // Close the dropdown after selection
+  };
+
+
+  const fileInputRef1 = useRef(null);
+
+  const handleButtonClick = () => {
+    // Trigger the hidden file input click
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange2 = (event) => {
+    const selectedFiles = event.target.files;
+    console.log("selected document is",selectedFiles); // You can handle the selected files here
+  };
+
+
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
@@ -839,6 +896,45 @@ const Page = () => {
               >
                 <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
               </button>
+
+
+
+              <div>
+                <button
+                  variant="contained"
+                  onClick={(event) => {
+                    handleClick(event);
+                    handleShareProjectToTeam()
+                  }}
+                >
+                  <img
+                    src="/assets/share.png"
+                    alt="share"
+                    style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
+                  />
+                </button>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  {teamMembers.map((teamMember) => (
+                    <MenuItem
+                      key={teamMember.id} // Assuming each project has a unique id
+                      onClick={handleChange}
+                      value={teamMember.name} // Assuming the project object has a name property
+                    >
+                      {teamMember.name}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </div>
+
+
+
+
+
+
             </div>
           </div>
           <button onClick={openSideBar}>
@@ -902,21 +998,30 @@ const Page = () => {
 
 
               {loading &&
-                <div className='flex flex-row ms-2'>
-                  {controls.map((control, index) => (
-                    <div key={control.id}>
-                      <div>
-                        <motion.div
-                          key={index}
-                          animate={control}
-                          initial={{ opacity: 0.2 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
-                        />
-                      </div>
+                <div className='flex flex-row gap-2 items-center'>
+                  <div>
+                    <div className='py-4 pl-1' style={{ backgroundColor: 'transparent' }}>
+                      <img src='/assets/logo.png' alt='bot' className=''
+                        style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
                     </div>
-                  ))}
-                </div>}
+                  </div>
+                  <div className='flex flex-row ms-2'>
+                    {controls.map((control, index) => (
+                      <div key={control.id}>
+                        <div>
+                          <motion.div
+                            key={index}
+                            animate={control}
+                            initial={{ opacity: 0.2 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            style={{ height: '20px', width: "20px", borderRadius: "50%", backgroundColor: "grey", display: "flex", flexDirection: "row" }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
 
 
             </div>
@@ -952,6 +1057,17 @@ const Page = () => {
                   <button>
                     <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>
+                    <button onClick={handleButtonClick}>
+                      <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
+                    </button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange2}
+                      style={{ display: 'none' }}
+                      multiple // Allows multiple file selection
+                      accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" // Specify the types of documents
+                    />
                   <button onClick={handleInputFileChange}>
                     <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>

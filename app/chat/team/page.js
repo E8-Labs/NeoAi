@@ -18,10 +18,17 @@ const Page = () => {
     const [openSideNav, setOpenSideNav] = useState(false);
     const [acceptLoader, setAcceptLoader] = useState(false);
     const [declineLoader, setDeclineLoader] = useState(false);
+    const [assignProject, setAssignProject] = useState("");
+    const [getProject, setGetProject] = useState([]);
+    const [selectedProjectId, setSelectedProjectId] = useState("");
     const [showFromUserData, setShowFromUserData] = useState(false);
 
     const [loggedInUser, setLoggedInUser] = useState(null)
     const handleOpenAddTeam = () => setOpenAddTeam(true);
+
+    useEffect(() => {
+        getProjectsList()
+    }, [])
 
     const handleCloseModal = () => {
         setOpenAddTeam(false);
@@ -54,6 +61,7 @@ const Page = () => {
                     toUserEmail: email,
                     name: name,
                     role: role,
+                    projectId: selectedProjectId
                 }
 
                 console.log("add member is:", AddMember);
@@ -145,25 +153,6 @@ const Page = () => {
         const toUserEmail1 = localStorageData.data.user.email;
         setLoggedInUser(localStorageData.data.user)
         console.log('Email for test is', toUserEmail1);
-
-        // let showAcceptButton = false;
-
-        // teamProfiles.forEach(element => {
-
-        //     if (element.status === "pending") {
-        //         // console.log('Working test 1');
-        //         if(element.fromUser.email === toUserEmail1){
-        //             setShowAcceptBtn(false);
-        //             setShowFromUserData(true);
-        //         }else {
-        //             setShowFromUserData(false);
-        //             setShowAcceptBtn(true);
-        //         }
-        //     } 
-
-        // });
-
-        // setShowAcceptBtn(showAcceptButton);
     }, []);
 
 
@@ -247,10 +236,40 @@ const Page = () => {
 
     }
 
-    const [assignProject, setAssignProject] = useState("")
     const handleChange = (event) => {
         setAssignProject(event.target.value);
     };
+
+    const getProjectsList = async () => {
+        try {
+            const ApiPath = Apis.GetProjects;
+            const LocalData = localStorage.getItem('User');
+            const D = JSON.parse(LocalData);
+            const AuthToken = D.data.token;
+            console.log('Auth token for getprojects', AuthToken);
+            const response = await axios.get(ApiPath, {
+                headers: {
+                    'Authorization': 'Bearer ' + AuthToken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.status === 200) {
+                console.log('Response of getprojects', response.data);
+                setGetProject(response.data.data)
+            }
+        } catch (error) {
+            console.error("Error occured in get projects lis", error);
+        }
+    }
+
+    const handleSelectProject = (id) => {
+        console.log("ProjectId selectd is", id);
+        setSelectedProjectId(id);
+    }
+
+    useEffect(() => {
+        console.log("selectd ProjectId is", selectedProjectId);
+    }, [selectedProjectId])
 
 
     return (
@@ -477,175 +496,6 @@ const Page = () => {
             {/* Code for adding team member */}
 
             <div>
-                {/* <Modal
-                    open={openAddTeam}
-                    onClose={handleCloseModal}
-                >
-                    <Box sx={addTeamStyle}>
-                        <div>
-                            <div className='w-full flex flex-row justify-end'>
-                                <button onClick={handleCloseModal}>
-                                    <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
-                                </button>
-                            </div>
-                            <div style={{ fontWeight: '500', fontSize: 24, fontFamily: 'inter', color: '#ffffff' }}>
-                                Invite Member
-                            </div>
-                            <TextField id="standard-basic" label="Name" variant="standard"
-                                placeholder="Enter Name"
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <TextField id="standard-basic" label="Role" variant="standard"
-                                placeholder="Role"
-                                value={role}
-                                onChange={(e) => {
-                                    setRole(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <TextField id="standard-basic" label="Email" variant="standard"
-                                placeholder="Enter Email"
-                                value={email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                }}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <TextField id="standard-basic" label="Assign Project" variant="standard"
-                                placeholder="Assign Project"
-                                aria-controls={open ? 'basic-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                                onFocus={handleClick}
-                                sx={{
-                                    width: '100%', // Change the width here
-                                    '& .MuiInputBase-root': {
-                                        color: 'white', // Change the text color here
-                                        fontWeight: '400',
-                                        fontSize: 13,
-                                        fontFamily: 'inter'
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                        borderBottomColor: '#ffffff60', // Change the underline color here
-                                    },
-                                    '& .MuiInput-underline:hover:before': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiInput-underline:after': {
-                                        borderBottomColor: '#ffffff', // Change the underline color on hover here
-                                    },
-                                    '& .MuiFormLabel-root': {
-                                        color: '#ffffff60', // Change the label color here
-                                    },
-                                    '& .MuiFormLabel-root.Mui-focused': {
-                                        color: '#ffffff', // Change the label color when focused
-                                    },
-                                    marginTop: 2
-                                }}
-                            />
-                            <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
-                                style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
-                                {
-                                    addTeamLoader ?
-                                        <CircularProgress size={30} /> :
-                                        "Submit"
-                                }
-                            </Button>
-                        </div>
-                        <div>
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                MenuListProps={{
-                                    'aria-labelledby': 'basic-button',
-                                }}
-                            >
-                                <MenuItem onClick={() => setAnchorEl(null)}>Profile</MenuItem>
-                                <MenuItem onClick={handleClose}>My account</MenuItem>
-                                <MenuItem onClick={handleClose}>Logout</MenuItem>
-                            </Menu>
-                        </div>
-                    </Box>
-                </Modal> */}
-
                 <Modal
                     open={openAddTeam}
                     onClose={handleCloseModal}
@@ -784,22 +634,57 @@ const Page = () => {
                             /> */}
 
                             <div className='mt-4'>
-                                <FormControl fullWidth>
+                                <FormControl
+                                    fullWidth
+                                    variant="standard"
+                                    sx={{
+                                        width: '100%',
+                                        '& .MuiInputBase-root': {
+                                            color: 'white',
+                                            fontWeight: '400',
+                                            fontSize: 13,
+                                            fontFamily: 'Inter',
+                                        },
+                                        '& .MuiInput-underline:before': {
+                                            borderBottomColor: '#ffffff60', // Default state color
+                                        },
+                                        '& .MuiInput-underline:hover:before': {
+                                            borderBottomColor: '#ffffff', // Hover state color
+                                        },
+                                        '& .MuiInput-underline:after': {
+                                            borderBottomColor: '#ffffff', // Focused state color
+                                        },
+                                        '& .MuiFormLabel-root': {
+                                            color: '#ffffff60', // Default label color
+                                        },
+                                        '& .MuiFormLabel-root.Mui-focused': {
+                                            color: '#ffffff', // Focused label color
+                                        },
+                                        marginTop: 2,
+                                    }}
+                                >
                                     <InputLabel id="demo-simple-select-label">Assign Project</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                         value={assignProject}
                                         label="Assign Project"
-                                        onChange={handleChange}>
-                                        <MenuItem value={10}>Ten</MenuItem>
-                                        <MenuItem value={20}>Twenty</MenuItem>
-                                        <MenuItem value={30}>Thirty</MenuItem>
+                                        onChange={handleChange}
+                                    >
+                                        {getProject.map((project) => (
+                                            <MenuItem key={project.id} value={project.id}>
+                                                <button onClick={() => handleSelectProject(project.chat.projectId)}>
+                                                    {project.projectName ? project.projectName : "App Name"}
+                                                </button>
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </div>
 
-                            <Button onClick={handleAddTeam} className='mt-4' sx={{ textTransform: 'none' }}
+
+
+                            <Button onClick={handleAddTeam} sx={{ textTransform: 'none', marginTop: 4 }}
                                 style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                 {
                                     addTeamLoader ?

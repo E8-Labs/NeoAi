@@ -47,6 +47,7 @@ const AnimatedForm = () => {
   const [showSaveWorkError, setShowSaveWorkError] = useState(false);
   const [founderContinueLoader, setFounderContinueLoader] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
+  const [rows, setRows] = useState(1);
 
   //login directly
   // useEffect(() => {
@@ -55,6 +56,22 @@ const AnimatedForm = () => {
   //     router.push('/chat')
   //   }
   // }, []);
+  //code for inputheight
+  const handleAudienceInputChange = (e) => {
+    const textareaLineHeight = 24; // Adjust this value to match the line-height of your textarea
+    const maxRows = 5;
+    const previousRows = e.target.rows;
+    e.target.rows = 1; // Reset number of rows in textarea 
+
+    const currentRows = Math.min(Math.floor(e.target.scrollHeight / textareaLineHeight), maxRows);
+
+    if (currentRows === previousRows) {
+      e.target.rows = currentRows;
+    }
+
+    setAudienceName(e.target.value);
+    setRows(currentRows);
+  };
 
   //code for animation continue
   const handleContinue = () => {
@@ -343,20 +360,50 @@ const AnimatedForm = () => {
                 <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   Who are the customers you're building this for?
                 </p>
-                <div className="flex justify-center">
-                  <textarea
+                <div className="flex justify-center mt-4">
+                  {/*<textarea
                     rows={1}
                     value={audienceName}
-                    onChange={(e) => setAudienceName(e.target.value)}
+                    onChange={handleAudienceInputChange}
                     className="mt-4 w-11/12"
                     style={{
-                      outline: 'none', border: 'none', backgroundColor: '#00000000',
-                      fontWeight: '400', fontSize: 13, resize: 'none', fontFamily: 'inter'
+                      outline: 'none',
+                      border: 'none',
+                      backgroundColor: '#00000000',
+                      fontWeight: '400', fontSize: 13,
+                      resize: 'none', fontFamily: 'inter',
+                      overflowY: rows >= 3 ? 'auto' : 'hidden',
+                      maxHeight: `${5 * 24}px`, // Limit the height to 5 rows
+                      scrollbarWidth: 'none', msOverflowStyle: 'none',
                     }}
-                    placeholder="Ex: Real estate agents, fitness coaches," />
+                    placeholder="Ex: Real estate agents, fitness coaches," 
+                  />*/}
+                  <textarea
+                    rows={rows}
+                    placeholder='Ex: Real estate agents, fitness coaches,'
+                    value={audienceName}
+                    onChange={handleAudienceInputChange}
+                    className='w-full'
+                    style={{
+                      backgroundColor: 'transparent',
+                      fontWeight: '400',
+                      fontSize: 13,
+                      fontFamily: 'inter',
+                      color: 'white',
+                      paddingLeft: 10,
+                      // paddingTop: 8,
+                      paddingBottom: 4,
+                      outline: 'none',
+                      border: 'none',
+                      resize: 'none',
+                      overflowY: rows >= 5 ? 'auto' : 'hidden',
+                      maxHeight: `${5 * 24}px`, // Limit the height to 5 rows
+                      scrollbarWidth: 'none', msOverflowStyle: 'none',
+                    }}
+                  />
                 </div>
-                <div className="flex flex-col gap-y-24">
-                  <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
+                <div className="flex flex-col">
+                  <div style={{ height: '1px', backgroundColor: '#ffffff', }} />
                   <div className="mt-6 flex flex-row gap-8">
 
                     {/* add continue btn here */}

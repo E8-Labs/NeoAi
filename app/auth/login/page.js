@@ -129,7 +129,7 @@ const Page = () => {
                                     Sign Up
                                 </p>
 
-                                <div className="flex flex-row w-8/12 mt-4 items-center justify-between">
+                                {/*<div className="flex flex-row w-8/12 mt-4 items-center justify-between">
                                     <img src="/assets/applogo.png" alt="applogo"
                                         style={{ height: '28px', width: '28px', resize: 'cover', objectFit: 'cover', borderRadius: 3 }} />
                                     <div style={{ fontSize: 13, fontWeight: '400', fontFamily: 'inter', color: '#ffffff70' }}>
@@ -138,7 +138,7 @@ const Page = () => {
                                     <div style={{ fontSize: 13, fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                         Wilo App
                                     </div>
-                                </div>
+    </div>*/}
 
                                 <div className="flex flex-col justify-center">
                                     <input
