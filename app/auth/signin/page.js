@@ -62,12 +62,18 @@ const Page = () => {
             try {
                 setLoader(true);
                 const ApiPath = Apis.Login;
+                const data = {
+                    "email": email,
+                    "password": password,
+                    "status": "true"
+                }
+                console.log("Data sending in api", data);
                 const response = await fetch(ApiPath, {
                     method: 'post',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify(data)
                 });
                 if (response.ok) {
                     const ApiResponse = await response.json();

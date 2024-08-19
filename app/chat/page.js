@@ -1208,7 +1208,7 @@ const Page = () => {
                                         )}
                                     </div>
 
-                                    <div className='flex rounded-xl w-7/12 flex-row justify-between'
+                                    {/* <div className='flex rounded-xl w-7/12 flex-row justify-between'
                                         style={{ position: 'absolute', bottom: 0, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
                                         <div className='w-full flex flex-col items-center'>
                                             <div className='text-white w-full items-start px-4 py-1'>
@@ -1296,7 +1296,7 @@ const Page = () => {
                                             </div>
                                         </div>
 
-                                    </div>
+                                    </div> */}
 
                                 </div>
                             </div>

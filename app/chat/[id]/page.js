@@ -8,7 +8,7 @@ import Apis from '@/public/Apis/Apis';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import styles from '../../Home.module.css';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { Box, Button, CircularProgress, Drawer, Menu, MenuItem, Modal } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Drawer, Menu, MenuItem, Modal, Slide, Snackbar } from '@mui/material';
 import LogoPicker from '@/public/ui/LogoPicker';
 import Notifications from '@/public/assets/notifications/Notifications';
 import { motion, useAnimation } from 'framer-motion';
@@ -26,6 +26,7 @@ function usePrevious(value) {
 
 
 const Page = () => {
+  const fileInputRef1 = useRef(null);
   const fileInputRef = useRef(null);
   const { id, data } = useParams();
   const router = useRouter();
@@ -58,12 +59,17 @@ const Page = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [rows, setRows] = useState(1);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [showAssignBtn, setShowAssignBtn] = useState(null);
+  const [selectedDocFile, setselectedDocFile] = useState(false);
 
   const [scrollHeight, setScrollHeight] = useState(0)
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true)
   const previousScrollHeight = usePrevious(scrollHeight);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [assignProject, setAssignProject] = useState('');
+  const [assignProjectSuccess, setAssignProjectSuccess] = useState(false);
+  const [assignProjectErr, setAssignProjectErr] = useState(false);
+  const [assignProjectLoader, setAssignProjectLoader] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState([]);
 
 
   const handleOpenEditproject = () => setOpen(true);
@@ -85,7 +91,7 @@ const Page = () => {
         }
       });
       if (response.status === 200) {
-        console.log("Response of getproject api", response.data.data);
+        console.log("Response of getteammembers api", response.data.data);
         setTeamMembers(response.data.data);
       } else {
         console.log("Api err");
@@ -365,7 +371,7 @@ const Page = () => {
   useEffect(() => {
     const storedData = localStorage.getItem('projectDetails');
     if (storedData) {
-      //console.log("Data recieved from local of project details is", storedData);
+      console.log("Data recieved from local of project details is", storedData);
       setProjectData(JSON.parse(storedData));
     }
   }, []);
@@ -438,11 +444,13 @@ const Page = () => {
 
 
   const handleSubmit = async () => {
+    // handleRemoveDocument(index);
+    setselectedDocFile(false);
     // //console.log('test working');
-    setShouldScrollToBottom(false)
+    setShouldScrollToBottom(false);
     setUserChatMessage("");
     setSelectedFileShow(false);
-    setSendImg(null);
+    // setSendImg(null);
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
     //console.log('Data from localstorage is :', localStorageData.data.user.message);
@@ -472,7 +480,7 @@ const Page = () => {
     // getProfile();
 
     const newChat = { role: 'user', content: userChatMsg, senderType: 'user', imageThumb: sendImgMsg };
-    console.log("img sending is", newChat);
+    console.log("img sending in", newChat);
 
     const updatedChat = [...chat, newChat];
     setChat(updatedChat);
@@ -492,7 +500,12 @@ const Page = () => {
       const formData = new FormData();
       formData.append('chatId', id);
       formData.append('content', userChatMsg);
-      formData.append('media', sendImgMsg)
+      if (sendImgMsg) {
+        formData.append('media', sendImgMsg);
+      }
+      if (selectedDocument) {
+        formData.append('media', selectedDocument);
+      }
 
       // Convert the image URL to a File object and append it to the form data
 
@@ -814,12 +827,7 @@ const Page = () => {
     setAnchorEl(null);
   };
 
-  const handleChange = (event) => {
-    handleClose(); // Close the dropdown after selection
-  };
 
-
-  const fileInputRef1 = useRef(null);
 
   const handleButtonClick = () => {
     // Trigger the hidden file input click
@@ -827,10 +835,64 @@ const Page = () => {
   };
 
   const handleFileChange2 = (event) => {
-    const selectedFiles = event.target.files;
-    console.log("selected document is",selectedFiles); // You can handle the selected files here
+    const files = event.target.files;
+    const fileArray = Array.from(files).map((file) => URL.createObjectURL(file));
+    setselectedDocFile(true);
+    setSelectedDocument((prevDocuments) => prevDocuments.concat(fileArray));
+    // If you need the file objects themselves, you can use setSelectedDocuments(files) instead.
   };
 
+
+  const handleAssignProject = async (id) => {
+    setAssignProjectLoader(true);
+    setTimeout(async () => {
+      try {
+        const LocalData = localStorage.getItem('User');
+        const D = JSON.parse(LocalData);
+        // console.log("User data is", D);
+        const storedData = localStorage.getItem('projectDetails');
+        const ProjectData = JSON.parse(storedData);
+        console.log("Project details are", ProjectData.chat.projectId);
+        const AuthToken = D.data.token;
+        const ApiPath = Apis.AssignProject;
+        const data = {
+          projectId: ProjectData.chat.projectId,
+          userId: id
+        }
+        console.log("Data to send in api is", data);
+
+        const response = await axios.post(ApiPath, data, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer " + AuthToken
+          }
+        });
+
+        if (response) {
+          console.log("Response of assign api is", response.data);
+          if (response.data.status === true) {
+            setAssignProjectSuccess(true);
+            handleClose();
+          }
+          else {
+            setAssignProjectErr(true);
+            handleClose();
+          }
+        }
+
+      } catch (error) {
+        console.error("Error occured in assign project id is", error);
+      } finally {
+        setAssignProjectLoader(false);
+      }
+    }, 1000);
+  }
+
+  const handleRemoveDocument = (index) => {
+    setSelectedDocument((prevDocuments) =>
+      prevDocuments.filter((_, i) => i !== index)
+    );
+  };
 
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
@@ -899,35 +961,116 @@ const Page = () => {
 
 
 
+              <button
+                variant="contained"
+                onClick={(event) => {
+                  handleClick(event);
+                  handleShareProjectToTeam()
+                }}
+              >
+                <img
+                  src="/assets/share.png"
+                  alt="share"
+                  style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
+                />
+              </button>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {
+                  teamMembers.length === 0 ?
+                    <div>
+                      <MenuItem value={teamMembers}>
+                        No TeamMember
+                      </MenuItem>
+                    </div> :
+                    <div>
+                      {teamMembers.map((teamMember) => (
+                        <MenuItem
+                          key={teamMember.id} // Assuming each project has a unique id
+                          // onClick={handleChange}
+                          value={teamMember.name} // Assuming the project object has a name property
+                        // disabled
+                        >
+                          <div className='flex flex-row gap-8'>
+                            <button onClick={() => {
+                              console.log("Test working id", teamMember.id);
+                              setShowAssignBtn(teamMember.id);
+                            }}
+                              style={{ fontSize: 14, fontWeight: "500", fontFamily: "inter" }}>
+                              {teamMember.status === "accepted" &&
+                                <div>
+                                  {teamMember.name}
+                                </div>
+                              }
+                            </button>
+                            {
+                              showAssignBtn === teamMember.id &&
+                              <div>
+                                <button
+                                  onClick={() => handleAssignProject(teamMember.id)}
+                                  style={{ fontSize: 12, fontWeight: "500", fontFamily: "inter" }}>
+                                  {
+                                    assignProjectLoader ?
+                                      <div>
+                                        <CircularProgress size={15} />
+                                      </div> :
+                                      "Assign Project"
+                                  }
+                                </button>
+                              </div>
+                            }
+                          </div>
+                        </MenuItem>
+                      ))}
+                    </div>
+                }
+              </Menu>
+
               <div>
-                <button
-                  variant="contained"
-                  onClick={(event) => {
-                    handleClick(event);
-                    handleShareProjectToTeam()
+                <Snackbar
+                  open={assignProjectSuccess}
+                  autoHideDuration={3000}
+                  onClose={() => setAssignProjectSuccess(false)}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  TransitionComponent={Slide}
+                  TransitionProps={{
+                    direction: 'left'
                   }}
                 >
-                  <img
-                    src="/assets/share.png"
-                    alt="share"
-                    style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
-                  />
-                </button>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
+                  <Alert
+                    onClose={() => setAssignProjectSuccess(false)} severity="success"
+                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                    Project assigned successfully.
+                  </Alert>
+                </Snackbar>
+              </div>
+
+              <div>
+                <Snackbar
+                  open={assignProjectErr}
+                  autoHideDuration={3000}
+                  onClose={() => setAssignProjectErr(false)}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  TransitionComponent={Slide}
+                  TransitionProps={{
+                    direction: 'left'
+                  }}
                 >
-                  {teamMembers.map((teamMember) => (
-                    <MenuItem
-                      key={teamMember.id} // Assuming each project has a unique id
-                      onClick={handleChange}
-                      value={teamMember.name} // Assuming the project object has a name property
-                    >
-                      {teamMember.name}
-                    </MenuItem>
-                  ))}
-                </Menu>
+                  <Alert
+                    onClose={() => setAssignProjectErr(false)} severity="error"
+                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                    Couldnot assign project.
+                  </Alert>
+                </Snackbar>
               </div>
 
 
@@ -1045,6 +1188,23 @@ const Page = () => {
                         style={{ height: '77px', width: '107px', resize: 'cover', objectFit: 'cover' }} />
                     </div> : ''
                   }
+                  {
+                    selectedDocFile &&
+                    <div>
+                      {selectedDocument.map((file, index) => (
+                        <div key={index} className='flex flex-row gap-2'>
+                          <button onClick={() => handleRemoveDocument(index)} style={{ border: 'none', cursor: 'pointer' }}>
+                            <img src='/assets/cross2.png' alt='cross'
+                              style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
+                            />
+                          </button>
+                          <a href={file} target="_blank" rel="noopener noreferrer">
+                            {file.substring(file.lastIndexOf('/') + 1)}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  }
                 </div>
                 <input
                   type="file"
@@ -1054,20 +1214,20 @@ const Page = () => {
                   onChange={handleFileChange}
                 />
                 <div className='flex flex-row gap-2 w-full pb-2 items-end'>
-                  <button>
+                  {/* <button>
+                    <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
+                  </button> */}
+                  <button onClick={handleButtonClick}>
                     <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>
-                    <button onClick={handleButtonClick}>
-                      <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
-                    </button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileChange2}
-                      style={{ display: 'none' }}
-                      multiple // Allows multiple file selection
-                      accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" // Specify the types of documents
-                    />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange2}
+                    style={{ display: 'none' }}
+                    multiple
+                    accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx"
+                  />
                   <button onClick={handleInputFileChange}>
                     <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button>

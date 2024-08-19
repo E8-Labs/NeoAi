@@ -17,14 +17,27 @@ const Page = () => {
     const [loginLoader, setLoginLoader] = useState(false);
     const [inviteId, setInviteId] = useState('');
     const [height, setHeight] = useState('100vh');
+    const [referalCode, setReferalCode] = useState(null);
 
+    // useEffect(() => {
+    //     const searchParams = new URLSearchParams(window.location.search);
+    //     const code = searchParams.get('referalCode');
+    //     setReferalCode(code);
+    // }, []);
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const inviteIdFromUrl = urlParams.get('inviteId');
+        const referalCode = urlParams.get('referalCode');
+        console.log("Referal code is", referalCode);
         if (inviteIdFromUrl) {
             setInviteId(inviteIdFromUrl);
         }
+        if (referalCode) {
+            setReferalCode(referalCode);
+        }
     }, []);
+
+    
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
@@ -67,6 +80,10 @@ const Page = () => {
         data.inviteId = inviteId
     }
 
+    if (referalCode) {
+        data.referalCode = referalCode
+    }
+
     // console.log("Data sending in  login api is:", data);
 
     const handleContinueClick = async () => {
@@ -85,8 +102,8 @@ const Page = () => {
                     const ApiResponse = await response.json();
                     console.log('Response of api is :', ApiResponse);
                     if (ApiResponse.status === true) {
-                            localStorage.setItem('User', JSON.stringify(ApiResponse));
-                            router.push('/chat');
+                        localStorage.setItem('User', JSON.stringify(ApiResponse));
+                        router.push('/chat');
                     }
                 } else if (!response.ok) {
                     console.log('Error in signing in is :', response)

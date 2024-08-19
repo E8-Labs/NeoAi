@@ -402,9 +402,9 @@ const AnimatedForm = () => {
                     }}
                   />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-y-24">
                   <div style={{ height: '1px', backgroundColor: '#ffffff', }} />
-                  <div className="mt-6 flex flex-row gap-8">
+                  <div className="mt-12 flex flex-row gap-8">
 
                     {/* add continue btn here */}
                     <Button onClick={handleBack}

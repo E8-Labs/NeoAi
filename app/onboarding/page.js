@@ -34,7 +34,7 @@ const Page = () => {
     }, []);
 
     return (
-        <div className="flex justify-center" style={{ color: 'white', height: "50vh" }}>
+        <div className="flex justify-center" style={{ color: 'white', height: "94vh", overflow: "hidden" }}>
             <div className="w-11/12">
                 <div className="flex justify-between mt-8">
                     <img src="/assets/Vector1.png" alt="vector1" style={{ height: '23px', width: '20px', resize: 'cover' }} />

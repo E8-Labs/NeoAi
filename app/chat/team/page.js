@@ -21,7 +21,7 @@ const Page = () => {
     const [assignProject, setAssignProject] = useState("");
     const [getProject, setGetProject] = useState([]);
     const [selectedProjectId, setSelectedProjectId] = useState("");
-    const [showFromUserData, setShowFromUserData] = useState(false);
+    const [memberAdded, setMemberAdded] = useState(false);
 
     const [loggedInUser, setLoggedInUser] = useState(null)
     const handleOpenAddTeam = () => setOpenAddTeam(true);
@@ -65,6 +65,7 @@ const Page = () => {
                 }
 
                 console.log("add member is:", AddMember);
+                setMemberAdded(AddMember)
                 // return
                 //Auth token from local storage add team loader
                 const LSD = localStorage.getItem('User');
@@ -87,8 +88,8 @@ const Page = () => {
                     const newMember = response.data.data;
 
                     // Update the teamProfiles state with the new member
-                    setTeamProfiles((prevProfiles) => [...prevProfiles, newMember])
-                    setOpenAddTeam
+                    setTeamProfiles((prevProfiles) => [...prevProfiles, newMember]);
+                    setOpenAddTeam(false);
                     setName('');
                     setEmail('');
                     setRole('');

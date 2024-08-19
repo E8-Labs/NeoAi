@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, CircularProgress, Link, Modal } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Link, Modal, Slide, Snackbar } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import ImagePicker from '@/public/ui/ImagePicker';
@@ -32,6 +32,10 @@ const Chatsidenav = () => {
     const [showProfileName, setShowProfileName] = useState(false);
     const [formattedEmail, setFormattedEmail] = useState('');
     const [separateLetters, setSeparateLetters] = useState('');
+    const [generatedLink, setGeneratedLink] = useState("");
+    //code for feedbackform
+    const [userType, setUserType] = useState("");
+    const [issueDescription, setIssueDescription] = useState("");
 
     const links1 = [
         {
@@ -50,6 +54,14 @@ const Chatsidenav = () => {
             href: '/chat/plans'
         }
     ]
+
+    useEffect(() => {
+        const LocalData = localStorage.getItem('User');
+        const Data = JSON.parse(LocalData);
+        console.log("Local data for text", Data.data.user);
+        const referalCode = Data.data.user.myShareCode;
+        setGeneratedLink(`https://neoai-ebon.vercel.app/auth/login?referalCode=${referalCode}`);
+    }, [])
 
     const handleProjectClick = (e) => {
         e.preventDefault();
@@ -260,6 +272,7 @@ const Chatsidenav = () => {
     //code for loging out the user
     const handleLogout = () => {
         localStorage.removeItem('User');
+        localStorage.removeItem('projectDetails');
         router.push('/onboarding');
     }
 
@@ -303,6 +316,55 @@ const Chatsidenav = () => {
     }, []);
 
 
+    const handleCopyReferalLink = () => {
+        navigator.clipboard.writeText(generatedLink)
+            .then(() => {
+                alert('Link copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    };
+
+    const [FeedBackLoader, setFeedBackLoader] = useState(false);
+    const [FeedBackSuccess, setFeedBackSuccess] = useState(false);
+    const [FeedBackErr, setFeedBackErr] = useState(false);
+    const handleFeedback = async () => {
+        setFeedBackLoader(true)
+        try {
+            const ApiPath = Apis.FeedbackApi;
+            const LocalData = localStorage.getItem('User');
+            const D = JSON.parse(LocalData);
+            const AuthToken = D.data.token;
+            const formData = new FormData();
+            formData.append("userType", userType);
+            formData.append("description", issueDescription);
+            if (previewURL) {
+                formData.append("media", selectedFile)
+            }
+            const response = await axios.post(ApiPath, formData, {
+                headers: {
+                    'Authorization': 'Bearer ' + AuthToken,
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+            if (response) {
+                console.log("Response of feedback", response.data);
+                if (response.data.status === true) {
+                    setOpenFeedback(false);
+                    setFeedBackSuccess(true);
+                } else if (response.data.status === false) {
+                    setFeedBackErr(true);
+                }
+            }
+        } catch (error) {
+            console.error("Error occured in feedback api", error);
+        } finally {
+            setFeedBackLoader(false);
+        }
+    }
+
+
     return (
         <div className='w-full flex flex-flex-col justify-center' style={{ backgroundColor: '#050221', height: '100%' }}>
             <div className='w-9/12'>
@@ -328,21 +390,21 @@ const Chatsidenav = () => {
                     </p>
                 </Button>
                 <div className='mt-4'>
-                    <Button
+                    {/* <Button
                         sx={{ textTransform: 'none' }}
                         style={{
                             fontWeight: '500',
                             fontSize: 12, fontFamily: 'inter', backgroundColor: pathName === dashboardPath ? "#ffffff70" : ""
                         }}>
-                        {/* <Link href={dashboardPath} sx={{ textDecoration: 'none' }} onClick={handleProjectClick}
+                        <Link href={dashboardPath} sx={{ textDecoration: 'none' }} onClick={handleProjectClick}
                             style={{
                                 color: pathName === dashboardPath ? '#ffffff' : '#ffffff60', fontWeight: '500',
                                 fontSize: 12, fontFamily: 'inter'
                             }}
                             className='w-full'>
                             My Projects
-                        </Link> */}
-                    </Button>
+                        </Link>
+                    </Button> */}
 
                     {/* user projects */}
                     <GetProjects />
@@ -523,7 +585,7 @@ const Chatsidenav = () => {
                                         Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus
                                     </div>
                                     <div className='p-3'>
-                                        <Button sx={{ textTransform: 'none' }}
+                                        <Button onClick={handleCopyReferalLink} sx={{ textTransform: 'none' }}
                                             className='mt-8 px-3 p-2' style={{ backgroundColor: '#2548FD', fontSize: 12, fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                             Copy Link
                                         </Button>
@@ -548,14 +610,6 @@ const Chatsidenav = () => {
                                             <img src='/assets/cross2.png' alt='cross' style={{ height: '10px', width: '10px', resize: 'cover' }} />
                                         </button>
                                     </div>
-                                    {/*<div className='w-full flex mt-3 items-center justify-center'>
-                    <button>
-                      <img src='/assets/profile1.png' alt='profile' style={{ height: '131px', width: '131px', resize: 'cover' }} />
-                      <div className='w-11/12 flex justify-end' style={{ position: 'relative', top: -30 }}>
-                        <img src='/assets/camera.png' alt='cam' style={{ height: '24px', width: '24px', resize: 'cover' }} />
-                      </div>
-                    </button>
-                  </div>*/}
                                     <div className='w-full flex mt-3 items-center justify-center'>
                                         <button>
                                             {selectedImage ? <img src={selectedImage} alt="Preview" style={{ height: '131px', width: '131px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
@@ -615,6 +669,8 @@ const Chatsidenav = () => {
                                         placeholder="What's your name?"
                                     />
                                     <input
+                                        value={userType}
+                                        onChange={(e) => setUserType(e.target.value)}
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="Which type of user were you? *"
                                     />
@@ -623,6 +679,8 @@ const Chatsidenav = () => {
                                         placeholder="What was the bug or issue? *"
                                     />
                                     <input
+                                        value={issueDescription}
+                                        onChange={(e) => setIssueDescription(e.target.value)}
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="In a few words, what is your feedback about?"
                                     />
@@ -634,10 +692,12 @@ const Chatsidenav = () => {
                                     {
                                         previewURL ?
                                             <div className='text-white w-full mt-6'>
-                                                <Image src={previewURL} alt='feedbackimg' height={10} width={1000} />
                                                 <button onClick={() => setPreviewURL(null)}>
-                                                    Close
+                                                    <img src='/assets/cross2.png' alt='cross'
+                                                        style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
+                                                    />
                                                 </button>
+                                                <Image src={previewURL} alt='feedbackimg' height={10} width={1000} />
                                             </div> :
                                             <div className='flex flex-row gap-2 items-center justify-center' style={{ height: "98px", border: '1px dashed grey', marginTop: 25 }}>
                                                 <div style={{ fontWeight: "400", fontFamily: "inter", fontSize: 13, color: "grey" }}>
@@ -674,8 +734,12 @@ const Chatsidenav = () => {
                                         textTransform: "none", backgroundColor: "#2548FD",
                                         fontWeight: "400", fontFamily: "inter",
                                         fontSize: 12, color: "white", marginTop: 2
-                                    }}>
-                                        Submit
+                                    }} onClick={handleFeedback}>
+                                        {
+                                            FeedBackLoader ?
+                                                <CircularProgress size={20} /> :
+                                                "Submit"
+                                        }
                                     </Button>
 
                                     <div className='flex flex-row' style={{ fontWeight: "400", fontFamily: "inter", fontSize: 12, marginTop: 17 }}>
@@ -691,6 +755,44 @@ const Chatsidenav = () => {
                             </Box>
                         </Modal>
                     </div>
+                    <Snackbar
+                        open={FeedBackSuccess}
+                        autoHideDuration={3000}
+                        onClose={() => setFeedBackSuccess(false)}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right'
+                        }}
+                        TransitionComponent={Slide}
+                        TransitionProps={{
+                            direction: 'left'
+                        }}
+                    >
+                        <Alert
+                            onClose={() => setFeedBackSuccess(false)} severity="success"
+                            sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                            Feedback sent.
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={FeedBackErr}
+                        autoHideDuration={3000}
+                        onClose={() => setFeedBackErr(false)}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right'
+                        }}
+                        TransitionComponent={Slide}
+                        TransitionProps={{
+                            direction: 'left'
+                        }}
+                    >
+                        <Alert
+                            onClose={() => setFeedBackErr(false)} severity="error"
+                            sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                            Couldnot send feedback.
+                        </Alert>
+                    </Snackbar>
                 </div>
             </div>
         </div>
