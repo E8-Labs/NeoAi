@@ -234,7 +234,7 @@ const Page = () => {
   };
 
   const handleInputFileChange = () => {
-    fileInputRef.current.click();
+    fileInputRef1.current.click();
   };
 
   const urlToFile = async (url, filename, mimeType) => {
@@ -1209,7 +1209,7 @@ const Page = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  ref={fileInputRef}
+                  ref={fileInputRef1}
                   style={{ display: 'none' }}
                   onChange={handleFileChange}
                 />
