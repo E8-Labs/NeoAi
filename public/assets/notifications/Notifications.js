@@ -143,8 +143,8 @@ const Notifications = ({ closeNav }) => {
                                 <div>
                                     {
                                         item.from.profile_image ?
-                                            <Image src={item.from.profile_image} height={30} width={30} layout='responsive' style={{ borderRadius: "50%" }} /> :
-                                            <Image src="/assets/profile1.jpeg" alt="Preview" height={30} width={30} layout='responsive' style={{ borderRadius: "50%" }} />
+                                            <Image source={item.from.profile_image}  height={30} width={30} layout='responsive' style={{ borderRadius: "50%" }} /> :
+                                            <div  style={{ borderRadius: "50%" ,backgroundColor: 'red' }} > </div>
                                     }
                                 </div>
                                 <div
