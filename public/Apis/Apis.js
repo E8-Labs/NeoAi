@@ -17,8 +17,9 @@ const Apis = {
     GetProfile: `${BasePath}api/user/get_profile`,
     AcceptInvitation: `${BasePath}api/user/handle_invitation`,
     AssignProject: `${BasePath}api/chat/assign_project`,
-    FeedbackApi: `${BasePath}api/user/send_feedback`
+    FeedbackApi: `${BasePath}api/user/send_feedback`,
     // GetTeamMembersList: `${BasePath}api/user/my_team`
+    GetNotification:`${BasePath}api/user/notifications`
 }
 
 export default Apis;

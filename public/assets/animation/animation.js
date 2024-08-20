@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, color } from 'framer-motion';
-import { Box, Button, CircularProgress, Modal, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Modal, TextareaAutosize, TextField } from '@mui/material';
 import Apis from '@/public/Apis/Apis';
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
@@ -191,6 +191,7 @@ const AnimatedForm = () => {
             if (response2.status === 200) {
               const Result = response2.data;
               localStorage.setItem('NewProject', JSON.stringify(Result));
+              localStorage.setItem('projectDetails', JSON.stringify(Result.data));
               console.log('Response of create project API is:', Result);
               router.push('/chat');
             } else {
@@ -230,6 +231,7 @@ const AnimatedForm = () => {
 
   const handleContinueFounderClick = async () => {
     const data = localStorage.getItem('User');
+    // localStorage.removeItem('projectDetails')
     if (data) {
       const ParsedLocalData = JSON.parse(data);
       const AuthToken = ParsedLocalData.data.token;
@@ -248,6 +250,7 @@ const AnimatedForm = () => {
         if (response2.status === 200) {
           const Result = response2.data;
           localStorage.setItem('NewProject', JSON.stringify(Result));
+          localStorage.setItem('projectDetails', JSON.stringify(Result.data));
           console.log('Response of API is:', Result);
           router.push('/chat');
           // router.push('/onboarding/founders');
@@ -361,8 +364,8 @@ const AnimatedForm = () => {
                   Who are the customers you're building this for?
                 </p>
                 <div className="flex justify-center mt-4">
-                  {/*<textarea
-                    rows={1}
+                  {/* <textarea
+                    rows={rows}
                     value={audienceName}
                     onChange={handleAudienceInputChange}
                     className="mt-4 w-11/12"
@@ -377,27 +380,31 @@ const AnimatedForm = () => {
                       scrollbarWidth: 'none', msOverflowStyle: 'none',
                     }}
                     placeholder="Ex: Real estate agents, fitness coaches," 
-                  />*/}
-                  <textarea
-                    rows={rows}
-                    placeholder='Ex: Real estate agents, fitness coaches,'
+                  /> */}
+                  {/* <textarea
+                    rows={4}
+                    className='w-full'
+                    placeholder="Ex: Real estate agents, fitness coaches,"
                     value={audienceName}
                     onChange={handleAudienceInputChange}
-                    className='w-full'
                     style={{
-                      backgroundColor: 'transparent',
-                      fontWeight: '400',
-                      fontSize: 13,
-                      fontFamily: 'inter',
-                      color: 'white',
-                      paddingLeft: 10,
-                      // paddingTop: 8,
-                      paddingBottom: 4,
-                      outline: 'none',
-                      border: 'none',
-                      resize: 'none',
-                      overflowY: rows >= 5 ? 'auto' : 'hidden',
-                      maxHeight: `${5 * 24}px`, // Limit the height to 5 rows
+                      backgroundColor: "transparent", resize: "none",
+                      outline: "none", border: "none", fontWeight: '400', fontSize: 13,
+                      fontFamily: "inter"
+                    }}
+                  /> */}
+                  <TextareaAutosize
+                    className='w-full'
+                    minRows={2}
+                    maxRows={3}
+                    placeholder="Ex: Real estate agents, fitness coaches,"
+                    value={audienceName}
+                    onChange={handleAudienceInputChange}
+                    // size="sm"
+                    variant="plain"
+                    style={{
+                      resize: "none", backgroundColor: "transparent", border: "none", outline: "none",
+                      fontWeight: '400', fontSize: 13, fontFamily: "inter",
                       scrollbarWidth: 'none', msOverflowStyle: 'none',
                     }}
                   />

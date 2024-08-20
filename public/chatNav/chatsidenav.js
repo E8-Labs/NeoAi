@@ -1,5 +1,5 @@
 "use client"
-import { Alert, Box, Button, CircularProgress, Link, Modal, Slide, Snackbar } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, Link, MenuItem, Modal, Select, Slide, Snackbar, TextField } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import ImagePicker from '@/public/ui/ImagePicker';
@@ -36,20 +36,25 @@ const Chatsidenav = () => {
     //code for feedbackform
     const [userType, setUserType] = useState("");
     const [issueDescription, setIssueDescription] = useState("");
+    const [selectedFeedbackabout, setSelectedFeedbackabout] = React.useState('');
+    const [feedBackPriorty, setFeedbackPriorty] = React.useState('');
+    const [FeedBackLoader, setFeedBackLoader] = useState(false);
+    const [FeedBackSuccess, setFeedBackSuccess] = useState(false);
+    const [FeedBackErr, setFeedBackErr] = useState(false);
 
     const links1 = [
+        // {
+        //     id: 1,
+        //     name: 'Settings',
+        //     href: '/chat/settings'
+        // },
         {
             id: 1,
-            name: 'Settings',
-            href: '/chat/settings'
-        },
-        {
-            id: 2,
             name: 'My Team',
             href: '/chat/team'
         },
         {
-            id: 3,
+            id: 2,
             name: 'Plans',
             href: '/chat/plans'
         }
@@ -326,9 +331,7 @@ const Chatsidenav = () => {
             });
     };
 
-    const [FeedBackLoader, setFeedBackLoader] = useState(false);
-    const [FeedBackSuccess, setFeedBackSuccess] = useState(false);
-    const [FeedBackErr, setFeedBackErr] = useState(false);
+
     const handleFeedback = async () => {
         setFeedBackLoader(true)
         try {
@@ -337,8 +340,9 @@ const Chatsidenav = () => {
             const D = JSON.parse(LocalData);
             const AuthToken = D.data.token;
             const formData = new FormData();
-            formData.append("userType", userType);
+            formData.append("feedbackType", selectedFeedbackabout);
             formData.append("description", issueDescription);
+            formData.append("priority", feedBackPriorty);
             if (previewURL) {
                 formData.append("media", selectedFile)
             }
@@ -363,6 +367,15 @@ const Chatsidenav = () => {
             setFeedBackLoader(false);
         }
     }
+
+
+    const handleFeedbackAbout = (event) => {
+        setSelectedFeedbackabout(event.target.value);
+    };
+
+    const handleFeedbackPriorty = (event) => {
+        setFeedbackPriorty(event.target.value);
+    };
 
 
     return (
@@ -424,7 +437,7 @@ const Chatsidenav = () => {
                             {
                                 links1.map((link) => {
                                     return (
-                                        <div key={link.id} className='mt-4'>
+                                        <div key={link.id} className='mt-3'>
                                             <Link className='text-white' sx={{ textDecoration: 'none', cursor: "pointer" }}
                                                 key={link.name}
                                                 // href={link.href}
@@ -612,8 +625,15 @@ const Chatsidenav = () => {
                                     </div>
                                     <div className='w-full flex mt-3 items-center justify-center'>
                                         <button>
-                                            {selectedImage ? <img src={selectedImage} alt="Preview" style={{ height: '131px', width: '131px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
-                                                <img src='/assets/profile1.jpeg' alt="Preview" style={{ height: '131px', width: '131px', resize: 'cover', borderRadius: '50%' }} />}
+                                            {selectedImage ? <img src={selectedImage} alt="Preview"
+                                                style={{ height: '131px', width: '131px', resize: 'cover', objectFit: 'cover', borderRadius: '50%' }} /> :
+                                                <div>
+                                                    {getProfileData && getProfileData.profile_image ?
+                                                        <img src={getProfileData.profile_image} alt="Preview" style={{ height: '131px', width: '131px', resize: 'cover', borderRadius: '50%' }} /> :
+                                                        <img src='/assets/profile1.jpeg' alt="Preview" style={{ height: '131px', width: '131px', resize: 'cover', borderRadius: '50%' }} />
+                                                    }
+                                                </div>
+                                            }
                                             <ImagePicker onFile={handleFileSelect} />
                                         </button>
                                     </div>
@@ -660,36 +680,36 @@ const Chatsidenav = () => {
                                     <div style={{ fontWeight: '400', fontFamily: "inter", fontSize: 12, color: "#ffffff60" }}>
                                         Lorem ipsum dolor sit amet consectetur. Et interdum duis lectus quis ipsum scelerisque inte
                                     </div>
-                                    <input
+                                    {/* <input
                                         style={{ width: "100%", marginTop: 10, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder='App Version Number (shown on TestFlight)'
                                     />
                                     <input
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="What's your name?"
-                                    />
-                                    <input
+                                    /> */}
+                                    {/* <input
                                         value={userType}
                                         onChange={(e) => setUserType(e.target.value)}
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="Which type of user were you? *"
-                                    />
-                                    <input
+                                    /> */}
+                                    {/* <input
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="What was the bug or issue? *"
-                                    />
-                                    <input
+                                    /> */}
+                                    {/* <input
                                         value={issueDescription}
                                         onChange={(e) => setIssueDescription(e.target.value)}
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="In a few words, what is your feedback about?"
-                                    />
-                                    <input
+                                    /> */}
+                                    {/* <input
                                         style={{ width: "100%", marginTop: 35, backgroundColor: "#ffffff00", borderBottom: "1px solid grey", padding: 4, outline: "none" }}
                                         placeholder="Tell us more about your feedback here  (optional)"
-                                    />
+                                    /> */}
 
-                                    {
+                                    {/* {
                                         previewURL ?
                                             <div className='text-white w-full mt-6'>
                                                 <button onClick={() => setPreviewURL(null)}>
@@ -719,16 +739,149 @@ const Chatsidenav = () => {
                                                     </button>
                                                 </div>
                                             </div>
-                                    }
+                                    } */}
 
-                                    <textarea
+                                    {/* <textarea
                                         rows={4}
                                         style={{
                                             width: '100%', borderBottom: "1px solid grey", resize: 'none', backgroundColor: "#ffffff00",
                                             fontWeight: "400", fontSize: 13, fontFamily: "inter", marginTop: 20, outline: "none"
                                         }}
                                         placeholder="What's your complain"
+                                    /> */}
+
+
+
+
+                                    <div>
+                                        <FormControl fullWidth
+                                            variant="standard"
+                                            sx={{
+                                                width: '100%',
+                                                '& .MuiInputBase-root': {
+                                                    color: 'white',
+                                                    fontWeight: '400',
+                                                    fontSize: 13,
+                                                    fontFamily: 'Inter',
+                                                },
+                                                '& .MuiInput-underline:before': {
+                                                    borderBottomColor: '#ffffff60', // Default state color
+                                                },
+                                                '& .MuiInput-underline:hover:before': {
+                                                    borderBottomColor: '#ffffff', // Hover state color
+                                                },
+                                                '& .MuiInput-underline:after': {
+                                                    borderBottomColor: '#ffffff', // Focused state color
+                                                },
+                                                '& .MuiFormLabel-root': {
+                                                    color: '#ffffff60', // Default label color
+                                                },
+                                                '& .MuiFormLabel-root.Mui-focused': {
+                                                    color: '#ffffff', // Focused label color
+                                                },
+                                                marginTop: 2,
+                                            }}>
+                                            <InputLabel id="demo-simple-select-label">What's your feedback about ?</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={selectedFeedbackabout}
+                                                label="Feedback About"
+                                                onChange={handleFeedbackAbout}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: 'white', // Change the color of the dropdown icon
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem value={1}>New feature</MenuItem>
+                                                <MenuItem value={2}>Bug</MenuItem>
+                                                <MenuItem value={3}>Support</MenuItem>
+                                                <MenuItem value={4}>General</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+
+                                    <TextField id="standard-basic" label="Description" variant="standard"
+                                        placeholder="Please describe your feedback in detail"
+                                        value={issueDescription}
+                                        onChange={(e) => setIssueDescription(e.target.value)}
+                                        sx={{
+                                            width: '100%',
+                                            '& .MuiInputBase-root': {
+                                                color: 'white',
+                                                fontWeight: '400',
+                                                fontSize: 13,
+                                                fontFamily: 'inter'
+                                            },
+                                            '& .MuiInput-underline:before': {
+                                                borderBottomColor: '#ffffff60',
+                                            },
+                                            '& .MuiInput-underline:hover:before': {
+                                                borderBottomColor: '#ffffff',
+                                            },
+                                            '& .MuiInput-underline:after': {
+                                                borderBottomColor: '#ffffff',
+                                            },
+                                            '& .MuiFormLabel-root': {
+                                                color: '#ffffff60',
+                                            },
+                                            '& .MuiFormLabel-root.Mui-focused': {
+                                                color: '#ffffff',
+                                            },
+                                            marginTop: 2
+                                        }}
                                     />
+
+                                    <div>
+                                        <FormControl fullWidth
+                                            variant="standard"
+                                            sx={{
+                                                width: '100%',
+                                                '& .MuiInputBase-root': {
+                                                    color: 'white',
+                                                    fontWeight: '400',
+                                                    fontSize: 13,
+                                                    fontFamily: 'Inter',
+                                                },
+                                                '& .MuiInput-underline:before': {
+                                                    borderBottomColor: '#ffffff60', // Default state color
+                                                },
+                                                '& .MuiInput-underline:hover:before': {
+                                                    borderBottomColor: '#ffffff', // Hover state color
+                                                },
+                                                '& .MuiInput-underline:after': {
+                                                    borderBottomColor: '#ffffff', // Focused state color
+                                                },
+                                                '& .MuiFormLabel-root': {
+                                                    color: '#ffffff60', // Default label color
+                                                },
+                                                '& .MuiFormLabel-root.Mui-focused': {
+                                                    color: '#ffffff', // Focused label color
+                                                },
+                                                marginTop: 2,
+                                            }}>
+                                            <InputLabel id="demo-simple-select-label">How urgent is this ?</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={feedBackPriorty}
+                                                label="Feedback Priorty"
+                                                onChange={handleFeedbackPriorty}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: 'white', // Change the color of the dropdown icon
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem value={1}>Normal</MenuItem>
+                                                <MenuItem value={2}>Medium</MenuItem>
+                                                <MenuItem value={3}>High</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+
+
 
                                     <Button sx={{
                                         textTransform: "none", backgroundColor: "#2548FD",

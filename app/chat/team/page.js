@@ -308,7 +308,16 @@ const Page = () => {
                                                         {
                                                             item.fromUser.email != loggedInUser.email ?
                                                                 <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
-                                                                    {item.fromUser.email}
+                                                                    {
+                                                                        item.fromUser.name ?
+                                                                            <div>
+                                                                                {item.fromUser.name}
+                                                                            </div> :
+                                                                            <div>
+                                                                                {item.fromUser.email}
+                                                                            </div>
+                                                                    }
+                                                                    {/* {item.fromUser.email} */}
                                                                 </div> :
                                                                 <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: '#ffffff' }}>
                                                                     {item.name}
@@ -671,6 +680,11 @@ const Page = () => {
                                         value={assignProject}
                                         label="Assign Project"
                                         onChange={handleChange}
+                                        sx={{
+                                            '& .MuiSelect-icon': {
+                                                color: 'white', // Change the color of the dropdown icon
+                                            },
+                                        }}
                                     >
                                         {getProject.map((project) => (
                                             <MenuItem key={project.id} value={project.id}>

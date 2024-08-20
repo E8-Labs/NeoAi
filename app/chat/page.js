@@ -116,9 +116,9 @@ const Page = () => {
     const [openEditProject, setOpenEditProject] = useState(false);
 
 
-    useEffect(() => {
-        fetchGetMessagesApi()
-    }, []);
+    // useEffect(() => {
+    //     fetchGetMessagesApi()
+    // }, []);
 
     const handleInputChange = (e) => {
         const textareaLineHeight = 24; // Adjust this value to match the line-height of your textarea
@@ -151,33 +151,33 @@ const Page = () => {
         }
     };
 
-    const fetchGetMessagesApi = async () => {
-        const NewProject = localStorage.getItem('NewProject');
-        if (NewProject) {
-            const projectChatId = JSON.parse(NewProject);
-            console.log('New project id from local storage for get messages api is :', projectChatId.data.chat.id);
-            const ID = projectChatId.data.chat.id;
-            const LSD = localStorage.getItem('User');
-            const localStorageData = JSON.parse(LSD);
-            const AuthToken = localStorageData.data.token;
-            const ApiPath = Apis.GetMessages; // 'http://localhost:8005/api/chat/get_messages'
-            const Data = {
-                chatId: ID
-            }
-            const response = await axios.get(`${ApiPath}?chatId=${ID}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${AuthToken}`
-                }
-            });
-            if (response.status === 200) {
-                setUserChat(response.data.data);
-                console.log("Chat history is:", response.data)
-            } else {
-                console.error('Error fetching chat data:', response);
-            }
-        }
-    }
+    // const fetchGetMessagesApi = async () => {
+    //     const NewProject = localStorage.getItem('NewProject');
+    //     if (NewProject) {
+    //         const projectChatId = JSON.parse(NewProject);
+    //         console.log('New project id from local storage for get messages api is :', projectChatId.data.chat.id);
+    //         const ID = projectChatId.data.chat.id;
+    //         const LSD = localStorage.getItem('User');
+    //         const localStorageData = JSON.parse(LSD);
+    //         const AuthToken = localStorageData.data.token;
+    //         const ApiPath = Apis.GetMessages; // 'http://localhost:8005/api/chat/get_messages'
+    //         const Data = {
+    //             chatId: ID
+    //         }
+    //         const response = await axios.get(`${ApiPath}?chatId=${ID}`, {
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${AuthToken}`
+    //             }
+    //         });
+    //         if (response.status === 200) {
+    //             setUserChat(response.data.data);
+    //             console.log("Chat history is:", response.data)
+    //         } else {
+    //             console.error('Error fetching chat data:', response);
+    //         }
+    //     }
+    // }
 
 
 

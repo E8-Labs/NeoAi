@@ -32,7 +32,7 @@ const GetProjects = () => {
                 console.log('Response on navbar is', response);
             }
             if (response.status === 200) {
-                console.log('Response of api on navbar screen is is', response.data);
+                console.log('Response of api on navbar screen is is', response.data.data);
                 setMyProjects(response.data.data)
                 if (response.data.data.length === 0) {
                     setNoProject(true)
@@ -107,15 +107,15 @@ const GetProjects = () => {
                                 <div>
                                     {
                                         myProjects.map((item) => (
-                                            <div key={item.id} className='w-full flex flex-row items-center mt-6'
-                                                style={{ backgroundColor: item.id === storedId ? '#ffffff20' : "transparent", borderRadius: 3 }}>
+                                            <div key={item.id} className='w-full flex flex-row items-center'
+                                                style={{ backgroundColor: item.id === storedId ? '#ffffff20' : "transparent", borderRadius: 3, marginTop: 7, paddingInlineStart: 10 }}>
                                                 <Link
-                                                    sx={{ textDecoration: 'none', fontWeight: "500", fontSize: 14, fontFamily: "inter" }}
-                                                    className='w-full items-start p-3'
+                                                    sx={{ textDecoration: 'none', fontWeight: "400", fontSize: 13, fontFamily: "inter" }}
+                                                    className='w-full items-start p-2'
                                                     href={`/chat/${item.chat.id}`}
                                                     onClick={(e) => {
-                                                        e.preventDefault(); // Prevent the default link behavior
-                                                        handleLinkClick(item); // Handle the click event manually
+                                                        e.preventDefault();
+                                                        handleLinkClick(item);
                                                     }}
                                                 >
                                                     <Box

@@ -1,5 +1,7 @@
 // pages/chat/[id].js
 'use client'
+// import JSZip from 'jszip';
+import JSZip from 'JSZip';
 import imageCompression from 'browser-image-compression';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -61,6 +63,7 @@ const Page = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [showAssignBtn, setShowAssignBtn] = useState(null);
   const [selectedDocFile, setselectedDocFile] = useState(false);
+  const [selectedDocumentFile, setSelectedDocumentFile] = useState(null);
 
   const [scrollHeight, setScrollHeight] = useState(0)
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true)
@@ -68,14 +71,24 @@ const Page = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [assignProjectSuccess, setAssignProjectSuccess] = useState(false);
   const [assignProjectErr, setAssignProjectErr] = useState(false);
+  const [assignProjectErr2, setAssignProjectErr2] = useState(false);
   const [assignProjectLoader, setAssignProjectLoader] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState(null)
 
 
   const handleOpenEditproject = () => setOpen(true);
   const handleCloseEditProject = () => setOpen(false);
   const handleOpenShareproject = () => setOpenShareApp(true);
   const handleCloseShareProject = () => setOpenShareApp(false);
+
+  useEffect(() => {
+    const LSD = localStorage.getItem('User');
+    const localStorageData = JSON.parse(LSD);
+    const toUserEmail1 = localStorageData.data.user.email;
+    setLoggedInUser(localStorageData.data.user)
+    console.log('Email for test is', toUserEmail1);
+  }, []);
 
   const handleShareProjectToTeam = async () => {
     console.log("Test working");
@@ -170,9 +183,6 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    getProfileResponse()
-  }, []);
 
   const getProfileResponse = async () => {
     const ApiPath = Apis.GetProfile;
@@ -187,27 +197,28 @@ const Page = () => {
     });
     try {
       if (response.status === 200) {
-        //console.log('Profiledata', response.data.data);
-        if (response.data.data.profileImage) {
-          setGetProfileData(response.data.data)
-        }
-        else if (response.data.data.name) {
-          const reduceName = (name) => {
-            if (name.length) {
-              return name.slice(0, 1).toUpperCase()
+        // console.log('Profiledata', response.data.data);
+        if (response.data.data) {
+          setGetProfileData(response.data.data);
+          console.log("Profile data exists", response.data.data);
+          if (response.data.data.name) {
+            const reduceName = (name) => {
+              if (name.length) {
+                return name.slice(0, 1).toUpperCase()
+              }
             }
+            const userName = response.data.data.name;
+            setUserEmail(reduceName(userName));
           }
-          const userName = response.data.data.name;
-          setUserEmail(reduceName(userName));
-        }
-        else {
-          const reduceemail = (email) => {
-            if (email.length) {
-              return email.slice(0, 1).toUpperCase()
+          else {
+            const reduceemail = (email) => {
+              if (email.length) {
+                return email.slice(0, 1).toUpperCase()
+              }
             }
+            const userEmail = response.data.data.email;
+            setUserEmail(reduceemail(userEmail));
           }
-          const userEmail = response.data.data.email;
-          setUserEmail(reduceemail(userEmail));
         }
       }
     } catch (error) {
@@ -215,6 +226,10 @@ const Page = () => {
 
     }
   }
+
+  useEffect(() => {
+    getProfileResponse()
+  }, []);
 
   const handleCopyLink = () => {
     const currentUrl = window.location.href;
@@ -501,11 +516,18 @@ const Page = () => {
       formData.append('chatId', id);
       formData.append('content', userChatMsg);
       if (sendImgMsg) {
+        console.log("Attaching img", sendImgMsg);
+
         formData.append('media', sendImgMsg);
       }
+
       if (selectedDocument) {
-        formData.append('media', selectedDocument);
+        console.log("Attaching pdf", selectedDocumentFile);
+
+        formData.append('media', selectedDocumentFile);
       }
+
+      // console.log("Attachment sending is", documentData);
 
       // Convert the image URL to a File object and append it to the form data
 
@@ -541,6 +563,7 @@ const Page = () => {
         return "Sorry, I can't respond right now.";
       } finally {
         setLoading(false);
+        setSelectedDocumentFile(null);
       }
     }, 1000);
 
@@ -834,13 +857,46 @@ const Page = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange2 = (event) => {
-    const files = event.target.files;
-    const fileArray = Array.from(files).map((file) => URL.createObjectURL(file));
-    setselectedDocFile(true);
-    setSelectedDocument((prevDocuments) => prevDocuments.concat(fileArray));
-    // If you need the file objects themselves, you can use setSelectedDocuments(files) instead.
+  // const handleFileChange2 = (event) => {
+  //   const file = event.target.files[0];
+  //   const fileUrl = URL.createObjectURL(file);
+  //   console.log("Test file added", file);
+
+
+  //   setselectedDocFile(true);
+  //   setSelectedDocument([fileUrl]);
+  //   // setSelectedDocument(event.target.files[0]);
+  //   console.log("Selected document file is", fileUrl);
+  // };
+
+
+
+  const handleFileChange2 = async (event) => {
+    const file = event.target.files[0];
+    const fileUrl = URL.createObjectURL(file);
+    console.log('Test file added', file);
+    setSelectedDocumentFile(file);
+
+
+    // Compress the file using JSZip
+    const zip = new JSZip();
+    zip.file(file.name, file);
+
+    try {
+      const compressedFile = await zip.generateAsync({ type: 'blob' });
+      console.log('Compressed file:', compressedFile);
+
+      // If you want to set the compressed file to state
+      const compressedFileUrl = URL.createObjectURL(compressedFile);
+      setselectedDocFile(true);
+      setSelectedDocument([compressedFileUrl]);
+
+      console.log('Selected document file is', compressedFileUrl);
+    } catch (error) {
+      console.error('Error compressing file:', error);
+    }
   };
+
 
 
   const handleAssignProject = async (id) => {
@@ -878,6 +934,9 @@ const Page = () => {
             setAssignProjectErr(true);
             handleClose();
           }
+        }
+        if (response.status === 403) {
+          setAssignProjectErr2(true);
         }
 
       } catch (error) {
@@ -989,9 +1048,9 @@ const Page = () => {
                     <div>
                       {teamMembers.map((teamMember) => (
                         <MenuItem
-                          key={teamMember.id} // Assuming each project has a unique id
+                          key={teamMember.id}
                           // onClick={handleChange}
-                          value={teamMember.name} // Assuming the project object has a name property
+                          value={teamMember.name}
                         // disabled
                         >
                           <div className='flex flex-row gap-8'>
@@ -1002,7 +1061,23 @@ const Page = () => {
                               style={{ fontSize: 14, fontWeight: "500", fontFamily: "inter" }}>
                               {teamMember.status === "accepted" &&
                                 <div>
-                                  {teamMember.name}
+                                  {
+                                    teamMember.fromUser.email != loggedInUser.email ?
+                                      <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
+                                        {
+                                          teamMember.fromUser.name ?
+                                            <div>
+                                              {teamMember.fromUser.name}
+                                            </div> :
+                                            <div>
+                                              {teamMember.name}
+                                            </div>
+                                        }
+                                      </div> :
+                                      <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
+                                        {teamMember.name}
+                                      </div>
+                                  }
                                 </div>
                               }
                             </button>
@@ -1010,14 +1085,23 @@ const Page = () => {
                               showAssignBtn === teamMember.id &&
                               <div>
                                 <button
-                                  onClick={() => handleAssignProject(teamMember.id)}
+                                  onClick={() => {
+                                    const idToSend = teamMember.fromUser.email === loggedInUser.email
+                                      ? teamMember.toUser.id
+                                      : teamMember.fromUser.id;
+
+                                    console.log("Test working id", idToSend);
+                                    handleAssignProject(idToSend);
+                                  }}
                                   style={{ fontSize: 12, fontWeight: "500", fontFamily: "inter" }}>
                                   {
                                     assignProjectLoader ?
                                       <div>
                                         <CircularProgress size={15} />
                                       </div> :
-                                      "Assign Project"
+                                      <div style={{ fontSize: 12, padding: 3, borderRadius: 5, color: "white", fontWeight: "500", fontFamily: "inter", backgroundColor: "#4011FA" }}>
+                                        Assign Project
+                                      </div>
                                   }
                                 </button>
                               </div>
@@ -1073,6 +1157,28 @@ const Page = () => {
                 </Snackbar>
               </div>
 
+              <div>
+                <Snackbar
+                  open={assignProjectErr2}
+                  autoHideDuration={3000}
+                  onClose={() => setAssignProjectErr2(false)}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  TransitionComponent={Slide}
+                  TransitionProps={{
+                    direction: 'left'
+                  }}
+                >
+                  <Alert
+                    onClose={() => setAssignProjectErr2(false)} severity="error"
+                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                    User not a teammember.
+                  </Alert>
+                </Snackbar>
+              </div>
+
 
 
 
@@ -1118,7 +1224,7 @@ const Page = () => {
                           {
                             getProfileData && getProfileData.profile_image ?
                               <div>
-                                <img src={getProfileData.profile_image} style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                                <img src={getProfileData.profile_image} style={{ height: '40px', width: '40px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
                               </div> :
                               <div className='flex items-center justify-center'
                                 style={{
@@ -1217,15 +1323,14 @@ const Page = () => {
                   {/* <button>
                     <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
                   </button> */}
-                  <button onClick={handleButtonClick}>
+                  {/* <button onClick={handleButtonClick}>
                     <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
-                  </button>
+                  </button> */}
                   <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange2}
                     style={{ display: 'none' }}
-                    multiple
                     accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx"
                   />
                   <button onClick={handleInputFileChange}>

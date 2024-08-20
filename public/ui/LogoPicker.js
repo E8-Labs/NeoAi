@@ -37,7 +37,7 @@ const LogoPicker = ({ onFileSelect }) => {
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
             />
-            <Button onClick={handleLogoClick} style={{ color: '#ffffff', fontWeight: '400', fontSize: 12, fontFamily: 'inter', marginTop: 15 }}>
+            <Button onClick={handleLogoClick} style={{ color: 'grey', fontWeight: '400', fontSize: 12, fontFamily: 'inter', marginTop: 15 }}>
                 <u>
                     Change App Logo
                 </u>
