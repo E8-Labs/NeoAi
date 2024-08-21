@@ -19,7 +19,8 @@ const Apis = {
     AssignProject: `${BasePath}api/chat/assign_project`,
     FeedbackApi: `${BasePath}api/user/send_feedback`,
     // GetTeamMembersList: `${BasePath}api/user/my_team`
-    GetNotification:`${BasePath}api/user/notifications`
+    GetNotification:`${BasePath}api/user/notifications`,
+    ReadAllNotifications: `${BasePath}api/user/read_notifications`
 }
 
 export default Apis;

@@ -51,10 +51,10 @@ const Page = () => {
 
     //add team member
     const handleAddTeam = async (e) => {
-        if (name && email && role) {
+        if (name && email && role && assignProject) {
 
             //api call for adding team member
-
+            // return
             try {
                 setAddTeamLoader(true)
                 const AddMember = {
@@ -93,6 +93,7 @@ const Page = () => {
                     setName('');
                     setEmail('');
                     setRole('');
+                    setAssignProject("")
                 }
 
             } catch (error) {
@@ -301,7 +302,32 @@ const Page = () => {
                                             <div className='w-full gap-8 p-4 flex flex-row'
                                                 style={{ backgroundColor: '#ffffff20', borderRadius: 2, height: 'fit-content', width: '100%', maxWidth: '335px' }}>
                                                 <div>
-                                                    <img src='/assets/profile1.png' alt='TM_Profile' style={{ height: '50px', width: '50px', objectFit: 'cover' }} />
+                                                    {
+                                                        item.fromUser.email != loggedInUser.email ?
+                                                            <div>
+                                                                {
+                                                                    item.fromUser.profile_image ?
+                                                                        <div>
+                                                                            <img src={item.fromUser.profile_image} alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                        </div> :
+                                                                        <div>
+                                                                            <img src="/assets/profile1.png" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                        </div>
+                                                                }
+                                                                {/* {item.fromUser.email} */}
+                                                            </div> :
+                                                            <div>
+                                                                {
+                                                                    item.toUser.profile_image ?
+                                                                        <div>
+                                                                            <img src={item.toUser.profile_image} alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                        </div> :
+                                                                        <div>
+                                                                            <img src="/assets/profile1.png" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                        </div>
+                                                                }
+                                                            </div>
+                                                    }
                                                 </div>
                                                 <div>
                                                     <div>
@@ -680,6 +706,13 @@ const Page = () => {
                                         value={assignProject}
                                         label="Assign Project"
                                         onChange={handleChange}
+                                        MenuProps={{
+                                            PaperProps: {
+                                                style: {
+                                                    maxHeight: 120, // Set the maximum height for the dropdown menu
+                                                },
+                                            },
+                                        }}
                                         sx={{
                                             '& .MuiSelect-icon': {
                                                 color: 'white', // Change the color of the dropdown icon

@@ -44,47 +44,331 @@ const Notifications = ({ closeNav }) => {
         setAllNot(true);
     }
 
-    const handleUnReadNot = () => {
+    // const handleUnReadNot = async () => {
+    //     setAllNot(false);
+    //     setUnreadNot(true);
+    //     const LocalData = localStorage.getItem('User');
+    //     const D = JSON.parse(LocalData);
+    //     const AuthToken = D.data.token;
+    //     const ApiPath = Apis.ReadAllNotifications;
+    //     console.log("Auth Token ", AuthToken)
+    //     try {
+    //         const response = await axios.post(ApiPath, {
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': 'Bearer ' + D.data.token
+    //             }
+    //         });
+    //         if (response) {
+    //             console.log("Response of readall notification api is", response.data);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error occured in readalnot api is", error);
+    //     }
+    // }
+
+    // const timestamps = [getNotificationData.createdAt];
+
+    // function timeAgo(seconds) {
+    //     const intervals = [
+    //         { label: 'year', seconds: 31536000 },
+    //         { label: 'month', seconds: 2592000 },
+    //         { label: 'week', seconds: 604800 },
+    //         { label: 'day', seconds: 86400 },
+    //         { label: 'hour', seconds: 3600 },
+    //         { label: 'minute', seconds: 60 },
+    //         { label: 'second', seconds: 1 }
+    //     ];
+
+    //     for (let i = 0; i < intervals.length; i++) {
+    //         const interval = intervals[i];
+    //         const count = Math.floor(seconds / interval.seconds);
+    //         if (count > 0) {
+    //             return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+    //         }
+    //     }
+
+    //     return 'just now';
+    // }
+
+    // function formatTimestamps(timestamps) {
+    //     const now = new Date();
+
+    //     return timestamps.map(timestamp => {
+    //         const createdDate = new Date(timestamp);
+    //         const timeDifference = Math.floor((now - createdDate) / 1000);
+    //         return timeAgo(timeDifference);
+    //     });
+    // }
+
+    // const formattedTimes = formatTimestamps([getNotificationData.createdAt]);
+    // console.log("Time when notification created", formattedTimes);
+
+
+
+    //code for timeinterval
+
+
+
+    const handleUnReadNot = async () => {
         setAllNot(false);
         setUnreadNot(true);
-    }
 
-    const timestamps = [getNotificationData.createdAt];
+        const LocalData = localStorage.getItem('User');
+        const D = JSON.parse(LocalData);
+        const AuthToken = D.data.token;
+        const ApiPath = Apis.ReadAllNotifications;
 
-    function timeAgo(seconds) {
-        const intervals = [
-            { label: 'year', seconds: 31536000 },
-            { label: 'month', seconds: 2592000 },
-            { label: 'week', seconds: 604800 },
-            { label: 'day', seconds: 86400 },
-            { label: 'hour', seconds: 3600 },
-            { label: 'minute', seconds: 60 },
-            { label: 'second', seconds: 1 }
-        ];
+        console.log("Auth Token ", AuthToken);
 
-        for (let i = 0; i < intervals.length; i++) {
-            const interval = intervals[i];
-            const count = Math.floor(seconds / interval.seconds);
+        try {
+            const response = await axios.post(
+                ApiPath,
+                {}, // Empty object for the request body
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + AuthToken,
+                    }
+                }
+            );
+            if (response) {
+                console.log("Response of readall notification api is", response.data);
+            }
+        } catch (error) {
+            console.error("Error occurred in readall notification API:", error);
+        }
+    };
+
+
+
+
+    const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 },
+        { label: 'second', seconds: 1 }
+    ];
+
+    function getTimeDifference(createdAt) {
+        const createdAtDate = new Date(createdAt);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - createdAtDate) / 1000);
+
+        for (const interval of intervals) {
+            const count = Math.floor(diffInSeconds / interval.seconds);
             if (count > 0) {
-                return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+                return count === 1 ? `1 ${interval.label} ago` : `${count} ${interval.label}s ago`;
             }
         }
-
-        return 'just now';
+        return "just now";
     }
 
-    function formatTimestamps(timestamps) {
-        const now = new Date();
 
-        return timestamps.map(timestamp => {
-            const createdDate = new Date(timestamp);
-            const timeDifference = Math.floor((now - createdDate) / 1000);
-            return timeAgo(timeDifference);
-        });
+    //code for notifications functions
+
+    const projectJoined = () => {
+        return (
+            <div>
+                {
+                    getNotificationData.map((item) => (
+                        <div key={item.id}>
+                            {item.notificationType === "ProjectJoined" &&
+                                <div className='flex flex-row gap-2 items-center mt-6'>
+                                    <div>
+                                        {
+                                            item.from.profile_image ?
+                                                <img src={item.from.profile_image} alt='profileimg' style={{ height: 40, width: 40, borderRadius: "50%", }} /> :
+                                                <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 40, width: 40, resize: "cover", borderRadius: "50%" }} />
+                                        }
+                                    </div>
+                                    <div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div
+                                                style={{ fontWeight: "500", fontSize: 15, fontFamily: "inter" }}>
+                                                <div>
+                                                    {item.from.name ?
+                                                        <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
+                                                            {item.from.name}
+                                                        </div> :
+                                                        <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
+                                                            {item.from.email}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div
+                                                style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                joined
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                {item.project.projectName}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                            {getTimeDifference(item.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>}
+                        </div>
+                    ))
+                }
+            </div>
+        )
     }
 
-    const formattedTimes = formatTimestamps(timestamps);
-    console.log("Time when notification created", formattedTimes);
+
+    const projectUpdated = () => {
+        return (
+            <div>
+                {
+                    getNotificationData.map((item) => (
+                        <div key={item.id}>
+                            {item.notificationType === "ProjectUpdated" &&
+                                <div className='flex flex-row gap-2 items-center mt-6'>
+                                    <div>
+                                        {
+                                            item.from.profile_image ?
+                                                <img src={item.from.profile_image} alt='profileimg' style={{ height: 40, width: 40, borderRadius: "50%", }} /> :
+                                                <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 40, width: 40, resize: "cover", borderRadius: "50%" }} />
+                                        }
+                                    </div>
+                                    <div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div
+                                                style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                Updates made on
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                {item.project.projectName}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                            {getTimeDifference(item.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>}
+                        </div>
+                    ))
+                }
+            </div>
+        )
+    }
+
+    const TeamInvitation = () => {
+        return (
+            <div>
+                {
+                    getNotificationData.map((item) => (
+                        <div key={item.id}>
+                            {item.notificationType === "TeamInvitation" &&
+                                <div className='flex flex-row gap-2 items-center mt-6'>
+                                    <div>
+                                        {
+                                            item.from.profile_image ?
+                                                <img src={item.from.profile_image} alt='profileimg' style={{ height: 40, width: 40, borderRadius: "50%", }} /> :
+                                                <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 40, width: 40, resize: "cover", borderRadius: "50%" }} />
+                                        }
+                                    </div>
+                                    <div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div
+                                                style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                Updates made on
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                {item.project.projectName}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                            {getTimeDifference(item.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>}
+                        </div>
+                    ))
+                }
+            </div>
+        )
+    }
+
+    const InviteTeam = () => {
+        return (
+            <div>
+                {
+                    getNotificationData.map((item) => (
+                        <div key={item.id}>
+                            {item.notificationType === "InviteTeam" &&
+                                <div className='flex flex-row gap-2 items-center mt-6'>
+                                    <div>
+                                        {
+                                            item.from.profile_image ?
+                                                <img src={item.from.profile_image} alt='profileimg' style={{ height: 40, width: 40, borderRadius: "50%", }} /> :
+                                                <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 40, width: 40, resize: "cover", borderRadius: "50%" }} />
+                                        }
+                                    </div>
+                                    <div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div
+                                                style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                Updates made on
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                {item.project.projectName}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                            {getTimeDifference(item.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>}
+                        </div>
+                    ))
+                }
+            </div>
+        )
+    }
+
+    const NewTeam = () => {
+        return (
+            <div>
+                {
+                    getNotificationData.map((item) => (
+                        <div key={item.id}>
+                            {item.notificationType === "NewTeam" &&
+                                <div className='flex flex-row gap-2 items-center mt-6'>
+                                    <div>
+                                        {
+                                            item.from.profile_image ?
+                                                <img src={item.from.profile_image} alt='profileimg' style={{ height: 40, width: 40, borderRadius: "50%", }} /> :
+                                                <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 40, width: 40, resize: "cover", borderRadius: "50%" }} />
+                                        }
+                                    </div>
+                                    <div>
+                                        <div className='flex flex-row gap-2'>
+                                            <div
+                                                style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                Updates made on
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                {item.project.projectName}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                            {getTimeDifference(item.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>}
+                        </div>
+                    ))
+                }
+            </div>
+        )
+    }
+
 
 
     return (
@@ -137,41 +421,17 @@ const Notifications = ({ closeNav }) => {
                         }}>
                         Action
                     </button> */}
-                    {
-                        getNotificationData.map((item) => (
-                            <div key={item.id} className='flex flex-row gap-2 items-center mt-6'>
-                                <div>
-                                    {
-                                        item.from.profile_image ?
-                                            <Image source={item.from.profile_image}  height={30} width={30} layout='responsive' style={{ borderRadius: "50%" }} /> :
-                                            <div  style={{ borderRadius: "50%" ,backgroundColor: 'red' }} > </div>
-                                    }
-                                </div>
-                                <div
-                                    style={{ fontWeight: "500", fontSize: 15, fontFamily: "inter" }}>
-                                    {item.notificationType === "ProjectJoined" &&
-                                        <div>
-                                            {item.from.name ?
-                                                <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
-                                                    {item.from.name}
-                                                </div> :
-                                                <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
-                                                    {item.from.email}
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                                <div
-                                    style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
-                                    joined
-                                </div>
-                                <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
-                                    {item.project.projectName}
-                                </div>
-                            </div>
-                        ))
-                    }
+
+                    
+                    {projectJoined()}
+
+                    {projectUpdated()}
+
+                    {TeamInvitation()}
+
+                    {InviteTeam()}
+
+                    {NewTeam()}
 
 
                 </div>
@@ -180,7 +440,56 @@ const Notifications = ({ closeNav }) => {
             {
                 unreadNot &&
                 <div className='text-white mt-4'>
-                    No Notification
+                    {
+                        getNotificationData.map((item) => (
+                            <div key={item.id}>
+                                {
+                                    item.isRead === false &&
+                                    <div className='flex flex-row gap-2 items-center mt-6'>
+                                        <div>
+                                            {
+                                                item.from.profile_image ?
+                                                    <img src={item.from.profile_image} alt='profileimg' style={{ height: 30, width: 30, borderRadius: "50%", }} /> :
+                                                    <img src='/assets/profile1.jpeg' alt='placeholder' style={{ height: 30, width: 30, resize: "cover", borderRadius: "50%" }} />
+                                            }
+                                        </div>
+                                        <div>
+                                            <div className='flex flex-row gap-2'>
+                                                <div
+                                                    style={{ fontWeight: "500", fontSize: 15, fontFamily: "inter" }}>
+                                                    {item.notificationType === "ProjectJoined" &&
+                                                        <div>
+                                                            {item.from.name ?
+                                                                <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
+                                                                    {item.from.name}
+                                                                </div> :
+                                                                <div style={{ fontWeight: "400", fontSize: 13, fontFamily: "inter" }}>
+                                                                    {item.from.email}
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div
+                                                    style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                    joined
+                                                </div>
+                                                <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: 'grey' }}>
+                                                    {item.project.projectName}
+                                                </div>
+                                            </div>
+                                            <div style={{ fontWeight: "400", fontSize: 12, fontFamily: "inter", color: "grey" }}>
+                                                {getTimeDifference(item.createdAt)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            //     <div>
+                            //     No Notification
+                            // </div>
+                        ))
+                    }
                 </div>
             }
 

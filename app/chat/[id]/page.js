@@ -1012,11 +1012,11 @@ const Page = () => {
               >
                 <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
               </button>
-              <button
+              {/* <button
                 onClick={handleOpenShareproject}
               >
                 <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-              </button>
+              </button> */}
 
 
 
@@ -1051,6 +1051,14 @@ const Page = () => {
                           key={teamMember.id}
                           // onClick={handleChange}
                           value={teamMember.name}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 100, // Set maximum height for the menu
+                                overflowY: 'auto', // Enable vertical scrolling
+                              },
+                            },
+                          }}
                         // disabled
                         >
                           <div className='flex flex-row gap-8'>
