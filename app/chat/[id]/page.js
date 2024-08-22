@@ -333,7 +333,7 @@ const Page = () => {
       const LocalData = JSON.parse(LD);
       const AuthToken = LocalData.data.token;
       const formData = new FormData();
-      formData.append("projectId", id);
+      formData.append("projectId", projectData.chat.projectId);
       formData.append("projectName", appName);
 
       if (SelectedLogo) {
@@ -389,9 +389,9 @@ const Page = () => {
   useEffect(() => {
     const storedData = localStorage.getItem('projectDetails');
     if (storedData) {
-      console.log("Data recieved from local of project details is", storedData);
       setProjectData(JSON.parse(storedData));
       const D = JSON.parse(storedData)
+      console.log("Data recieved from local of project details is", D);
       console.log("Default app name", D.projectName);
 
       if (D.projectName) {
@@ -730,7 +730,7 @@ const Page = () => {
         <div className='flex  flex-col px-1 py-2 ms-2'
           style={{
             borderTopLeftRadius: 25, backgroundColor: 'transparent', borderTopRightRadius: 25,
-            borderBottomRightRadius: 25, width: '90%'
+            borderBottomRightRadius: 25, width: '95%'
           }}>
           {separatedContent.map((part, index) => (
             <div style={{ backdropColor: 'yellow' }} key={index}>

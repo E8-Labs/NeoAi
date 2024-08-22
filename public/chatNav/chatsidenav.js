@@ -462,21 +462,21 @@ const Chatsidenav = () => {
                     <div className='flex mt-4'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenRefer}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
+                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
                             Refer
                         </button>
                     </div>
                     <div className='flex mt-3'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenSupport}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
+                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
                             Support
                         </button>
                     </div>
                     <div className='flex mt-3'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={() => setOpenFeedback(true)}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: 'white' }}>
+                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
                             Feedback
                         </button>
                     </div>
