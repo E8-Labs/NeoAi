@@ -63,7 +63,7 @@ const Page = () => {
                 });
                 if (response2.status === 200) {
                     const Result = response2.data;
-                    localStorage.setItem('NewProject', JSON.stringify(Result));
+                    // localStorage.setItem('NewProject', JSON.stringify(Result));
                     console.log('Response of API is:', Result);
                     router.push('/chat');
                     // router.push('/onboarding/founders');

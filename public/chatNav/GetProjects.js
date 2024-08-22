@@ -70,6 +70,8 @@ const GetProjects = () => {
 
     const router = useRouter();
     const handleLinkClick = (item) => {
+        // const event = new CustomEvent("selectedProject", { detail: item });
+        // window.dispatchEvent(event);
         console.log('ITem data sending is', item);
         localStorage.setItem('projectDetails', JSON.stringify(item));
         router.push(`/chat/${item.chat.id}`);
@@ -83,14 +85,15 @@ const GetProjects = () => {
             const StoredId = LocalData.id;
             setStoredId(StoredId)
             console.log("Data of project", LocalData.id);
-        } else {
-            const LocalData = localStorage.getItem('NewProject');
-            if (LocalData) {
-                const Data = JSON.parse(LocalData);
-                console.log("Data of local", Data.data.id);
-                setStoredId(Data.data.id)
-            }
         }
+        // else {
+        //     const LocalData = localStorage.getItem('NewProject');
+        //     if (LocalData) {
+        //         const Data = JSON.parse(LocalData);
+        //         console.log("Data of local", Data.data.id);
+        //         setStoredId(Data.data.id)
+        //     }
+        // }
 
     }, [handleLinkClick])
 
@@ -108,9 +111,15 @@ const GetProjects = () => {
                                     {
                                         myProjects.map((item) => (
                                             <div key={item.id} className='w-full flex flex-row items-center'
-                                                style={{ backgroundColor: item.id === storedId ? '#ffffff20' : "transparent", borderRadius: 3, marginTop: 7, paddingInlineStart: 10 }}>
+                                                style={{
+                                                    backgroundColor: item.id === storedId ? '#ffffff20' : "transparent",
+                                                    height: item.id === storedId ? 30 : "", borderRadius: 3, marginTop: 7, paddingInlineStart: 10,
+                                                }}>
                                                 <Link
-                                                    sx={{ textDecoration: 'none', fontWeight: "400", fontSize: 13, fontFamily: "inter" }}
+                                                    sx={{
+                                                        textDecoration: 'none', fontWeight: item.id === storedId ? '500' : "400",
+                                                        fontSize: item.id === storedId ? 16 : 13, fontFamily: "inter"
+                                                    }}
                                                     className='w-full items-start p-2'
                                                     href={`/chat/${item.chat.id}`}
                                                     onClick={(e) => {
@@ -141,7 +150,7 @@ const GetProjects = () => {
                     </div>
                 }
             </div>
-        </div>
+        </div >
     )
 }
 

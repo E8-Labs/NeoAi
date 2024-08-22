@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, color } from 'framer-motion';
-import { Box, Button, CircularProgress, Modal, TextareaAutosize, TextField } from '@mui/material';
+import { Box, Button, Checkbox, CircularProgress, Grid, Modal, TextareaAutosize, TextField } from '@mui/material';
 import Apis from '@/public/Apis/Apis';
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
@@ -16,14 +16,23 @@ const boxVariants = {
   enter: (direction) => ({
     y: direction > 0 ? '100%' : '-100%',
     opacity: 0,
+    transition: {
+      duration: 0.5,
+    },
   }),
   center: {
     y: 0,
     opacity: 1,
+    transition: {
+      duration: 0.5,
+    },
   },
   exit: (direction) => ({
     y: direction < 0 ? '100%' : '-100%',
     opacity: 0,
+    transition: {
+      duration: 0.5,
+    },
   }),
 };
 //animation ends here
@@ -48,6 +57,13 @@ const AnimatedForm = () => {
   const [founderContinueLoader, setFounderContinueLoader] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
   const [rows, setRows] = useState(1);
+  const [checked, setChecked] = useState(false);
+
+  // Step 2: Handle the checkbox change
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
 
   //login directly
   // useEffect(() => {
@@ -291,10 +307,6 @@ const AnimatedForm = () => {
               style={styles}
             >
               <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-                {/* test */}
-                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                  ONBOARDING
-                </p>
                 <p className="mt-2" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   What's your app idea about
                 </p>
@@ -311,13 +323,32 @@ const AnimatedForm = () => {
                     placeholder="Type here" />
                 </div>
                 <div style={{ height: '1px', backgroundColor: '#ffffff', marginTop: 15 }} />
-                <div className='mt-6' style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
-                  By submitting, I consent to Hebbia's communications and acknowledge
-                  my data will be handled per their Privacy Policy *
+                <div className='flex flex-row mt-6 items-center'>
+                  <Checkbox
+                    checked={checked}
+                    onChange={handleChange}
+                    sx={{
+                      color: 'white', // Color of the checkbox when unchecked
+                      '&.Mui-checked': {
+                        color: 'white', // Color of the checkbox when checked
+                      },
+                      '&:hover': {
+                        backgroundColor: 'transparent', // No background color on hover
+                      },
+                      '& .MuiSvgIcon-root': {
+                        // border: '1px solid white', // White border
+                        borderRadius: '4px', // Optional: to make the border look like a box
+                      },
+                    }}
+                  />
+                  <div style={{ fontWeight: '400', fontSize: 11, fontFamily: 'inter' }}>
+                    By submitting, I consent to Hebbia's communications and acknowledge
+                    my data will be handled per their Privacy Policy *
+                  </div>
                 </div>
                 <div>
                   {
-                    appIdea ?
+                    appIdea && checked ?
                       <Button
                         className="p-3 py-4"
                         style={{
@@ -356,10 +387,6 @@ const AnimatedForm = () => {
               style={styles}
             >
               <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-                {/* test */}
-                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                  ONBOARDING
-                </p>
                 <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   Who are the customers you're building this for?
                 </p>
@@ -395,8 +422,8 @@ const AnimatedForm = () => {
                   /> */}
                   <TextareaAutosize
                     className='w-full'
-                    minRows={2}
-                    maxRows={3}
+                    minRows={4}
+                    maxRows={6}
                     placeholder="Ex: Real estate agents, fitness coaches,"
                     value={audienceName}
                     onChange={handleAudienceInputChange}
@@ -455,7 +482,7 @@ const AnimatedForm = () => {
           </div>
         )}
         {currentIndex === 2 && (
-          <div style={{ height: '55vh' }}>
+          <div style={{ height: '40vh' }}>
             <motion.div
               key="box3"
               custom={direction}
@@ -467,16 +494,12 @@ const AnimatedForm = () => {
               style={styles}
             >
               <div style={{ width: "100%", paddingInline: 26, paddingTop: 18, paddingBottom: 18 }}>
-                {/* test */}
-                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter', width: "100%" }}>
-                  ONBOARDING
-                </p>
                 <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                   What is your app name
                 </p>
                 <div className="flex justify-center">
-                  <textarea
-                    rows={4}
+                  <input
+                    // rows={1}
                     value={appName}
                     onChange={(e) => setAppName(e.target.value)}
                     className="mt-4 w-11/12"
@@ -532,7 +555,7 @@ const AnimatedForm = () => {
           </div>
         )}
         {currentIndex === 3 && (
-          <div style={{ height: '60vh' }}>
+          <div style={{ height: founders.length > 6 ? "65vh" : "60vh" }}>
             <motion.div
               key="box4"
               custom={direction}
@@ -545,9 +568,6 @@ const AnimatedForm = () => {
             >
               <div className="w-full"
                 style={{ paddingInline: 26, paddingTop: 18, paddingBottom: 18, backgroundColor: '#0F0C2D' }}>
-                <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
-                  ONBOARDING
-                </p>
                 <div className="mt-4 w-full flex flex-row">
                   <p className='w-8/12' style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                     Who are the founders involved?
@@ -556,53 +576,58 @@ const AnimatedForm = () => {
                 </div>
                 {
                   founders.length ?
-                    <div className="mt-4 flex flex-col gap-8  w-full" style={{ height: '24vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className="mt-4 flex flex-col gap-8  w-full" style={{ height: '35vh', overflow: 'auto', paddingBottom: 10, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                       <div className='w-full'>
-                        {
-                          founders.map((item) => (
-                            <div key={item.id} className="flex justify-center w-full mt-4">
-                              <div className="w-full px-4 py-6" style={{ border: '2px solid #ffffff35' }}>
-                                <div className="flex flex-row justify-between">
-                                  <div className="flex flex-row gap-2 items-center">
-                                    <p
-                                      style={{
-                                        fontWeight: '600', fontFamily: 'inter',
-                                        fontSize: '15px'
+                        <Grid container>
+                          {
+                            founders.map((item) => (
+                              <div key={item.id} className="flex justify-center w-6/12 mt-4 gap-2">
+                                <div className="w-full px-4 w-11/12 py-4 ms-2" style={{ border: '2px solid #ffffff35' }}>
+                                  <div className="flex flex-row justify-between">
+                                    <div className="flex flex-row gap-2 items-center">
+                                      <p
+                                        style={{
+                                          fontWeight: '600', fontFamily: 'inter',
+                                          fontSize: '15px'
+                                        }}>
+                                        {item.founderName} ,
+                                      </p>
+                                      <p style={{
+                                        fontWeight: '400', fontFamily: 'inter',
+                                        fontSize: '13px', color: '#ffffff60'
                                       }}>
-                                      {item.founderName} ,
-                                    </p>
-                                    <p style={{
-                                      fontWeight: '400', fontFamily: 'inter',
-                                      fontSize: '13px', color: '#ffffff60'
-                                    }}>
-                                      {item.role}
-                                    </p>
+                                        {item.role}
+                                      </p>
+                                    </div>
+                                    <button onClick={() => handleDelfounder(item.id)}>
+                                      <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
+                                    </button>
                                   </div>
-                                  <button onClick={() => handleDelfounder(item.id)}>
-                                    <img src="/assets/deleteIcon.png" alt="delbtn" style={{ height: 'auto', width: '100%', maxWidth: '15px', resize: 'cover' }} />
-                                  </button>
+                                  <p style={{
+                                    fontWeight: '400', fontFamily: 'inter',
+                                    fontSize: '13px', color: '#ffffff60'
+                                  }}>
+                                    {item.founderEmail}
+                                  </p>
                                 </div>
-                                <p style={{
-                                  fontWeight: '400', fontFamily: 'inter',
-                                  fontSize: '13px', color: '#ffffff60'
-                                }}>
-                                  {item.founderEmail}
-                                </p>
                               </div>
-                            </div>
-                          ))
-                        }
+                            ))
+                          }
+                        </Grid>
                       </div>
                       <div className='flex justify-start items-start'>
                         {
                           founders.length > 0 && (
-                            <button onClick={handleAddFounder} className="px-4 py-2"
+                            <button onClick={handleAddFounder} className="px-2 py-2"
                               style={{
-                                backgroundColor: '#4011FA', borderRadius: 4, fontSize: 12,
+                                // backgroundColor: '#4011FA',
+                                borderRadius: 4, fontSize: 12,
                                 fontWeight: '500', fontFamily: "inter"
                               }}>
                               {/* <img src="/assets/addIcon.png" alt="Add" style={{ height: 'auto', width: '100%', maxWidth: '12px' }} /> */}
-                              Add Founder
+                              <u>
+                                Add Founder
+                              </u>
                             </button>
                           )
                         }
@@ -679,9 +704,6 @@ const AnimatedForm = () => {
               <div className='w-full'>
                 <div className="w-full"
                   style={{ padding: 22, backgroundColor: '#0F0C2D' }}>
-                  <p className="font-semibold" style={{ color: '#2548FD', fontSize: 10, fontFamily: 'inter' }}>
-                    ONBOARDING
-                  </p>
                   <p className="mt-4" style={{ fontSize: 24, fontWeight: '600', fontFamily: 'inter' }}>
                     Save your work
                   </p>

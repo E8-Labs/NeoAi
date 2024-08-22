@@ -278,6 +278,7 @@ const Chatsidenav = () => {
     const handleLogout = () => {
         localStorage.removeItem('User');
         localStorage.removeItem('projectDetails');
+        localStorage.removeItem('NewProject');
         router.push('/onboarding');
     }
 
@@ -380,7 +381,7 @@ const Chatsidenav = () => {
 
     return (
         <div className='w-full flex flex-flex-col justify-center' style={{ backgroundColor: '#050221', height: '100%' }}>
-            <div className='w-9/12'>
+            <div className='w-11/12'>
                 <div className='flex justify-center mt-6 w-full'>
                     <button>
                         <img src='/assets/logo.png' alt='logo'
@@ -457,7 +458,7 @@ const Chatsidenav = () => {
                     </div>
                 </div>
 
-                <div className='w-full' style={{ paddingLeft: 5, position: 'absolute', bottom: 0 }}>
+                <div className='w-full' style={{ paddingLeft: 5, position: 'absolute', bottom: 15 }}>
                     <div className='flex mt-4'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenRefer}
@@ -513,8 +514,8 @@ const Chatsidenav = () => {
                             </div>
                         </button>
                     </div>
-                    <div className='mt-4'>
-                        <button onClick={handleLogout} style={{ color: '#FF4242' }}>
+                    <div className='mt-2'>
+                        <button onClick={handleLogout} style={{ color: '#FF4242', cursor: "pointer" }}>
                             Logout
                         </button>
                     </div>
@@ -794,10 +795,10 @@ const Chatsidenav = () => {
                                                     },
                                                 }}
                                             >
-                                                <MenuItem value={1}>New feature</MenuItem>
-                                                <MenuItem value={2}>Bug</MenuItem>
-                                                <MenuItem value={3}>Support</MenuItem>
-                                                <MenuItem value={4}>General</MenuItem>
+                                                <MenuItem value="Newfeature">New feature</MenuItem>
+                                                <MenuItem value="Bug">Bug</MenuItem>
+                                                <MenuItem value="Support">Support</MenuItem>
+                                                <MenuItem value="General">General</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </div>
@@ -874,9 +875,9 @@ const Chatsidenav = () => {
                                                     },
                                                 }}
                                             >
-                                                <MenuItem value={1}>Normal</MenuItem>
-                                                <MenuItem value={2}>Medium</MenuItem>
-                                                <MenuItem value={3}>High</MenuItem>
+                                                <MenuItem value="Normal">Normal</MenuItem>
+                                                <MenuItem value="Medium">Medium</MenuItem>
+                                                <MenuItem value="High">High</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </div>

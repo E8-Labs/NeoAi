@@ -192,7 +192,7 @@ const Page = () => {
 
                                 <div className="flex flex-row items-center mt-4">
                                     <div>
-                                        Have an account
+                                        Don not have an account
                                     </div>
                                     <Button onClick={handleSignup} style={{ textTransform: 'none', color: 'white' }}>
                                         <u>

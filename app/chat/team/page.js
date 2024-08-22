@@ -311,19 +311,27 @@ const Page = () => {
                                                                             <img src={item.fromUser.profile_image} alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
                                                                         </div> :
                                                                         <div>
-                                                                            <img src="/assets/profile1.png" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                            <img src="/assets/profile1.jpeg" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
                                                                         </div>
                                                                 }
                                                                 {/* {item.fromUser.email} */}
                                                             </div> :
                                                             <div>
                                                                 {
-                                                                    item.toUser.profile_image ?
+                                                                    item.toUser ?
                                                                         <div>
-                                                                            <img src={item.toUser.profile_image} alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                            {
+                                                                                item.toUser.profile_image ?
+                                                                                    <div>
+                                                                                        <img src={item.toUser.profile_image} alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                                    </div> :
+                                                                                    <div>
+                                                                                        <img src="/assets/profile1.jpeg" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                                    </div>
+                                                                            }
                                                                         </div> :
                                                                         <div>
-                                                                            <img src="/assets/profile1.png" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
+                                                                            <img src="/assets/profile1.jpeg" alt='profile' style={{ height: '50px', width: '50px', objectFit: 'cover', borderRadius: "50%" }} />
                                                                         </div>
                                                                 }
                                                             </div>

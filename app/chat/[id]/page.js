@@ -88,6 +88,7 @@ const Page = () => {
     const toUserEmail1 = localStorageData.data.user.email;
     setLoggedInUser(localStorageData.data.user)
     console.log('Email for test is', toUserEmail1);
+
   }, []);
 
   const handleShareProjectToTeam = async () => {
@@ -113,6 +114,20 @@ const Page = () => {
       console.error("Error in getTeammembers api", error);
     }
   }
+
+  //code for getting selected project event
+  // useEffect(() => {
+  //   const handleProjectSelect = (event) => {
+  //     const projectData = event.detail;
+  //     console.log('Received project data:', projectData);
+  //   };
+
+  //   window.addEventListener('selectedProject', handleProjectSelect);
+
+  //   return () => {
+  //     window.removeEventListener('selectedProject', handleProjectSelect);
+  //   };
+  // }, []);
 
 
   const handleInputChange = (e) => {
@@ -339,15 +354,13 @@ const Page = () => {
       if (response.status === 200) {
         const PData = response.data.data;
         setUpdatedData(PData);
-        //console.log("UpdateProject Api Response is", PData);
-        localStorage.setItem('projectDetails', JSON.stringify(PData));
+        console.log("UpdateProject Api Response is", PData);
+        // localStorage.setItem('projectDetails', JSON.stringify(PData));
         const event = new CustomEvent('apiSuccess', { detail: 'Api call was successfull' });
         document.dispatchEvent(event);
         setOpen(false);
         if (PData) {
           setAppName(PData.projectName)
-        } else if (projectData) {
-          setAppName(projectData.projectName)
         }
         // window.location.reload();
       }
@@ -360,16 +373,6 @@ const Page = () => {
 
   };
 
-  // const getProjectDetails = async () => {
-  //   const LD = localStorage.getItem('projectDetails');
-  //   const LocalData = await JSON.parse(LD);
-  //   setProjectData(LocalData);
-  //   //console.log('Project  name is', LocalData.projectName);
-  // }
-
-  // useEffect(() => {
-  //   getProjectDetails();
-  // }, [])
 
   // useEffect(() => {
   //   //console.log('Data of project details is :', projectData);
@@ -379,7 +382,7 @@ const Page = () => {
     setPUpdateLoader(true);
     setTimeout(() => {
       handleUpdateEditProject();
-      setAppName("");
+      // setAppName("");
     }, 2000);
   }
 
@@ -388,8 +391,15 @@ const Page = () => {
     if (storedData) {
       console.log("Data recieved from local of project details is", storedData);
       setProjectData(JSON.parse(storedData));
+      const D = JSON.parse(storedData)
+      console.log("Default app name", D.projectName);
+
+      if (D.projectName) {
+        setAppName(D.projectName);
+      }
     }
   }, []);
+
 
   useEffect(() => {
     if (projectData !== null) {
@@ -901,18 +911,18 @@ const Page = () => {
 
   const handleAssignProject = async (id) => {
     setAssignProjectLoader(true);
+    console.log("Project details are", projectData.chat.projectId);
     setTimeout(async () => {
       try {
         const LocalData = localStorage.getItem('User');
         const D = JSON.parse(LocalData);
         // console.log("User data is", D);
-        const storedData = localStorage.getItem('projectDetails');
-        const ProjectData = JSON.parse(storedData);
-        console.log("Project details are", ProjectData.chat.projectId);
+        // const storedData = localStorage.getItem('projectDetails');
+        // const ProjectData = JSON.parse(storedData);
         const AuthToken = D.data.token;
         const ApiPath = Apis.AssignProject;
         const data = {
-          projectId: ProjectData.chat.projectId,
+          projectId: projectData.chat.projectId,
           userId: id
         }
         console.log("Data to send in api is", data);
@@ -956,63 +966,82 @@ const Page = () => {
   return (
     <div className='w-full flex  flex-col justify-center' style={{ height: '100vh' }}>
       <div className='text-white' style={{ borderBottom: '1px solid grey' }}>
-        <div className='mb-2 px-4 flex flex-row justify-between items-center'>
-          <div className='flex flex-row items-center gap-12 mt-4' style={{ width: "fit-content" }}>
-            <div className='flex flex-row gap-2 items-center text-white'>
+        <div className='mb-2 px-4 flex flex-row justify-between w-full items-center'>
+          {
+            projectData &&
+            <div className='flex flex-row items-center gap-12 mt-4' style={{ width: "fit-content" }}>
+              <div className='flex flex-row gap-2 items-center text-white'>
+                <div>
+                  {/* <img
+                    src={
+                      updatedData
+                        ? updatedData.projectImage
+                        : projectData && projectData.projectImage
+                          ? projectData.projectImage
+                          : '/assets/applogo.png'
+                    }
+                    alt='Applogo'
+                    style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                  /> */}
 
-              {/* {projectData ?
-                <img src={projectData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', resize: 'cover' }} /> :
-                <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-              } */}
-              {/* <img src='/assets/applogo.png' alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} /> */}
-              {/* <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                {
-                  updatedData ?
-                    <div>
-                      <img src={updatedData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-                    </div> :
-                    <div>
-                      {
-                        projectData ?
-                          <img src={projectData.projectImage} alt='Applogo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} /> :
-                          <img src='/assets/applogo.png' alt='logo' style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }} />
-                      }
-                    </div>
-                }
-              </div> */}
-              <div>
-                <img
-                  src={
-                    updatedData
-                      ? updatedData.projectImage
-                      : projectData && projectData.projectImage
+                  {/* <img
+                    src={
+                      projectData && projectData.projectImage
                         ? projectData.projectImage
                         : '/assets/applogo.png'
-                  }
-                  alt='Applogo'
-                  style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
-                />
-              </div>
+                    }
+                    alt='Applogo'
+                    style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                  /> */}
 
-              <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
-                {
-                  updatedData ?
-                    <div>
-                      {updatedData ? updatedData.projectName : ""}
-                    </div> :
-                    <div>
-                      {projectData ? projectData.projectName : ""}
-                    </div>
-                }
+                  {
+                    updatedData && updatedData.projectImage ?
+                      <img
+                        src={
+                          updatedData.projectImage
+                        }
+                        alt='Applogo'
+                        style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                      /> :
+                      <div>
+                        {
+                          projectData && projectData.projectImage ?
+                            <img
+                              src={projectData.projectImage}
+                              alt='Applogo'
+                              style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                            /> :
+                            <img
+                              src='/assets/applogo.png'
+                              alt='Applogo'
+                              style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
+                            />
+                        }
+                      </div>
+                  }
+
+
+                </div>
+
+                <div style={{ fontWeight: '500', fontSize: 15, fontFamily: 'inter' }}>
+                  {
+                    updatedData ?
+                      <div>
+                        {updatedData ? updatedData.projectName : ""}
+                      </div> :
+                      <div>
+                        {projectData ? projectData.projectName : ""}
+                      </div>
+                  }
+                </div>
               </div>
-            </div>
-            <div className='flex flex-row gap-2 items-center'>
-              <button
-                onClick={handleOpenEditproject}
-              >
-                <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
-              </button>
-              {/* <button
+              <div className='flex flex-row gap-2 items-center'>
+                <button
+                  onClick={handleOpenEditproject}
+                >
+                  <img src='/assets/edit.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                </button>
+                {/* <button
                 onClick={handleOpenShareproject}
               >
                 <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
@@ -1020,183 +1049,195 @@ const Page = () => {
 
 
 
-              <button
-                variant="contained"
-                onClick={(event) => {
-                  handleClick(event);
-                  handleShareProjectToTeam()
-                }}
-              >
-                <img
-                  src="/assets/share.png"
-                  alt="share"
-                  style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
-                />
-              </button>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                {
-                  teamMembers.length === 0 ?
-                    <div>
-                      <MenuItem value={teamMembers}>
-                        No TeamMember
-                      </MenuItem>
-                    </div> :
-                    <div>
-                      {teamMembers.map((teamMember) => (
-                        <MenuItem
-                          key={teamMember.id}
-                          // onClick={handleChange}
-                          value={teamMember.name}
-                          MenuProps={{
-                            PaperProps: {
-                              style: {
-                                maxHeight: 100, // Set maximum height for the menu
-                                overflowY: 'auto', // Enable vertical scrolling
+                <button
+                  variant="contained"
+                  onClick={(event) => {
+                    handleClick(event);
+                    handleShareProjectToTeam()
+                  }}
+                >
+                  <img
+                    src="/assets/share.png"
+                    alt="share"
+                    style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
+                  />
+                </button>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  {
+                    teamMembers.length === 0 ?
+                      <div>
+                        <MenuItem value={teamMembers}>
+                          No TeamMember
+                        </MenuItem>
+                      </div> :
+                      <div>
+                        {teamMembers.map((teamMember) => (
+                          <MenuItem
+                            key={teamMember.id}
+                            // onClick={handleChange}
+                            value={teamMember.name}
+                            MenuProps={{
+                              PaperProps: {
+                                style: {
+                                  maxHeight: 100, // Set maximum height for the menu
+                                  overflowY: 'auto', // Enable vertical scrolling
+                                },
                               },
-                            },
-                          }}
-                        // disabled
-                        >
-                          <div className='flex flex-row gap-8'>
-                            <button onClick={() => {
-                              console.log("Test working id", teamMember.id);
-                              setShowAssignBtn(teamMember.id);
                             }}
-                              style={{ fontSize: 14, fontWeight: "500", fontFamily: "inter" }}>
-                              {teamMember.status === "accepted" &&
+                          // disabled
+                          >
+                            <div className='flex flex-row gap-8'>
+                              <button onClick={() => {
+                                console.log("Test working id", teamMember.id);
+                                setShowAssignBtn(teamMember.id);
+                              }}
+                                style={{ fontSize: 14, fontWeight: "500", fontFamily: "inter" }}>
+                                {teamMember.status === "accepted" &&
+                                  <div>
+                                    {
+                                      teamMember.fromUser.email != loggedInUser.email ?
+                                        <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
+                                          {
+                                            teamMember.fromUser.name ?
+                                              <div>
+                                                {teamMember.fromUser.name}
+                                              </div> :
+                                              <div>
+                                                {teamMember.name}
+                                              </div>
+                                          }
+                                        </div> :
+                                        <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
+                                          {teamMember.name}
+                                        </div>
+                                    }
+                                  </div>
+                                }
+                              </button>
+                              {
+                                showAssignBtn === teamMember.id &&
                                 <div>
-                                  {
-                                    teamMember.fromUser.email != loggedInUser.email ?
-                                      <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
-                                        {
-                                          teamMember.fromUser.name ?
-                                            <div>
-                                              {teamMember.fromUser.name}
-                                            </div> :
-                                            <div>
-                                              {teamMember.name}
-                                            </div>
-                                        }
-                                      </div> :
-                                      <div style={{ fontSize: 15, fontWeight: '500', fontFamily: 'inter', color: 'grey' }}>
-                                        {teamMember.name}
-                                      </div>
-                                  }
+                                  <button
+                                    onClick={() => {
+                                      const idToSend = teamMember.fromUser.email === loggedInUser.email
+                                        ? teamMember.toUser.id
+                                        : teamMember.fromUser.id;
+
+                                      console.log("Test working id", idToSend);
+                                      handleAssignProject(idToSend);
+                                    }}
+                                    style={{ fontSize: 12, fontWeight: "500", fontFamily: "inter" }}>
+                                    {
+                                      assignProjectLoader ?
+                                        <div>
+                                          <CircularProgress size={15} />
+                                        </div> :
+                                        <div style={{ fontSize: 12, padding: 3, borderRadius: 5, color: "white", fontWeight: "500", fontFamily: "inter", backgroundColor: "#4011FA" }}>
+                                          Assign Project
+                                        </div>
+                                    }
+                                  </button>
                                 </div>
                               }
-                            </button>
-                            {
-                              showAssignBtn === teamMember.id &&
-                              <div>
-                                <button
-                                  onClick={() => {
-                                    const idToSend = teamMember.fromUser.email === loggedInUser.email
-                                      ? teamMember.toUser.id
-                                      : teamMember.fromUser.id;
+                            </div>
+                          </MenuItem>
+                        ))}
+                      </div>
+                  }
+                </Menu>
 
-                                    console.log("Test working id", idToSend);
-                                    handleAssignProject(idToSend);
-                                  }}
-                                  style={{ fontSize: 12, fontWeight: "500", fontFamily: "inter" }}>
-                                  {
-                                    assignProjectLoader ?
-                                      <div>
-                                        <CircularProgress size={15} />
-                                      </div> :
-                                      <div style={{ fontSize: 12, padding: 3, borderRadius: 5, color: "white", fontWeight: "500", fontFamily: "inter", backgroundColor: "#4011FA" }}>
-                                        Assign Project
-                                      </div>
-                                  }
-                                </button>
-                              </div>
-                            }
-                          </div>
-                        </MenuItem>
-                      ))}
-                    </div>
-                }
-              </Menu>
+                <div>
+                  <Snackbar
+                    open={assignProjectSuccess}
+                    autoHideDuration={3000}
+                    onClose={() => setAssignProjectSuccess(false)}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    TransitionComponent={Slide}
+                    TransitionProps={{
+                      direction: 'left'
+                    }}
+                  >
+                    <Alert
+                      onClose={() => setAssignProjectSuccess(false)} severity="success"
+                      sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                      Project assigned successfully.
+                    </Alert>
+                  </Snackbar>
+                </div>
 
-              <div>
-                <Snackbar
-                  open={assignProjectSuccess}
-                  autoHideDuration={3000}
-                  onClose={() => setAssignProjectSuccess(false)}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  TransitionComponent={Slide}
-                  TransitionProps={{
-                    direction: 'left'
-                  }}
-                >
-                  <Alert
-                    onClose={() => setAssignProjectSuccess(false)} severity="success"
-                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                    Project assigned successfully.
-                  </Alert>
-                </Snackbar>
+                <div>
+                  <Snackbar
+                    open={assignProjectErr}
+                    autoHideDuration={3000}
+                    onClose={() => setAssignProjectErr(false)}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    TransitionComponent={Slide}
+                    TransitionProps={{
+                      direction: 'left'
+                    }}
+                  >
+                    <Alert
+                      onClose={() => setAssignProjectErr(false)} severity="error"
+                      sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                      Couldnot assign project.
+                    </Alert>
+                  </Snackbar>
+                </div>
+
+                <div>
+                  <Snackbar
+                    open={assignProjectErr2}
+                    autoHideDuration={3000}
+                    onClose={() => setAssignProjectErr2(false)}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    TransitionComponent={Slide}
+                    TransitionProps={{
+                      direction: 'left'
+                    }}
+                  >
+                    <Alert
+                      onClose={() => setAssignProjectErr2(false)} severity="error"
+                      sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
+                      User not a teammember.
+                    </Alert>
+                  </Snackbar>
+                </div>
+
+
+
+
+
+
               </div>
-
-              <div>
-                <Snackbar
-                  open={assignProjectErr}
-                  autoHideDuration={3000}
-                  onClose={() => setAssignProjectErr(false)}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  TransitionComponent={Slide}
-                  TransitionProps={{
-                    direction: 'left'
-                  }}
-                >
-                  <Alert
-                    onClose={() => setAssignProjectErr(false)} severity="error"
-                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                    Couldnot assign project.
-                  </Alert>
-                </Snackbar>
-              </div>
-
-              <div>
-                <Snackbar
-                  open={assignProjectErr2}
-                  autoHideDuration={3000}
-                  onClose={() => setAssignProjectErr2(false)}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  TransitionComponent={Slide}
-                  TransitionProps={{
-                    direction: 'left'
-                  }}
-                >
-                  <Alert
-                    onClose={() => setAssignProjectErr2(false)} severity="error"
-                    sx={{ width: '30vw', fontWeight: '700', fontFamily: 'inter', fontSize: '22' }}>
-                    User not a teammember.
-                  </Alert>
-                </Snackbar>
-              </div>
-
-
-
-
-
-
             </div>
-          </div>
-          <button onClick={openSideBar}>
+          }
+          {/* <button onClick={openSideBar}>
             <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
-          </button>
+          </button> */}
+          {
+            projectData ?
+              <button onClick={openSideBar}>
+                <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
+              </button> :
+              <div className='w-full flex justify-end'>
+                <button onClick={openSideBar}>
+                  <img src='/assets/notification.png' alt='notify' style={{ height: "18px", width: "20px", resize: 'cover', objectFit: 'contain' }} />
+                </button>
+              </div>
+          }
         </div>
       </div>
       <div className='w-full flex justify-center'>
@@ -1420,8 +1461,36 @@ const Page = () => {
               </button>
               <div className='w-full flex mt-3 items-center justify-center'>
                 <div>
-                  {SelectedLogo ? <img src={SelectedLogo} alt='profile' style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }} /> :
-                    <img src='/assets/applogo.png' alt='profile' style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover' }} />}
+                  {SelectedLogo ?
+                    <img src={SelectedLogo} alt='profile' style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }} /> :
+                    <div>
+                      {
+                        updatedData && updatedData.projectImage ?
+                          <img
+                            src={
+                              updatedData.projectImage
+                            }
+                            alt='Applogo'
+                            style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }}
+                          /> :
+                          <div>
+                            {
+                              projectData && projectData.projectImage ?
+                                <img
+                                  src={projectData.projectImage}
+                                  alt='Applogo'
+                                  style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }}
+                                /> :
+                                <img
+                                  src='/assets/applogo.png'
+                                  alt='Applogo'
+                                  style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }}
+                                />
+                            }
+                          </div>
+                      }
+                    </div>
+                  }
                   <LogoPicker onFileSelect={handleLogoSelect} />
                 </div>
               </div>

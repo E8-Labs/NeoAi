@@ -927,7 +927,7 @@ const Page = () => {
         const NewProject = localStorage.getItem('NewProject');
         if (NewProject) {
             const projectChatId = JSON.parse(NewProject);
-            // console.log('New project id from local storage for get messages api is :', projectChatId.data.chat.id);
+            console.log('New project id from local storage for get messages api is :', projectChatId.data);
             const ID = projectChatId.data.chat.id;
             router.push(`/chat/${ID}`)
         }
@@ -1074,12 +1074,11 @@ const Page = () => {
 
                 {
                     openProjects &&
-                    <div className='flex flex-row justify-center'>
-                        <div className='w-11/12 flex justify-center'
+                    <div className='flex flex-row justify-center h-screen'>
+                        {/* <div className='w-11/12 flex justify-center'
                             style={{ height: '95vh', padding: 15, backgroundColor: '#ffffff10' }}>
                             <div className='w-11/12'>
                                 <div className='w-full flex justify-center'>
-                                    {/* replace with the component */}
                                     <div className='flex justify-center w-full'>
                                         {userChat.length === 0 ? (
                                             <div className='w-full'>
@@ -1138,7 +1137,6 @@ const Page = () => {
                                                                             {
                                                                                 chat.imageThumb ?
                                                                                     <div>
-                                                                                        {/* <img src={chat.imageThumb} style={{ height: 50, width: 50, resize: 'cover', objectFit: 'cover' }} /> */}
                                                                                         <Image
                                                                                             src={chat.imageThumb}
                                                                                             height={70}
@@ -1208,99 +1206,9 @@ const Page = () => {
                                         )}
                                     </div>
 
-                                    {/* <div className='flex rounded-xl w-7/12 flex-row justify-between'
-                                        style={{ position: 'absolute', bottom: 0, paddingLeft: 10, borderWidth: 1, borderRadius: '33px', backgroundColor: '#1D1B37' }}>
-                                        <div className='w-full flex flex-col items-center'>
-                                            <div className='text-white w-full items-start px-4 py-1'>
-                                                {selectedFileShow ?
-                                                    <div style={{ width: "fit-content" }}>
-                                                        <div className='flex flex-row justify-start ps-6 w-full'
-                                                            style={{ position: "absolute", top: 9, marginLeft: 5, left: 0 }}>
-                                                            <div className='flex items-center justify-center'
-                                                                style={{ height: "20px", width: "20px", borderRadius: "50%", backgroundColor: "#ffffff20" }}>
-                                                                <button onClick={() => setSelectedFileShow(false)}>
-                                                                    <img src='/assets/cross2.png' alt='cross'
-                                                                        style={{ height: "10px", width: "10px", resize: "cover", objectFit: "cover" }}
-                                                                    />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <img src={previewURL} alt='Inputimg' className='rounded-md'
-                                                            style={{ height: '77px', width: '107px', resize: 'cover', objectFit: 'cover' }} />
-                                                    </div> : ''
-                                                }
-                                            </div>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                ref={fileInputRef}
-                                                style={{ display: 'none' }}
-                                                onChange={handleFileChange}
-                                            />
-                                            <div className='flex flex-row gap-2 items-end w-full pb-2'>
-                                                <button>
-                                                    <img src='/assets/attachmentIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
-                                                </button>
-                                                <button onClick={handleInputFileChange}>
-                                                    <img src='/assets/imageIcon.png' alt='attachfile' style={{ height: '30px', width: '30px', resize: 'cover' }} />
-                                                </button>
-                                                <textarea
-                                                    rows={rows}
-                                                    placeholder='Message GPT'
-                                                    value={message}
-                                                    onChange={handleInputChange}
-                                                    onKeyDown={handleKeyDownInputMsg}
-                                                    className='rounded w-full'
-                                                    style={{
-                                                        backgroundColor: 'transparent',
-                                                        fontWeight: '500',
-                                                        fontSize: 12,
-                                                        fontFamily: 'inter',
-                                                        color: 'white',
-                                                        paddingLeft: 10,
-                                                        paddingTop: 8,
-                                                        paddingBottom: 4,
-                                                        outline: 'none',
-                                                        border: 'none',
-                                                        resize: 'none',
-                                                        overflowY: rows >= 5 ? 'auto' : 'hidden',
-                                                        maxHeight: `${5 * 24}px`, // Limit the height to 5 rows
-                                                        scrollbarWidth: 'none', msOverflowStyle: 'none',
-                                                    }}
-                                                />
-                                                <div
-                                                    style={{ textTransform: 'none', backgroundColor: '#00000000' }} disabled={loading}>
-                                                    <div
-                                                        className='flex items-center justify-center'
-                                                        style={{ height: '34px', width: '34px', borderRadius: '50%' }}>
-                                                        {loading ?
-                                                            <div
-                                                                className='flex items-center justify-center me-6'
-                                                                style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD40' }}>
-                                                                <Button variant='disabled' style={{ backgroundColor: '#00000000' }}>
-                                                                    <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
-                                                                </Button>
-                                                            </div> :
-                                                            <div
-                                                                className='flex items-center justify-center me-6'
-                                                                style={{ height: '34px', width: '34px', borderRadius: '50%', backgroundColor: '#2548FD' }}>
-                                                                <button onClick={handleSubmit}
-                                                                    className='flex justify-center items-center'
-                                                                    style={{ height: '34px', width: '34px' }}>
-                                                                    <img src='/assets/upIcon.png' alt='sendIcon' style={{ height: '13px', width: '10px', resize: 'cover' }} />
-                                                                </button>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div> */}
-
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 }
             </div>
