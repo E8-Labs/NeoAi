@@ -58,11 +58,36 @@ const AnimatedForm = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [rows, setRows] = useState(1);
   const [checked, setChecked] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState("transparent");
 
-  // Step 2: Handle the checkbox change
+  //Handle the checkbox change
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
+
+  useEffect(() => {
+    const LocalData = localStorage.getItem('User');
+    if (LocalData) {
+      const D = JSON.parse(LocalData);
+      console.log("Data recieved for testing", D.data.user);
+      if (founders.length === 0) {
+        console.log("founders are 0");
+        setFounderEmail(D.data.user.email);
+        if (D.data.user.name) {
+          setFounderName(D.data.user.name);
+        } else {
+          setFounderName("");
+        }
+      } else {
+        setFounderEmail("");
+      }
+    }
+  }, [])
+
+  const handleSuggestionSelect = () => {
+    setBackgroundColor('red');
+  };
+
 
 
   //login directly
@@ -197,7 +222,8 @@ const AnimatedForm = () => {
             const response2 = await axios.post(Apis.CreateProject, {
               appIdea: appIdea,
               targettedAudience: audienceName,
-              projectName: appName
+              projectName: appName,
+              founders: founders
             }, {
               headers: {
                 'Content-Type': 'application/json',
@@ -256,7 +282,8 @@ const AnimatedForm = () => {
         const response2 = await axios.post(Apis.CreateProject, {
           appIdea: appIdea,
           targettedAudience: audienceName,
-          projectName: appName
+          projectName: appName,
+          founders: founders
         }, {
           headers: {
             'Content-Type': 'application/json',
@@ -826,6 +853,9 @@ const AnimatedForm = () => {
                   setFounderName(e.target.value);
                   setAddFounderError(false);
                 }}
+                InputLabelProps={{
+                  backgroundColor: "red"
+                }}
                 sx={{
                   width: '100%', // Change the width here
                   '& .MuiInputBase-root': {
@@ -851,6 +881,110 @@ const AnimatedForm = () => {
                   // marginTop: 0
                 }}
               />
+              {/* <TextField
+                id="standard-basic"
+                label="Full Name"
+                variant="standard"
+                placeholder="Enter Full Name"
+                value={founderName}
+                onChange={(e) => {
+                  setFounderName(e.target.value);
+                  setAddFounderError(false);
+                }}
+                sx={{
+                  width: '100%',
+                  '& .MuiInputBase-root': {
+                    color: 'white',
+                    fontWeight: '400',
+                    fontSize: 13,
+                    fontFamily: 'inter',
+                    backgroundColor: '#ffffff00', // Ensure background is transparent
+                  },
+                  '& .MuiInputBase-input': {
+                    backgroundColor: '#ffffff00', // Input area background transparent
+                  },
+                  '& .MuiInput-underline:before': {
+                    borderBottomColor: '#ffffff60',
+                  },
+                  '& .MuiInput-underline:hover:before': {
+                    borderBottomColor: '#ffffff60',
+                  },
+                  '& .MuiInput-underline:after': {
+                    borderBottomColor: '#ffffff',
+                  },
+                  '& .MuiFormLabel-root': {
+                    color: '#ffffff60',
+                  },
+                  '& .MuiFormLabel-root.Mui-focused': {
+                    color: '#ffffff',
+                  },
+                  '& .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input': {
+                    padding: 0,
+                    backgroundColor: '#ffffff00', // Transparent when autocomplete is focused
+                  },
+                }}
+              /> */}
+
+              {/* <TextField
+                id="standard-basic"
+                label="Full Name"
+                variant="standard"
+                placeholder="Enter Full Name"
+                value={founderName}
+                onChange={(e) => {
+                  setFounderName(e.target.value);
+                  setAddFounderError(false);
+                }}
+                sx={{
+                  width: '100%',
+                  '& .MuiInputBase-root': {
+                    color: 'white',
+                    fontWeight: '400',
+                    fontSize: 13,
+                    fontFamily: 'inter',
+                    backgroundColor: 'transparent', // Ensure background is transparent
+                  },
+                  '& .MuiInputBase-input': {
+                    backgroundColor: 'transparent', // Input area background transparent
+                  },
+                  '& .MuiInput-underline:before': {
+                    borderBottomColor: '#ffffff60',
+                  },
+                  '& .MuiInput-underline:hover:before': {
+                    borderBottomColor: '#ffffff60',
+                  },
+                  '& .MuiInput-underline:after': {
+                    borderBottomColor: '#ffffff',
+                  },
+                  '& .MuiFormLabel-root': {
+                    color: '#ffffff60',
+                  },
+                  '& .MuiFormLabel-root.Mui-focused': {
+                    color: '#ffffff',
+                  },
+                  '& .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input': {
+                    padding: 0,
+                    backgroundColor: 'transparent', // Transparent when autocomplete is focused
+                  },
+                  '& .MuiAutocomplete-popupIndicator': {
+                    color: 'white', // Ensure the popup indicator stays consistent
+                  },
+                  '& .MuiAutocomplete-clearIndicator': {
+                    color: 'white', // Ensure the clear indicator stays consistent
+                  },
+                  '& .MuiAutocomplete-endAdornment': {
+                    top: 'calc(50% - 12px)', // Adjust end adornment position if needed
+                  },
+                  '& .MuiAutocomplete-option[data-focus="true"]': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent background on focus
+                  },
+                  '& .MuiAutocomplete-option[aria-selected="true"]': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent background when selected
+                  },
+                }}
+              /> */}
+
+
               <TextField id="standard-basic" label="Role" variant="standard"
                 placeholder="Enter Founder Role"
                 value={role}

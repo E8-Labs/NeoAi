@@ -41,6 +41,9 @@ const Chatsidenav = () => {
     const [FeedBackLoader, setFeedBackLoader] = useState(false);
     const [FeedBackSuccess, setFeedBackSuccess] = useState(false);
     const [FeedBackErr, setFeedBackErr] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isHovered2, setIsHovered2] = useState(false);
+    const [isHovered3, setIsHovered3] = useState(false);
 
     const links1 = [
         // {
@@ -460,23 +463,64 @@ const Chatsidenav = () => {
 
                 <div className='w-full' style={{ paddingLeft: 5, position: 'absolute', bottom: 15 }}>
                     <div className='flex mt-4'>
-                        <button sx={{ textTransform: 'none' }}
+                        <button
+                            // className="text-purple"
                             onClick={handleOpenRefer}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
+                            style={{
+                                fontWeight: '500',
+                                fontSize: isHovered ? 13 : 15,
+                                fontFamily: 'inter',
+                                backgroundColor: isHovered ? '#ffffff60' : 'transparent',
+                                transition: 'background-color 0.3s',
+                                color: isHovered ? "#ffffff" : "#ffffff60",
+                                padding: isHovered ? 4 : '',
+                                borderRadius: 3
+                            }}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
                             Refer
                         </button>
+
+
                     </div>
                     <div className='flex mt-3'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={handleOpenSupport}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
+                            style={{
+                                fontWeight: '500',
+                                fontSize: 13,
+                                fontFamily: 'inter',
+                                // color: '#ffffff60',
+                                backgroundColor: isHovered2 ? '#ffffff60' : 'transparent',
+                                transition: 'background-color 0.3s',
+                                color: isHovered2 ? "#ffffff" : "#ffffff60",
+                                padding: isHovered2 ? 4 : '',
+                                borderRadius: 3
+                            }}
+                            onMouseEnter={() => setIsHovered2(true)}
+                            onMouseLeave={() => setIsHovered2(false)}
+                        >
                             Support
                         </button>
                     </div>
                     <div className='flex mt-3'>
                         <button sx={{ textTransform: 'none' }}
                             onClick={() => setOpenFeedback(true)}
-                            style={{ fontWeight: '500', fontSize: 13, fontFamily: 'inter', color: '#ffffff60' }}>
+                            style={{
+                                fontWeight: '500',
+                                fontSize: 13,
+                                fontFamily: 'inter',
+                                // color: '#ffffff60'
+                                backgroundColor: isHovered3 ? '#ffffff60' : 'transparent',
+                                transition: 'background-color 0.3s',
+                                color: isHovered3 ? "#ffffff" : "#ffffff60",
+                                padding: isHovered3 ? 4 : '',
+                                borderRadius: 3
+                            }}
+                            onMouseEnter={() => setIsHovered3(true)}
+                            onMouseLeave={() => setIsHovered3(false)}
+                        >
                             Feedback
                         </button>
                     </div>
@@ -514,11 +558,11 @@ const Chatsidenav = () => {
                             </div>
                         </button>
                     </div>
-                    <div className='mt-2'>
+                    {/* <div className='mt-2'>
                         <button onClick={handleLogout} style={{ color: '#FF4242', cursor: "pointer" }}>
                             Logout
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
 
@@ -650,12 +694,18 @@ const Chatsidenav = () => {
                                             borderBottom: '1px solid #ffffff'
                                         }}
                                         placeholder="Enter Name" />
-                                    <div className='w-full flex justify-center mt-14'>
+                                    <div className='w-full flex justify-between mt-14 items-center'>
+                                        <div>
+                                            <Button onClick={handleLogout}
+                                                style={{ backgroundColor: '#FF424250', fontWeight: '400', fontFamily: 'inter', color: '#FF4242', cursor: "pointer" }}>
+                                                Logout
+                                            </Button>
+                                        </div>
                                         {
                                             updateLoader ?
-                                                <CircularProgress className='mt-4' size={30} /> :
+                                                <CircularProgress size={30} /> :
                                                 <Button onClick={handleSaveChanges} sx={{ textTransform: 'none' }}
-                                                    className='mt-4 px-4 py-3' style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
+                                                    className='px-4 py-3' style={{ backgroundColor: '#2548FD', fontWeight: '400', fontFamily: 'inter', color: '#ffffff' }}>
                                                     Save Changes
                                                 </Button>
                                         }

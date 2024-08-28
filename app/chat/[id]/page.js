@@ -725,7 +725,7 @@ const Page = () => {
       <div className='flex flex-row mt-8 mb-8' style={{ width: "80%" }}>
         <div className='py-4 pl-1' style={{ backgroundColor: 'transparent' }}>
           <img src='/assets/logo.png' alt='bot' className=''
-            style={{ height: '30px', width: '30px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+            style={{ height: '40px', width: '40px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'black', }} />
         </div>
         <div className='flex  flex-col px-1 py-2 ms-2'
           style={{
@@ -1012,7 +1012,7 @@ const Page = () => {
                               style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
                             /> :
                             <img
-                              src='/assets/applogo.png'
+                              src='/assets/logo.png'
                               alt='Applogo'
                               style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
                             />
@@ -1387,15 +1387,15 @@ const Page = () => {
                   </button>
                   <textarea
                     rows={rows}
-                    placeholder='Message GPT'
+                    placeholder='Reply to Neo'
                     value={userChatMsg}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDownInputMsg}
                     className='rounded w-full'
                     style={{
                       backgroundColor: 'transparent',
-                      fontWeight: '500',
-                      fontSize: 12,
+                      fontWeight: '400',
+                      fontSize: 15,
                       fontFamily: 'inter',
                       color: 'white',
                       paddingLeft: 10,
@@ -1482,7 +1482,7 @@ const Page = () => {
                                   style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }}
                                 /> :
                                 <img
-                                  src='/assets/applogo.png'
+                                  src='/assets/logo.png'
                                   alt='Applogo'
                                   style={{ height: '124px', width: '129px', borderRadius: 5, resize: 'cover', objectFit: 'cover' }}
                                 />

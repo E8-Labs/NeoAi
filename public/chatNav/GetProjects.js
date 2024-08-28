@@ -3,6 +3,7 @@ import Apis from '../Apis/Apis';
 import axios from 'axios';
 import { Box, CircularProgress, Link } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
+import { color } from 'framer-motion';
 
 const GetProjects = () => {
 
@@ -11,6 +12,7 @@ const GetProjects = () => {
     const [noProject, setNoProject] = useState(false);
     const [loader, setLoader] = useState(false);
     const [storedId, setStoredId] = useState(null);
+    const [isHovered, setIsHovered] = useState(null);
 
     const getProjects = async () => {
         try {
@@ -112,13 +114,25 @@ const GetProjects = () => {
                                         myProjects.map((item) => (
                                             <div key={item.id} className='w-full flex flex-row items-center'
                                                 style={{
-                                                    backgroundColor: item.id === storedId ? '#ffffff20' : "transparent",
-                                                    height: item.id === storedId ? 30 : "", borderRadius: 3, marginTop: 7, paddingInlineStart: 10,
-                                                }}>
+                                                    backgroundColor: item.id === isHovered
+                                                        ? '#ffffff20'
+                                                        : item.id === storedId
+                                                            ? '#ffffff20'
+                                                            : "transparent",
+                                                    height: item.id === isHovered ?
+                                                        30 : item.id === storedId ? 30 : "",
+                                                    borderRadius: 3,
+                                                    marginTop: 7,
+                                                    paddingInlineStart: 10,
+                                                }}
+                                                onMouseEnter={() => setIsHovered(item.id)}
+                                                onMouseLeave={() => setIsHovered(null)}>
                                                 <Link
                                                     sx={{
-                                                        textDecoration: 'none', fontWeight: item.id === storedId ? '500' : "400",
-                                                        fontSize: item.id === storedId ? 16 : 13, fontFamily: "inter"
+                                                        textDecoration: 'none',
+                                                        fontWeight: item.id === isHovered ? "500" : item.id === storedId ? '500' : "400",
+                                                        fontSize: item.id === isHovered ? 16 : item.id === storedId ? 16 : 13,
+                                                        fontFamily: "inter"
                                                     }}
                                                     className='w-full items-start p-2'
                                                     href={`/chat/${item.chat.id}`}
@@ -126,10 +140,15 @@ const GetProjects = () => {
                                                         e.preventDefault();
                                                         handleLinkClick(item);
                                                     }}
+                                                    onMouseEnter={() => setIsHovered(item.id)}
+                                                    onMouseLeave={() => setIsHovered(null)}
                                                 >
                                                     <Box
                                                         sx={{ textDecoration: 'none' }}
-                                                        className='w-full text-white items-start'
+                                                        className='w-full items-start'
+                                                        style={{
+                                                            color: "white"
+                                                        }}
                                                     >
                                                         {item.projectName ? item.projectName : "App Name"}
                                                     </Box>
