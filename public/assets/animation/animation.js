@@ -59,6 +59,14 @@ const AnimatedForm = () => {
   const [rows, setRows] = useState(1);
   const [checked, setChecked] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("transparent");
+  const [emailValidationError, setEmailValidationError] = useState(false);
+  const [userEmailValidationErr, setUserEmailValidationErr] = useState(false);
+
+  //validete to enter email only
+  const validateEmail = ({ founderEmail }) => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test({ founderEmail });
+  };
 
   //Handle the checkbox change
   const handleChange = (event) => {
@@ -157,6 +165,9 @@ const AnimatedForm = () => {
   }
 
   const handleSubmit = (e) => {
+    if (emailValidationError === true) {
+      return
+    }
     if (founderName && founderEmail && role) {
       e.preventDefault();
       const newFounder = {
@@ -679,35 +690,44 @@ const AnimatedForm = () => {
                     }}>
                     Back
                   </Button>
-                  {founders ? <Button
-                    // variant="disabled"
-                    onClick={() => {
-                      handleSaveEmail();
-                      handleFounderClick();
-                      // handleContinue();
-                      // handleContinueFounderClick();
-                    }}
-                    className="p-3 py-4"
-                    style={{
-                      height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                      backgroundColor: '#4011FA', fontFamily: 'inter'
-                    }}>
-                    {
-                      founderContinueLoader ?
-                        <CircularProgress size={30} /> :
-                        "Continue"
-                    }
-                  </Button> :
+                  {founders.length === 0 ?
                     <Button
-                      // onClick={handleContinue}
+                      // variant="disabled"
+                      disabled
+                      onClick={() => {
+                        handleSaveEmail();
+                        handleFounderClick();
+                        // handleContinue();
+                        // handleContinueFounderClick();
+                      }}
                       className="p-3 py-4"
                       style={{
                         height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
-                        backgroundColor: 'red', fontFamily: 'inter'
+                        backgroundColor: '#4011FA', fontFamily: 'inter'
                       }}>
                       {
-                        loader ?
-                          <CircularProgress size={30} /> : "Continue"
+                        founderContinueLoader ?
+                          <CircularProgress size={30} /> :
+                          "Continue"
+                      }
+                    </Button> :
+                    <Button
+                      // variant="disabled"
+                      onClick={() => {
+                        handleSaveEmail();
+                        handleFounderClick();
+                        // handleContinue();
+                        // handleContinueFounderClick();
+                      }}
+                      className="p-3 py-4"
+                      style={{
+                        height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
+                        backgroundColor: '#4011FA', fontFamily: 'inter'
+                      }}>
+                      {
+                        founderContinueLoader ?
+                          <CircularProgress size={30} /> :
+                          "Continue"
                       }
                     </Button>
                   }
@@ -738,7 +758,9 @@ const AnimatedForm = () => {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setUserEmail(e.target.value)}
+                      onChange={(e) => {
+                        setUserEmail(e.target.value);
+                      }}
                       className="mt-8 w-11/12"
                       style={{
                         outline: 'none', border: 'none', backgroundColor: '#00000000',
@@ -881,6 +903,12 @@ const AnimatedForm = () => {
                   // marginTop: 0
                 }}
               />
+              {
+                userEmailValidationErr &&
+                <div className='text-sm mt-4' style={{ fontWeight: "400", fontFamily: "inter", color: "red" }}>
+                  Email not valid
+                </div>
+              }
               {/* <TextField
                 id="standard-basic"
                 label="Full Name"
@@ -1024,6 +1052,14 @@ const AnimatedForm = () => {
                 onChange={(e) => {
                   setFounderEmail(e.target.value);
                   setAddFounderError(false);
+                  // setEmailValidationError(false);
+                  const value = e.target.value;
+                  setEmailValidationError(!validateEmail(value));
+                  // if (validateEmail(e)) {
+                  //   setEmailValidationError(true);
+                  // } else {
+                  //   setEmailValidationError(false);
+                  // }
                 }}
                 sx={{
                   width: '100%', // Change the width here
@@ -1052,10 +1088,18 @@ const AnimatedForm = () => {
                 }}
               />
             </div>
+
+            {
+              emailValidationError &&
+              <div className='text-sm mt-4' style={{ fontWeight: "400", fontFamily: "inter", color: "red" }}>
+                Email not valid
+              </div>
+            }
+
             {
               AddFounderError &&
-              <div className="text-xs mt-4" style={{ color: 'red' }}>
-                Enter all Credientials
+              <div className="mt-4" style={{ color: 'red', fontWeight: "400", fontFamily: "inter", fontSize: 13 }}>
+                Email required
               </div>
             }
             <div>

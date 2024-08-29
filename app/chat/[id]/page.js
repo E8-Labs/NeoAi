@@ -15,6 +15,7 @@ import LogoPicker from '@/public/ui/LogoPicker';
 import Notifications from '@/public/assets/notifications/Notifications';
 import { motion, useAnimation } from 'framer-motion';
 import Image from 'next/image';
+import React from 'react';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -582,109 +583,281 @@ const Page = () => {
 
 
 
+  // const determineTextType = (text) => {
+  //   if (/^####\s/.test(text)) {
+  //     return 'heading4';
+  //   }
+  //   else if (/^###\s/.test(text)) {
+  //     return 'heading3';
+  //   } else if (/^##\s/.test(text)) {
+  //     return 'heading2';
+  //   } else if (/^#\s/.test(text)) {
+  //     return 'heading1';
+  //   } else if (/^-\s/.test(text)) {
+  //     return 'bullet';
+  //   } else if (/^\d+\.\s/.test(text)) {
+  //     return 'numbered';
+  //   } else if (/•\s/.test(text)) {
+  //     return 'dot';
+  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
+  //     return 'image';
+  //   } else {
+  //     return 'simpleText';
+  //   }
+  // };
+
+  // const RenderText = ({ text }) => {
+  //   const textType = determineTextType(text);
+  //   // //console.log(`Text ${text} is of ${textType}`)
+  //   switch (textType) {
+  //     case 'heading1':
+  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
+  //     case 'heading2':
+  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
+  //     case 'heading3':
+  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
+  //     case 'heading4':
+  //       return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
+  //     case 'bullet':
+  //       return <li>{formatText(text.replace(/^-/, ''))}</li>;
+  //     case 'numbered':
+  //       return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
+  //     case 'dot':
+  //       return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
+  //     case 'image':
+  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
+  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
+  //     case 'simpleText':
+  //       // Check for bold text patterns
+  //       return <p>{formatText(text)}</p>;
+  //     case 'code':
+  //       return <pre><code>{text}</code></pre>;
+  //     default:
+  //       return <p>{text}</p>;
+  //   }
+  // };
+
+  // const formatInlineText = (text) => {
+  //   const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
+  //   return parts.map((part, index) => {
+  //     if (/^\*\*[^*]+\*\*$/.test(part)) {
+  //       return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
+  //     } else if (/^\*[^*]+\*$/.test(part)) {
+  //       return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
+  //     } else {
+  //       return part;
+  //     }
+  //   });
+  // };
+
+
+  // const formatText = (text) => {
+  //   const parts = text.split(/\*\*(.*?)\*\*/).map((part, index) =>
+  //     index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+  //   );
+
+  //   return parts.map((part, index) => {
+  //     if (typeof part === 'string') {
+  //       const imageParts = part.split(/(!\[icon\]\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\))/g);
+  //       return imageParts.map((imagePart, imageIndex) => {
+  //         if (imagePart.startsWith('http')) {
+  //           return <img key={`img-${index}-${imageIndex}`} src={imagePart} alt="icon" style={{ width: '30vw', margin: '0 5px' }} />;
+  //         } else {
+  //           return imagePart;
+  //         }
+  //       });
+  //     } else {
+  //       return part;
+  //     }
+  //   });
+  // };
+
+  // const separateTextAndCode = (input) => {
+  //   const regex = /(```.*?```)/gs;
+  //   const parts = input.split(regex);
+
+  //   return parts.map(part => {
+  //     if (part.startsWith('```') && part.endsWith('```')) {
+  //       let code = part.slice(3, -3).trim();
+
+  //       // Remove any file type name that might be after the opening triple backticks
+  //       const firstLine = code.split('\n')[0].trim();
+  //       if (['jsx', 'javascript', 'js', 'ts', 'tsx'].includes(firstLine)) {
+  //         code = code.split('\n').slice(1).join('\n').trim();
+  //       }
+
+  //       return {
+  //         type: 'code',
+  //         value: code,
+  //       };
+  //     } else {
+  //       return {
+  //         type: 'string',
+  //         value: part.trim(),
+  //       };
+  //     }
+  //   });
+  // };
+
+
+  //code added
   const determineTextType = (text) => {
     if (/^####\s/.test(text)) {
       return 'heading4';
-    }
-    else if (/^###\s/.test(text)) {
+    } else if (/^###\s/.test(text)) {
       return 'heading3';
     } else if (/^##\s/.test(text)) {
       return 'heading2';
     } else if (/^#\s/.test(text)) {
       return 'heading1';
-    } else if (/^-\s/.test(text)) {
+    } else if (/^>\s/.test(text)) {
+      return 'blockquote';
+    } else if (/^\s*-\s\*\*/.test(text)) { // Detects lines starting with "- **" for extra indentation
+      return 'nestedBullet';
+    } else if (/^\s*-\s/.test(text)) {
       return 'bullet';
-    } else if (/^\d+\.\s/.test(text)) {
+    } else if (/^\s*\d+\.\s/.test(text)) {
       return 'numbered';
-    } else if (/•\s/.test(text)) {
+    } else if (/^\s*•\s/.test(text)) {
       return 'dot';
     } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
       return 'image';
+    } else if (/^```/.test(text)) {
+      return 'code';
+    } else if (/\|.*\|/.test(text) && text.split('\n').some(line => /\|.*\|/.test(line))) {
+      return 'table';
+    } else if (/^\*\*.*\*\*$/.test(text)) { // Detects bold text
+      return 'boldText';
     } else {
       return 'simpleText';
     }
   };
 
-  const RenderText = ({ text }) => {
+  const RenderText = ({ text, level = 0 }) => {
     const textType = determineTextType(text);
-    // //console.log(`Text ${text} is of ${textType}`)
+
+    const indentLevel = level * 20; // Adjust indentation based on level
+
     switch (textType) {
       case 'heading1':
-        return <h1>{text.replace(/^#\s/, '')}</h1>;
+        return <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>{text.replace(/^#\s/, '')}</div>;
       case 'heading2':
-        return <h2>{text.replace(/^##\s/, '')}</h2>;
+        return <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '14px' }}>{text.replace(/^##\s/, '')}</div>;
       case 'heading3':
-        return <h3>{text.replace(/^###\s/, '')}</h3>;
+        return <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>{text.replace(/^###\s/, '')}</div>;
       case 'heading4':
-        return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
+        return <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>{text.replace(/^####\s/, '')}</div>;
+      case 'blockquote':
+        return <blockquote className="pl-4 border-l-4">{formatText(text.replace(/^>\s/, ''))}</blockquote>;
+      case 'nestedBullet': // Extra indentation for nested bullets
+        return <li style={{ marginLeft: `${indentLevel + 20}px`, listStyleType: 'disc' }}>{formatText(text.replace(/^\s*-\s/, ''))}</li>;
       case 'bullet':
-        return <li>{formatText(text.replace(/^-/, ''))}</li>;
+        return <li style={{ marginLeft: `${indentLevel}px`, listStyleType: 'disc' }}>{formatText(text.replace(/^\s*-\s/, ''))}</li>;
       case 'numbered':
-        return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
+        return <li style={{ marginLeft: `${indentLevel}px`, listStyleType: 'decimal' }}>{formatText(text.replace(/^\s*\d+\.\s/, ''))}</li>;
       case 'dot':
-        return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
+        return <li style={{ marginLeft: `${indentLevel}px`, listStyleType: 'circle' }}>{formatText(text.replace(/^\s*•\s/, ''))}</li>;
+      case 'boldText': // No extra indentation for bold text
+        return <p style={{ fontWeight: 'bold' }}>{formatText(text.replace(/^\*\*(.*)\*\*$/, '$1'))}</p>;
       case 'image':
         const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
         return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
-      case 'simpleText':
-        // Check for bold text patterns
-        return <p>{formatText(text)}</p>;
       case 'code':
-        return <pre><code>{text}</code></pre>;
+        return <pre><code>{text.replace(/^```/, '').replace(/```$/, '')}</code></pre>;
+      case 'table':
+        return renderTable(text);
+      case 'simpleText':
+        return <p>{formatText(text)}</p>;
       default:
         return <p>{text}</p>;
     }
   };
 
+  const renderTable = (text) => {
+    // Split the text into lines
+    const lines = text.trim().split('\n');
+    
+    // Filter out separator lines
+    const filteredLines = lines.filter(line => !/^[-\s|]+$/.test(line));
+    
+    // Map each row by splitting columns and filtering out empty cells
+    const rows = filteredLines.map(line => line.split('|').filter(cell => cell.trim()));
+  
+    return (
+      <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '20px' }}>
+        <tbody>
+          {rows.map((cells, rowIndex) => (
+            <tr key={rowIndex}>
+              {cells.map((cell, cellIndex) => (
+                <td
+                  key={cellIndex}
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px',
+                    fontWeight: rowIndex === 0 ? 'bold' : 'normal', // Bold for headers
+                    textAlign: rowIndex === 0 ? 'center' : 'left',
+                  }}
+                >
+                  {formatText(cell.trim().replace(/<br\s*\/?>/gi, '\n'))}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   const formatInlineText = (text) => {
-    const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
+    // Split the text by markdown indicators but ensure inline content is together
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/);
+  
     return parts.map((part, index) => {
       if (/^\*\*[^*]+\*\*$/.test(part)) {
         return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
       } else if (/^\*[^*]+\*$/.test(part)) {
         return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
+      } else if (/^`[^`]+`$/.test(part)) {
+        return <code key={index}>{part.replace(/^`(.*)`$/, '$1')}</code>;
       } else {
-        return part;
+        return part; // Keep non-markdown text together
       }
     });
   };
-
 
   const formatText = (text) => {
-    const parts = text.split(/\*\*(.*?)\*\*/).map((part, index) =>
-      index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-    );
-
-    return parts.map((part, index) => {
-      if (typeof part === 'string') {
-        const imageParts = part.split(/(!\[icon\]\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\))/g);
-        return imageParts.map((imagePart, imageIndex) => {
-          if (imagePart.startsWith('http')) {
-            return <img key={`img-${index}-${imageIndex}`} src={imagePart} alt="icon" style={{ width: '30vw', margin: '0 5px' }} />;
-          } else {
-            return imagePart;
-          }
-        });
-      } else {
-        return part;
-      }
-    });
+    // Split text into paragraphs by two or more line breaks
+    const paragraphs = text.split(/\n{2,}/);
+  
+    // Map each paragraph
+    return paragraphs.map((paragraph, index) => (
+      <div key={index} style={{ marginBottom: '16px' }}>
+        {paragraph.split('\n').map((line, lineIndex) => (
+          <React.Fragment key={lineIndex}>
+            {formatInlineText(line)}
+            {/* Only add line breaks if this isn't the last line */}
+            {lineIndex < paragraph.split('\n').length - 1 && <br />}
+          </React.Fragment>
+        ))}
+      </div>
+    ));
   };
-
+  
+  
+  
   const separateTextAndCode = (input) => {
-    const regex = /(```.*?```)/gs;
+    const regex = /(```[\s\S]*?```)/g;
     const parts = input.split(regex);
-
+  
     return parts.map(part => {
       if (part.startsWith('```') && part.endsWith('```')) {
         let code = part.slice(3, -3).trim();
-
-        // Remove any file type name that might be after the opening triple backticks
+  
         const firstLine = code.split('\n')[0].trim();
         if (['jsx', 'javascript', 'js', 'ts', 'tsx'].includes(firstLine)) {
           code = code.split('\n').slice(1).join('\n').trim();
         }
-
+  
         return {
           type: 'code',
           value: code,
