@@ -222,7 +222,7 @@ const Page = () => {
 
                                 <div className="flex flex-row items-center mt-4">
                                     <div>
-                                        Have an account
+                                        Have  account
                                     </div>
                                     <Button onClick={handleSignin} style={{ textTransform: 'none', color: 'white' }}>
                                         <u>
