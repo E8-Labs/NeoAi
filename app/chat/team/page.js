@@ -717,7 +717,11 @@ const Page = () => {
                                         MenuProps={{
                                             PaperProps: {
                                                 style: {
-                                                    maxHeight: 120, // Set the maximum height for the dropdown menu
+                                                    maxHeight: 120,
+                                                    backgroundColor: "#0F0C2D",
+                                                    border: "1px solid white",
+                                                    color: "white",
+                                                    borderRadius: 5
                                                 },
                                             },
                                         }}

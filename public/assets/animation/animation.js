@@ -63,9 +63,14 @@ const AnimatedForm = () => {
   const [userEmailValidationErr, setUserEmailValidationErr] = useState(false);
 
   //validete to enter email only
-  const validateEmail = ({ founderEmail }) => {
+  // const validateEmail = ({ founderEmail }) => {
+  //   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  //   return emailPattern.test({ founderEmail });
+  // };
+
+  const validateEmail = (email) => { // Accept email directly as a string
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test({ founderEmail });
+    return emailPattern.test(email); // Test the email string directly
   };
 
   //Handle the checkbox change
@@ -903,12 +908,6 @@ const AnimatedForm = () => {
                   // marginTop: 0
                 }}
               />
-              {
-                userEmailValidationErr &&
-                <div className='text-sm mt-4' style={{ fontWeight: "400", fontFamily: "inter", color: "red" }}>
-                  Email not valid
-                </div>
-              }
               {/* <TextField
                 id="standard-basic"
                 label="Full Name"
@@ -1054,12 +1053,11 @@ const AnimatedForm = () => {
                   setAddFounderError(false);
                   // setEmailValidationError(false);
                   const value = e.target.value;
-                  setEmailValidationError(!validateEmail(value));
-                  // if (validateEmail(e)) {
-                  //   setEmailValidationError(true);
-                  // } else {
-                  //   setEmailValidationError(false);
-                  // }
+                  if (!validateEmail(value)) { // Pass the email string directly to validateEmail
+                    setEmailValidationError(true);
+                  } else {
+                    setEmailValidationError(false);
+                  }
                 }}
                 sx={{
                   width: '100%', // Change the width here
@@ -1103,10 +1101,19 @@ const AnimatedForm = () => {
               </div>
             }
             <div>
-              <Button onClick={handleSubmit}
-                style={{ color: '#ffffff', fontWeight: '500', fontSize: 15, backgroundColor: '#4011FA', marginTop: 50 }}>
-                Save Founder
-              </Button>
+              {
+                founderName && role && founderEmail ?
+                  <Button onClick={handleSubmit}
+                    style={{ color: '#ffffff', fontWeight: '500', fontSize: 15, backgroundColor: '#4011FA', marginTop: 50 }}>
+                    Save Founder
+                  </Button> :
+                  <Button
+                    disabled
+                    // onClick={handleSubmit}
+                    style={{ color: '#ffffff', fontWeight: '500', fontSize: 15, backgroundColor: '#4011FA50', marginTop: 50 }}>
+                    Save Founder
+                  </Button>
+              }
             </div>
           </div>
         </Box>

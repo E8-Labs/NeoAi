@@ -776,13 +776,13 @@ const Page = () => {
   const renderTable = (text) => {
     // Split the text into lines
     const lines = text.trim().split('\n');
-    
+
     // Filter out separator lines
     const filteredLines = lines.filter(line => !/^[-\s|]+$/.test(line));
-    
+
     // Map each row by splitting columns and filtering out empty cells
     const rows = filteredLines.map(line => line.split('|').filter(cell => cell.trim()));
-  
+
     return (
       <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '20px' }}>
         <tbody>
@@ -811,7 +811,7 @@ const Page = () => {
   const formatInlineText = (text) => {
     // Split the text by markdown indicators but ensure inline content is together
     const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/);
-  
+
     return parts.map((part, index) => {
       if (/^\*\*[^*]+\*\*$/.test(part)) {
         return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
@@ -828,7 +828,7 @@ const Page = () => {
   const formatText = (text) => {
     // Split text into paragraphs by two or more line breaks
     const paragraphs = text.split(/\n{2,}/);
-  
+
     // Map each paragraph
     return paragraphs.map((paragraph, index) => (
       <div key={index} style={{ marginBottom: '16px' }}>
@@ -842,22 +842,22 @@ const Page = () => {
       </div>
     ));
   };
-  
-  
-  
+
+
+
   const separateTextAndCode = (input) => {
     const regex = /(```[\s\S]*?```)/g;
     const parts = input.split(regex);
-  
+
     return parts.map(part => {
       if (part.startsWith('```') && part.endsWith('```')) {
         let code = part.slice(3, -3).trim();
-  
+
         const firstLine = code.split('\n')[0].trim();
         if (['jsx', 'javascript', 'js', 'ts', 'tsx'].includes(firstLine)) {
           code = code.split('\n').slice(1).join('\n').trim();
         }
-  
+
         return {
           type: 'code',
           value: code,
@@ -1221,6 +1221,11 @@ const Page = () => {
               </button> */}
 
 
+                <button
+                  // onClick={handleOpenEditproject}
+                >
+                  <img src='/assets/share.png' alt='edit' style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }} />
+                </button>
 
                 <button
                   variant="contained"
@@ -1229,11 +1234,12 @@ const Page = () => {
                     handleShareProjectToTeam()
                   }}
                 >
-                  <img
+                  {/* <img
                     src="/assets/share.png"
                     alt="share"
                     style={{ height: '24px', width: '24px', resize: 'cover', objectFit: 'cover' }}
-                  />
+                  /> */}
+                  <Image src="/addUser.png" alt='adduser' height={23} width={23} />
                 </button>
                 <Menu
                   anchorEl={anchorEl}
@@ -1310,7 +1316,7 @@ const Page = () => {
                                           <CircularProgress size={15} />
                                         </div> :
                                         <div style={{ fontSize: 12, padding: 3, borderRadius: 5, color: "white", fontWeight: "500", fontFamily: "inter", backgroundColor: "#4011FA" }}>
-                                          Assign Project
+                                          Assign
                                         </div>
                                     }
                                   </button>
@@ -1479,7 +1485,7 @@ const Page = () => {
                   <div className='flex flex-row ms-2'>
                     {controls.map((control, index) => (
                       <div key={control.id}>
-                        <div>
+                        <div className='flex flex-row'>
                           <motion.div
                             key={index}
                             animate={control}
@@ -1490,6 +1496,9 @@ const Page = () => {
                         </div>
                       </div>
                     ))}
+                    <div className='ms-2' style={{ fontWeight: "400", fontFamily: "inter", fontSize: 14, color: "white" }}>
+                      Thinking about
+                    </div>
                   </div>
                 </div>
               }
@@ -1766,7 +1775,7 @@ const Page = () => {
       </div>
 
 
-    </div>
+    </div >
   );
 };
 

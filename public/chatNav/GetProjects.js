@@ -17,6 +17,7 @@ const GetProjects = () => {
     const getProjects = async () => {
         try {
             setLoader(true);
+            const recentProjectStatus = localStorage.getItem("recenProjectStatus");
             const P2 = Apis.GetProjects
             const LSD = localStorage.getItem('User');
             const localStorageData = JSON.parse(LSD);
@@ -36,19 +37,33 @@ const GetProjects = () => {
             if (response.status === 200) {
                 console.log('Response of api on navbar screen is is', response.data.data);
                 setMyProjects(response.data.data)
+
+
                 if (response.data.data.length === 0) {
                     setNoProject(true)
                 }
                 if (response.data.data === null) {
                     setNoProject(true)
                 }
+
+                if (response.data.data) {
+                    console.log("Recent project created", response.data.data[0]);
+                    if (recentProjectStatus) {
+                        const pStatus = JSON.parse(recentProjectStatus);
+                        const recentProject = response.data.data[0];
+                        localStorage.setItem('projectDetails', JSON.stringify(recentProject));
+                        router.push(`/chat/${recentProject.chat.id}`);
+                    }
+                }
+
             } else if (!response.status === 200) {
                 console.log('Response is not ok due to:', response);
             }
         } catch (error) {
             console.log('error occured is', error);
         } finally {
-            setLoader(false)
+            setLoader(false);
+            localStorage.removeItem("recenProjectStatus");
         }
     };
 

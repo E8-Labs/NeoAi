@@ -86,6 +86,10 @@ const Page = () => {
                             // router.push('/chat');
                         } else {
                             localStorage.setItem('User', JSON.stringify(ApiResponse));
+                            const recenProjectStatus = {
+                                status: true
+                            }
+                            localStorage.setItem('recenProjectStatus', JSON.stringify(recenProjectStatus))
                             router.push('/chat');
                         }
                     } else if (ApiResponse.message === "Invalid password") {
@@ -177,7 +181,7 @@ const Page = () => {
                                                     Sign In
                                                 </Button> :
                                                     <Button variant="disabled"
-                                                        onClick={handleContinueClick}
+                                                        // onClick={handleContinueClick}
                                                         className="p-3 py-6"
                                                         style={{
                                                             height: '40px', color: 'white', fontWeight: 'medium', fontSize: 15,
