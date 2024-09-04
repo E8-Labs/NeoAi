@@ -155,7 +155,7 @@ const Page = () => {
       const Data = JSON.parse(Test);
       console.log('Test data', Data.data.user.message);
 
-      if (Data.dz && Data.data.user.message === 3) {
+      if (Data.dz && Data.data.user.message > 3) {
         console.log("test should work");
         setSubscribePlanPopup(true);
       } else {
@@ -479,7 +479,7 @@ const Page = () => {
     // setSendImg(null);
     const LSD = localStorage.getItem('User');
     const localStorageData = JSON.parse(LSD);
-    //console.log('Data from localstorage is :', localStorageData.data.user.message);
+    console.log('Data from localstorage is :', localStorageData.data.user.message);
     const AuthToken = localStorageData.data.token;
 
     if (localStorageData) {
@@ -489,13 +489,13 @@ const Page = () => {
       localStorage.setItem('User', JSON.stringify(localStorageData));
     }
 
-    const planStatus = localStorage.getItem('User');
-    const Data = JSON.parse(Test);
-    console.log('Test data', Data.data.user);
+    // const planStatus = localStorage.getItem('User');
+    // const Data = JSON.parse(planStatus);
+    console.log('Test data', localStorageData.data.user);
 
-    if (planStatus) {
-      if (Data.data.user.plan === null) {
-        if (Data.data.user.message === 3) {
+    if (localStorageData) {
+      if (localStorageData.data.user.plan === null) {
+        if (localStorageData.data.user.message > 3) {
           setSubscribePlanPopup(true);
         }
       } else {
