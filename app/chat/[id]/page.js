@@ -155,9 +155,9 @@ const Page = () => {
       const Data = JSON.parse(Test);
       console.log('Test data', Data.data.user.message);
 
-      if (Data.data.user.plan === null && Data.data.user.message === 3) {
+      if (Data.dz && Data.data.user.message === 3) {
         console.log("test should work");
-        // setSubscribePlanPopup(true);
+        setSubscribePlanPopup(true);
       } else {
         setSubscribePlanPopup(false);
       }
@@ -489,14 +489,14 @@ const Page = () => {
       localStorage.setItem('User', JSON.stringify(localStorageData));
     }
 
-    const Test = localStorage.getItem('User');
+    const planStatus = localStorage.getItem('User');
     const Data = JSON.parse(Test);
-    //console.log('Test data', Data.data.user);
+    console.log('Test data', Data.data.user);
 
-    if (Test) {
+    if (planStatus) {
       if (Data.data.user.plan === null) {
         if (Data.data.user.message === 3) {
-          // setSubscribePlanPopup(true)
+          setSubscribePlanPopup(true);
         }
       } else {
         setSubscribePlanPopup(false);
@@ -1247,7 +1247,7 @@ const Page = () => {
                   onClose={handleClose}
                 >
                   {
-                    teamMembers.length === 0 ?
+                    teamMembers === null || teamMembers.length === 0 ?
                       <div>
                         <MenuItem value={teamMembers}>
                           No TeamMember
@@ -1452,7 +1452,7 @@ const Page = () => {
                           {
                             getProfileData && getProfileData.profile_image ?
                               <div>
-                                <img src={getProfileData.profile_image} style={{ height: '40px', width: '40px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'green', }} />
+                                <img src={getProfileData.profile_image} style={{ height: '40px', width: '40px', resize: 'cover', borderRadius: '50%', objectFit: 'cover', backgroundColor: 'black', }} />
                               </div> :
                               <div className='flex items-center justify-center'
                                 style={{

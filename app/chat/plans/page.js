@@ -16,7 +16,7 @@ const Page = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "#050221", color: "white" }}>
+    <div className='h-screen' style={{ backgroundColor: "#050221", color: "white" }}>
       <div className='px-4 mt-6 flex flex-row justify-between'>
         <div>
           Subscribe Plans
