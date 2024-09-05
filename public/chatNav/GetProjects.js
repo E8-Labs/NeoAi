@@ -41,19 +41,19 @@ const GetProjects = () => {
 
                 if (response.data.data.length === 0) {
                     setNoProject(true)
+                } else {
+                    if (response.data.data) {
+                        console.log("Recent project created", response.data.data[0]);
+                        if (recentProjectStatus) {
+                            const pStatus = JSON.parse(recentProjectStatus);
+                            const recentProject = response.data.data[0];
+                            localStorage.setItem('projectDetails', JSON.stringify(recentProject));
+                            router.push(`/chat/${recentProject.chat.id}`);
+                        }
+                    }
                 }
                 if (response.data.data === null) {
                     setNoProject(true)
-                }
-
-                if (response.data.data) {
-                    console.log("Recent project created", response.data.data[0]);
-                    if (recentProjectStatus) {
-                        const pStatus = JSON.parse(recentProjectStatus);
-                        const recentProject = response.data.data[0];
-                        localStorage.setItem('projectDetails', JSON.stringify(recentProject));
-                        router.push(`/chat/${recentProject.chat.id}`);
-                    }
                 }
 
             } else if (!response.status === 200) {

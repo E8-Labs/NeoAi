@@ -150,14 +150,15 @@ const Page = () => {
   //code for showing subscribeplan popup
   useEffect(() => {
     const Test = localStorage.getItem('User');
+    console.log('Data getting on screen load to check user plan status:=================');
 
     if (Test) {
       const Data = JSON.parse(Test);
-      console.log('Test data', Data.data.user.message);
+      console.log('Data getting on screen load to check user plan status:', Data.data.user.message);
 
       if (Data.dz && Data.data.user.message > 3) {
         console.log("test should work");
-        setSubscribePlanPopup(true);
+        // setSubscribePlanPopup(true);
       } else {
         setSubscribePlanPopup(false);
       }
@@ -491,12 +492,12 @@ const Page = () => {
 
     // const planStatus = localStorage.getItem('User');
     // const Data = JSON.parse(planStatus);
-    console.log('Test data', localStorageData.data.user);
+    console.log('User data to check plan status', localStorageData.data.user);
 
     if (localStorageData) {
       if (localStorageData.data.user.plan === null) {
         if (localStorageData.data.user.message > 3) {
-          setSubscribePlanPopup(true);
+          // setSubscribePlanPopup(true);
         }
       } else {
         setSubscribePlanPopup(false);
@@ -580,124 +581,6 @@ const Page = () => {
 
 
   };
-
-
-
-  // const determineTextType = (text) => {
-  //   if (/^####\s/.test(text)) {
-  //     return 'heading4';
-  //   }
-  //   else if (/^###\s/.test(text)) {
-  //     return 'heading3';
-  //   } else if (/^##\s/.test(text)) {
-  //     return 'heading2';
-  //   } else if (/^#\s/.test(text)) {
-  //     return 'heading1';
-  //   } else if (/^-\s/.test(text)) {
-  //     return 'bullet';
-  //   } else if (/^\d+\.\s/.test(text)) {
-  //     return 'numbered';
-  //   } else if (/•\s/.test(text)) {
-  //     return 'dot';
-  //   } else if (/\(https?:\/\/.*\.(?:png|jpg|jpeg|gif)\)/.test(text)) {
-  //     return 'image';
-  //   } else {
-  //     return 'simpleText';
-  //   }
-  // };
-
-  // const RenderText = ({ text }) => {
-  //   const textType = determineTextType(text);
-  //   // //console.log(`Text ${text} is of ${textType}`)
-  //   switch (textType) {
-  //     case 'heading1':
-  //       return <h1>{text.replace(/^#\s/, '')}</h1>;
-  //     case 'heading2':
-  //       return <h2>{text.replace(/^##\s/, '')}</h2>;
-  //     case 'heading3':
-  //       return <h3>{text.replace(/^###\s/, '')}</h3>;
-  //     case 'heading4':
-  //       return <h2 className='text-xl font-bold'>{text.replace(/^####\s/, '')}</h2>;
-  //     case 'bullet':
-  //       return <li>{formatText(text.replace(/^-/, ''))}</li>;
-  //     case 'numbered':
-  //       return <li>{formatText(text.replace(/^\d+\.\s/, ''))}</li>;
-  //     case 'dot':
-  //       return <li>{formatText(text.replace(/^•\s/, ''))}</li>;
-  //     case 'image':
-  //       const imageUrl = text.match(/\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\)/)[1];
-  //       return <img src={imageUrl} alt="image" style={{ maxWidth: '100%', margin: '20px 0' }} />;
-  //     case 'simpleText':
-  //       // Check for bold text patterns
-  //       return <p>{formatText(text)}</p>;
-  //     case 'code':
-  //       return <pre><code>{text}</code></pre>;
-  //     default:
-  //       return <p>{text}</p>;
-  //   }
-  // };
-
-  // const formatInlineText = (text) => {
-  //   const parts = text.split(/(\*{1,2}[^*]+\*{1,2})/);
-  //   return parts.map((part, index) => {
-  //     if (/^\*\*[^*]+\*\*$/.test(part)) {
-  //       return <strong key={index}>{part.replace(/^\*\*(.*)\*\*$/, '$1')}</strong>;
-  //     } else if (/^\*[^*]+\*$/.test(part)) {
-  //       return <em key={index}>{part.replace(/^\*(.*)\*$/, '$1')}</em>;
-  //     } else {
-  //       return part;
-  //     }
-  //   });
-  // };
-
-
-  // const formatText = (text) => {
-  //   const parts = text.split(/\*\*(.*?)\*\*/).map((part, index) =>
-  //     index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-  //   );
-
-  //   return parts.map((part, index) => {
-  //     if (typeof part === 'string') {
-  //       const imageParts = part.split(/(!\[icon\]\((https?:\/\/.*\.(?:png|jpg|jpeg|gif))\))/g);
-  //       return imageParts.map((imagePart, imageIndex) => {
-  //         if (imagePart.startsWith('http')) {
-  //           return <img key={`img-${index}-${imageIndex}`} src={imagePart} alt="icon" style={{ width: '30vw', margin: '0 5px' }} />;
-  //         } else {
-  //           return imagePart;
-  //         }
-  //       });
-  //     } else {
-  //       return part;
-  //     }
-  //   });
-  // };
-
-  // const separateTextAndCode = (input) => {
-  //   const regex = /(```.*?```)/gs;
-  //   const parts = input.split(regex);
-
-  //   return parts.map(part => {
-  //     if (part.startsWith('```') && part.endsWith('```')) {
-  //       let code = part.slice(3, -3).trim();
-
-  //       // Remove any file type name that might be after the opening triple backticks
-  //       const firstLine = code.split('\n')[0].trim();
-  //       if (['jsx', 'javascript', 'js', 'ts', 'tsx'].includes(firstLine)) {
-  //         code = code.split('\n').slice(1).join('\n').trim();
-  //       }
-
-  //       return {
-  //         type: 'code',
-  //         value: code,
-  //       };
-  //     } else {
-  //       return {
-  //         type: 'string',
-  //         value: part.trim(),
-  //       };
-  //     }
-  //   });
-  // };
 
 
   //code added
@@ -1145,28 +1028,6 @@ const Page = () => {
             <div className='flex flex-row items-center gap-12 mt-4' style={{ width: "fit-content" }}>
               <div className='flex flex-row gap-2 items-center text-white'>
                 <div>
-                  {/* <img
-                    src={
-                      updatedData
-                        ? updatedData.projectImage
-                        : projectData && projectData.projectImage
-                          ? projectData.projectImage
-                          : '/assets/applogo.png'
-                    }
-                    alt='Applogo'
-                    style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
-                  /> */}
-
-                  {/* <img
-                    src={
-                      projectData && projectData.projectImage
-                        ? projectData.projectImage
-                        : '/assets/applogo.png'
-                    }
-                    alt='Applogo'
-                    style={{ height: '45px', width: '45px', objectFit: 'cover', resize: 'cover' }}
-                  /> */}
-
                   {
                     updatedData && updatedData.projectImage ?
                       <img

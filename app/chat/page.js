@@ -190,15 +190,26 @@ const Page = () => {
 
     useEffect(() => {
         const NewProject = localStorage.getItem('NewProject');
-        if (NewProject) {
+        console.log("Local data", NewProject);
+        console.log("Reached till here");
+        if (NewProject === null || NewProject === undefined) {
             // setChatHistory(JSON.parse(storedHistory));
+            showProjDet(false);
+        } else {
             const projectChatId = JSON.parse(NewProject);
             console.log('New project id from local storage is :', projectChatId.data.chat.id);
             setChatId(projectChatId.data.chat.id);
             showProjDet(true);
-        } else {
-            showProjDet(false);
         }
+        // if (NewProject !== null && NewProject !== undefined) {
+        //     // setChatHistory(JSON.parse(storedHistory));
+        //     const projectChatId = JSON.parse(NewProject);
+        //     console.log('New project id from local storage is :', projectChatId.data.chat.id);
+        //     setChatId(projectChatId.data.chat.id);
+        //     showProjDet(true);
+        // } else {
+        //     showProjDet(false);
+        // }
     }, []);
 
     useEffect(() => {
