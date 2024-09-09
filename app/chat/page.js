@@ -192,10 +192,14 @@ const Page = () => {
         const NewProject = localStorage.getItem('NewProject');
         console.log("Local data", NewProject);
         console.log("Reached till here");
+
+        // return
         if (NewProject === null || NewProject === undefined) {
+            console.log('Not showing details');
             // setChatHistory(JSON.parse(storedHistory));
             showProjDet(false);
         } else {
+            console.log('Trying to get details');
             const projectChatId = JSON.parse(NewProject);
             console.log('New project id from local storage is :', projectChatId.data.chat.id);
             setChatId(projectChatId.data.chat.id);

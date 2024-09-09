@@ -35,17 +35,17 @@ const GetProjects = () => {
                 console.log('Response on navbar is', response);
             }
             if (response.status === 200) {
-                console.log('Response of api on navbar screen is is', response.data.data);
+                console.log('Response of api on navbar screen is is', response.data);
                 setMyProjects(response.data.data)
 
 
-                if (response.data.data.length === 0) {
+                if (response.data.data.length === 0 || response.data.data == undefined) {
                     setNoProject(true)
                 } else {
                     if (response.data.data) {
                         console.log("Recent project created", response.data.data[0]);
                         if (recentProjectStatus) {
-                            const pStatus = JSON.parse(recentProjectStatus);
+                            // const pStatus = JSON.parse(recentProjectStatus);
                             const recentProject = response.data.data[0];
                             localStorage.setItem('projectDetails', JSON.stringify(recentProject));
                             router.push(`/chat/${recentProject.chat.id}`);
